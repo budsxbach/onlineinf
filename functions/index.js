@@ -42,26 +42,30 @@ exports.validateLead = onDocumentCreated({
   }
 
   try {
-    // Query for existing leads with same email or phone
-    const existingLeadsQuery = db.collection('handwerksbetriebe')
-      .where('email.stringValue', '==', email);
+    let allMatches = [];
     
-    const existingLeadsSnapshot = await existingLeadsQuery.get();
+    // Query for existing leads with same email
+    if (email) {
+      const existingLeadsQuery = db.collection('handwerksbetriebe')
+        .where('email.stringValue', '==', email);
+      
+      const existingLeadsSnapshot = await existingLeadsQuery.get();
+      allMatches.push(...existingLeadsSnapshot.docs);
+    }
     
     // Also check by phone if provided
-    let phoneMatches = [];
     if (telefon) {
       const phoneQuery = db.collection('handwerksbetriebe')
         .where('telefon.stringValue', '==', telefon);
       const phoneSnapshot = await phoneQuery.get();
-      phoneMatches = phoneSnapshot.docs;
+      allMatches.push(...phoneSnapshot.docs);
     }
     
-    // Combine results and filter out the current document
-    const allMatches = [...existingLeadsSnapshot.docs, ...phoneMatches]
+    // Remove duplicates and filter out the current document
+    allMatches = allMatches
       .filter((doc, index, self) => 
         doc.id !== leadId && 
-        self.findIndex(d => d.id === doc.id) === index // Remove duplicates
+        self.findIndex(d => d.id === doc.id) === index
       );
 
     if (allMatches.length > 0) {

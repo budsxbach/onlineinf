@@ -43,40 +43,26 @@ exports.validateLead = firestoreOnDocumentCreated({
   try {
     // Check for duplicates based on email or telefon
     const handwerksbetriebeRef = db.collection('handwerksbetriebe');
-    let query = handwerksbetriebeRef;
-    
-    // Build query to find existing documents with same email or telefon
-    const orConditions = [];
-    if (email) {
-      orConditions.push(handwerksbetriebeRef.where('email.stringValue', '==', email));
-    }
-    if (telefon) {
-      orConditions.push(handwerksbetriebeRef.where('telefon.stringValue', '==', telefon));
-    }
-    
-    // For now, we'll check both conditions separately
-    // In a production environment, you might want to use a composite query
     let duplicateFound = false;
     
-    if (email) {
-      const emailQuery = await handwerksbetriebeRef.where('email.stringValue', '==', email).get();
-      emailQuery.forEach(doc => {
-        if (doc.id !== docId) {
-          duplicateFound = true;
-          console.log(`Lead validiert: Duplicate found by email: ${doc.id}`);
-        }
-      });
-    }
+    // Get all documents and check manually since Firestore queries can be complex with nested fields
+    const allDocs = await handwerksbetriebeRef.get();
     
-    if (telefon && !duplicateFound) {
-      const telefonQuery = await handwerksbetriebeRef.where('telefon.stringValue', '==', telefon).get();
-      telefonQuery.forEach(doc => {
-        if (doc.id !== docId) {
-          duplicateFound = true;
-          console.log(`Lead validiert: Duplicate found by telefon: ${doc.id}`);
-        }
-      });
-    }
+    allDocs.forEach(doc => {
+      if (doc.id === docId) {
+        return; // Skip self
+      }
+      
+      const data = doc.data();
+      const docEmail = data.email?.stringValue;
+      const docTelefon = data.telefon?.stringValue;
+      
+      if ((email && docEmail === email) || (telefon && docTelefon === telefon)) {
+        duplicateFound = true;
+        const matchType = (email && docEmail === email) ? 'email' : 'telefon';
+        console.log(`Lead validiert: Duplicate found by ${matchType}: ${doc.id}`);
+      }
+    });
     
     if (duplicateFound) {
       // Update the current document to mark it as duplicate

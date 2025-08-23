@@ -1,0 +1,23 @@
+{
+  "name": "onlineinf",
+  "version": "1.0.0",
+  "description": "Firebase Functions for leadgenerator-online-infinity",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.10.1",
+    "firebase-functions": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0"
+  }
+}

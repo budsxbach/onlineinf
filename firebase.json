@@ -1,0 +1,20 @@
+{
+  "projects": {
+    "default": "leadgenerator-online-infinity"
+  },
+  "functions": {
+    "source": ".",
+    "runtime": "nodejs18"
+  },
+  "emulators": {
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    }
+  }
+}

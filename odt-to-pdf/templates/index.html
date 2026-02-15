@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ODT zu PDF Konverter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                    <rect width="40" height="40" rx="8" fill="#2C3E50"/>
+                    <path d="M10 12h14v2H10zM10 18h20v2H10zM10 24h16v2H10zM10 30h20v2H10z" fill="#3498DB"/>
+                    <path d="M26 8l8 8h-8z" fill="#E74C3C"/>
+                </svg>
+            </div>
+            <h1>ODT zu PDF Konverter</h1>
+            <p class="subtitle">Laden Sie Ihre .odt Dateien hoch &mdash; Inhalte werden geprüft, korrigiert und als sauberes PDF zusammengeführt.</p>
+        </header>
+
+        <main>
+            <form id="uploadForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title">Dokumenttitel (optional)</label>
+                    <input type="text" id="title" name="title" placeholder="z.B. Projektbericht Q4 2024">
+                </div>
+
+                <div class="upload-area" id="dropZone">
+                    <div class="upload-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L14 16h7v12h6V16h7L24 4z" fill="#3498DB"/>
+                            <path d="M8 36v4c0 2.2 1.8 4 4 4h24c2.2 0 4-1.8 4-4v-4H8z" fill="#BDC3C7"/>
+                        </svg>
+                    </div>
+                    <p class="upload-text">ODT-Dateien hierher ziehen</p>
+                    <p class="upload-hint">oder klicken zum Auswählen</p>
+                    <input type="file" id="fileInput" name="files" multiple accept=".odt" hidden>
+                </div>
+
+                <div class="file-list" id="fileList" hidden>
+                    <h3>Ausgewählte Dateien</h3>
+                    <ul id="fileListItems"></ul>
+                    <button type="button" class="btn btn-secondary" id="clearBtn">Dateien entfernen</button>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-outline" id="validateBtn" disabled>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 12.5a5.5 5.5 0 110-11 5.5 5.5 0 010 11zM7 4h2v5H7V4zm0 6h2v2H7v-2z" fill="currentColor"/>
+                        </svg>
+                        Nur prüfen
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="convertBtn" disabled>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M2 2h8l4 4v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4a2 2 0 012-2z" fill="currentColor"/>
+                            <path d="M10 2v4h4" fill="none" stroke="white" stroke-width="1"/>
+                            <path d="M4 9h8M4 11.5h6" stroke="white" stroke-width="1"/>
+                        </svg>
+                        PDF erstellen
+                    </button>
+                </div>
+            </form>
+
+            <div class="result-area" id="resultArea" hidden>
+                <div class="result-header" id="resultHeader"></div>
+                <div class="result-content" id="resultContent"></div>
+            </div>
+
+            <div class="loading" id="loading" hidden>
+                <div class="spinner"></div>
+                <p id="loadingText">Verarbeite Dateien...</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>ODT zu PDF Konverter &mdash; Dateien werden nach der Verarbeitung automatisch gelöscht.</p>
+        </footer>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const fileListItems = document.getElementById('fileListItems');
+        const clearBtn = document.getElementById('clearBtn');
+        const validateBtn = document.getElementById('validateBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const resultArea = document.getElementById('resultArea');
+        const resultHeader = document.getElementById('resultHeader');
+        const resultContent = document.getElementById('resultContent');
+        const loading = document.getElementById('loading');
+        const loadingText = document.getElementById('loadingText');
+
+        let selectedFiles = [];
+
+        // Drag & Drop
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.odt'));
+            if (files.length === 0) {
+                showError('Nur .odt Dateien sind erlaubt.');
+                return;
+            }
+            addFiles(files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            addFiles(Array.from(fileInput.files));
+            fileInput.value = '';
+        });
+
+        function addFiles(files) {
+            for (const f of files) {
+                if (!selectedFiles.some(sf => sf.name === f.name && sf.size === f.size)) {
+                    selectedFiles.push(f);
+                }
+            }
+            updateFileList();
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.hidden = true;
+                validateBtn.disabled = true;
+                convertBtn.disabled = true;
+                return;
+            }
+
+            fileList.hidden = false;
+            validateBtn.disabled = false;
+            convertBtn.disabled = false;
+
+            fileListItems.innerHTML = '';
+            selectedFiles.forEach((f, idx) => {
+                const li = document.createElement('li');
+                const size = (f.size / 1024).toFixed(1);
+                li.innerHTML = `
+                    <span class="file-name">${escapeHtml(f.name)}</span>
+                    <span class="file-size">${size} KB</span>
+                    <button type="button" class="btn-remove" data-idx="${idx}" title="Entfernen">&times;</button>
+                `;
+                fileListItems.appendChild(li);
+            });
+
+            document.querySelectorAll('.btn-remove').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedFiles.splice(parseInt(btn.dataset.idx), 1);
+                    updateFileList();
+                });
+            });
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            updateFileList();
+            resultArea.hidden = true;
+        });
+
+        // Validate only
+        validateBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) return;
+
+            showLoading('Dateien werden geprüft...');
+            resultArea.hidden = true;
+
+            const formData = new FormData();
+            selectedFiles.forEach(f => formData.append('files', f));
+
+            try {
+                const response = await fetch('/validate', { method: 'POST', body: formData });
+                const data = await response.json();
+
+                hideLoading();
+                showValidationResult(data);
+
+            } catch (err) {
+                hideLoading();
+                showError('Verbindungsfehler: ' + err.message);
+            }
+        });
+
+        // Convert to PDF
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (selectedFiles.length === 0) return;
+
+            showLoading('PDF wird erstellt...');
+            resultArea.hidden = true;
+
+            const formData = new FormData();
+            selectedFiles.forEach(f => formData.append('files', f));
+            const title = document.getElementById('title').value;
+            if (title) formData.append('title', title);
+
+            try {
+                const response = await fetch('/convert', { method: 'POST', body: formData });
+
+                hideLoading();
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    const disposition = response.headers.get('Content-Disposition');
+                    let filename = 'dokument.pdf';
+                    if (disposition) {
+                        const match = disposition.match(/filename\*?=(?:UTF-8'')?([^;\n]+)/i);
+                        if (match) filename = decodeURIComponent(match[1].replace(/"/g, ''));
+                    }
+                    a.href = url;
+                    a.download = filename;
+                    a.click();
+                    URL.revokeObjectURL(url);
+
+                    showSuccess('PDF wurde erfolgreich erstellt und heruntergeladen.');
+                } else {
+                    const data = await response.json();
+                    showError(data.error || 'Unbekannter Fehler bei der Konvertierung.');
+                    if (data.validation) {
+                        resultContent.innerHTML += `<pre class="validation-log">${escapeHtml(data.validation)}</pre>`;
+                    }
+                }
+
+            } catch (err) {
+                hideLoading();
+                showError('Verbindungsfehler: ' + err.message);
+            }
+        });
+
+        function showLoading(text) {
+            loadingText.textContent = text;
+            loading.hidden = false;
+            validateBtn.disabled = true;
+            convertBtn.disabled = true;
+        }
+
+        function hideLoading() {
+            loading.hidden = true;
+            validateBtn.disabled = false;
+            convertBtn.disabled = false;
+        }
+
+        function showError(message) {
+            resultArea.hidden = false;
+            resultHeader.className = 'result-header error';
+            resultHeader.innerHTML = `<span class="result-icon">&#10060;</span> Fehler`;
+            resultContent.innerHTML = `<p class="error-text">${escapeHtml(message)}</p>`;
+        }
+
+        function showSuccess(message) {
+            resultArea.hidden = false;
+            resultHeader.className = 'result-header success';
+            resultHeader.innerHTML = `<span class="result-icon">&#10004;</span> Erfolgreich`;
+            resultContent.innerHTML = `<p class="success-text">${escapeHtml(message)}</p>`;
+        }
+
+        function showValidationResult(data) {
+            resultArea.hidden = false;
+
+            const hasIssues = data.total_corrections > 0 || data.total_warnings > 0;
+            resultHeader.className = 'result-header ' + (hasIssues ? 'warning' : 'success');
+            resultHeader.innerHTML = hasIssues
+                ? `<span class="result-icon">&#9888;</span> Validierungsergebnis`
+                : `<span class="result-icon">&#10004;</span> Alle Dateien in Ordnung`;
+
+            let html = `<div class="validation-summary">
+                <div class="stat"><span class="stat-num">${data.total_files}</span><span class="stat-label">Dateien</span></div>
+                <div class="stat"><span class="stat-num">${data.total_corrections}</span><span class="stat-label">Korrekturen</span></div>
+                <div class="stat"><span class="stat-num">${data.total_warnings}</span><span class="stat-label">Warnungen</span></div>
+            </div>`;
+
+            for (const file of data.files) {
+                html += `<div class="file-report">`;
+                html += `<h4>${escapeHtml(file.filename)}</h4>`;
+
+                if (file.error) {
+                    html += `<p class="error-text">Fehler: ${escapeHtml(file.error)}</p>`;
+                } else {
+                    html += `<p class="file-stats">${file.blocks} Inhaltsblöcke`;
+                    if (file.structure) {
+                        const parts = [];
+                        if (file.structure.heading) parts.push(`${file.structure.heading} Überschriften`);
+                        if (file.structure.paragraph) parts.push(`${file.structure.paragraph} Absätze`);
+                        if (file.structure.table) parts.push(`${file.structure.table} Tabellen`);
+                        if (file.structure.list) parts.push(`${file.structure.list} Listen`);
+                        if (parts.length) html += ` (${parts.join(', ')})`;
+                    }
+                    html += `</p>`;
+
+                    if (file.corrections > 0) {
+                        html += `<div class="detail-section"><h5>${file.corrections} Korrekturen</h5><ul>`;
+                        for (const c of (file.correction_details || [])) {
+                            html += `<li><strong>${escapeHtml(c.reason)}</strong></li>`;
+                        }
+                        html += `</ul></div>`;
+                    }
+
+                    if (file.warnings && file.warnings.length > 0) {
+                        html += `<div class="detail-section warnings"><h5>Warnungen</h5><ul>`;
+                        for (const w of file.warnings) {
+                            html += `<li>${escapeHtml(w)}</li>`;
+                        }
+                        html += `</ul></div>`;
+                    }
+
+                    if (file.info && file.info.length > 0) {
+                        html += `<div class="detail-section info"><h5>Hinweise</h5><ul>`;
+                        for (const i of file.info) {
+                            html += `<li>${escapeHtml(i)}</li>`;
+                        }
+                        html += `</ul></div>`;
+                    }
+                }
+
+                html += `</div>`;
+            }
+
+            resultContent.innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

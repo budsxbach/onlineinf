@@ -77,3 +77,6 @@ $body=@{fields=@{name=@{stringValue="Noch ein Betrieb"}; email=@{stringValue="in
   - Checks for duplicates based on email and phone number
   - Sets `isDuplicate: true` for duplicates
   - Logs validation results with "Lead validiert:" prefix
+## Weitere Inhalte
+
+- [`trading-strategie/`](trading-strategie/README.md) – Recherche zu den erfolgreichsten Tradern, Analyse ihrer Gemeinsamkeiten und die daraus abgeleitete Strategie „Simple Trend“ inkl. Backtest-Skript und Ergebnissen.

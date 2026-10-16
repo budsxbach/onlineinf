@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat AutoTyper AI – Live-Testumgebung & Installation</title>
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card: #111827;
+      --border: #1f2937;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --primary: #0ea5e9;
+      --emerald: #10b981;
+    }
+    * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 28px 100px 28px;
+      line-height: 1.5;
+    }
+    .top-bar {
+      max-width: 1180px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+      border: 1px solid #334155;
+      border-radius: 14px;
+      padding: 18px 22px;
+    }
+    .top-bar h1 {
+      margin: 0 0 4px 0;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .top-bar p {
+      margin: 0;
+      font-size: 13.5px;
+      color: #cbd5e1;
+    }
+    .dl-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+    .dl-btn-ext {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      border: 1px solid #38bdf8;
+    }
+    .dl-btn-user {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+    }
+    .dl-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+    .card-header {
+      padding: 14px 18px;
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sim-controls {
+      padding: 12px 18px;
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .sim-btn {
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #334155;
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .sim-btn:hover { background: #334155; border-color: #38bdf8; }
+    .sim-btn.highlight {
+      background: rgba(16, 185, 129, 0.16);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+
+    .chat-history {
+      height: 330px;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #090d16;
+    }
+    .msg-bubble {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      line-height: 1.45;
+      position: relative;
+    }
+    .msg-bubble.incoming {
+      align-self: flex-start;
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      border-bottom-left-radius: 4px;
+    }
+    .msg-bubble.outgoing {
+      align-self: flex-end;
+      background: #0369a1;
+      color: #ffffff;
+      border: 1px solid #0284c7;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-sender {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      margin-bottom: 3px;
+    }
+    .msg-bubble.outgoing .msg-sender { color: #bae6fd; }
+
+    .chat-composer {
+      padding: 14px 18px;
+      background: #111827;
+      border-top: 1px solid #1e293b;
+    }
+    .composer-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .composer-row {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .chat-input-box {
+      flex: 1;
+      min-height: 68px;
+      background: #090d16;
+      color: #f8fafc;
+      border: 1.5px solid #334155;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 14px;
+      line-height: 1.45;
+      outline: none;
+      resize: vertical;
+    }
+    .chat-input-box:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+    .send-btn {
+      background: #10b981;
+      color: #052e16;
+      border: none;
+      border-radius: 10px;
+      padding: 0 18px;
+      font-weight: 700;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .send-btn:hover { background: #34d399; }
+
+    .event-log {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11.5px;
+      background: #090d16;
+      padding: 12px 14px;
+      height: 170px;
+      overflow-y: auto;
+      color: #94a3b8;
+      border-top: 1px solid #1e293b;
+    }
+    .event-item { margin-bottom: 4px; }
+    .event-key { color: #38bdf8; font-weight: 700; }
+
+    .guide-list {
+      padding: 16px 20px;
+      margin: 0;
+      font-size: 13px;
+      color: #d1d5db;
+    }
+    .guide-list li { margin-bottom: 10px; }
+    .code-inline {
+      background: #1e293b;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: monospace;
+      color: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <div>
+      <h1>⌨️ Chat AutoTyper AI – Live-Test & Download</h1>
+      <p>Liest automatisch den Chatverlauf, erstellt eine KI-Antwort und tippt sie <strong>Buchstabe für Buchstabe</strong> über die Tastatur ins Chatfeld – <strong>ohne sie abzusenden</strong>.</p>
+    </div>
+    <div class="dl-group">
+      <a class="dl-btn dl-btn-ext" href="/download/chat-autotyper-extension.zip" download>
+        📦 Chrome / Edge Erweiterung (.zip)
+      </a>
+      <a class="dl-btn dl-btn-user" href="/download/chat-autotyper.user.js" target="_blank">
+        🐵 Tampermonkey Userscript (.user.js)
+      </a>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Linke Spalte: Interaktiver Beispiel-Chat zum sofortigen Live-Testen -->
+    <div class="card">
+      <div class="card-header">
+        <h2>💬 Live-Chat Simulation (Teste das Programm direkt hier!)</h2>
+        <span style="font-size:12px;color:#34d399;">● AutoTyper Widget unten rechts aktiv</span>
+      </div>
+
+      <div class="sim-controls">
+        <span style="font-size:12px;color:#94a3b8;font-weight:600;">Kunden-Nachricht empfangen:</span>
+        <button class="sim-btn highlight" data-msg="Hallo! Hätten Sie diese Woche noch einen freien Termin für eine kurze Besprechung?">
+          📅 Termin-Anfrage
+        </button>
+        <button class="sim-btn" data-msg="Könnten Sie mir bitte sagen, was das Paket ungefähr kostet und ob Sie ein Angebot schicken können?">
+          💶 Preis / Angebot
+        </button>
+        <button class="sim-btn" data-msg="Wie lange dauert aktuell die Lieferzeit für meine Bestellung?">
+          🚚 Lieferzeit
+        </button>
+        <button class="sim-btn" data-msg="Vielen Dank für die schnelle Hilfe, das passt super so!">
+          👍 Dankeschön
+        </button>
+      </div>
+
+      <!-- Chatverlauf-Container (wird vom AutoTyper überwacht) -->
+      <div class="chat-history" id="demo-chat-history" data-autotyper-chat="true">
+        <div class="msg-bubble incoming" data-sender="Kunde">
+          <div class="msg-sender">Kunde (Max Mustermann)</div>
+          <div>Hallo! Ich interessiere mich für Ihre Dienstleistung. Hätten Sie diese Woche noch einen freien Termin für ein kurzes Gespräch?</div>
+        </div>
+      </div>
+
+      <!-- Chat-Eingabebereich (hier tippt der AutoTyper Buchstabe für Buchstabe hinein, ohne abzusenden!) -->
+      <div class="chat-composer">
+        <div class="composer-toolbar">
+          <span>✍️ <strong>Dein Chat-Eingabefeld</strong> (AutoTyper tippt hier Zeichen für Zeichen ein und stoppt vor dem Senden)</span>
+          <label style="cursor:pointer;">
+            <input type="checkbox" id="toggle-contenteditable" />
+            Rich-Text Modus (<code>contenteditable</code> wie WhatsApp/Instagram)
+          </label>
+        </div>
+
+        <div class="composer-row">
+          <textarea
+            id="demo-chat-input"
+            class="chat-input-box"
+            data-autotyper-input="true"
+            placeholder="Hier tippt das Programm Buchstabe für Buchstabe wie auf einer echten Tastatur..."
+          ></textarea>
+          <div
+            id="demo-chat-contenteditable"
+            class="chat-input-box"
+            contenteditable="true"
+            role="textbox"
+            style="display:none;"
+          ></div>
+          <button class="send-btn" id="demo-send-btn" title="Erst wenn du selbst hier klickst, wird die Nachricht abgeschickt!">
+            Selbst absenden ➤
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Tastatur-Event-Monitor (beweist echte Tastatur-Events pro Buchstabe) -->
+      <div class="event-log" id="keyboard-event-log">
+        <div><strong>🔍 Live Tastatur-Event-Inspektor (am Chat-Eingabefeld gemessen):</strong></div>
+        <div>Warte auf Tastenanschläge (`keydown` → `keypress` → `beforeinput` → `input` → `keyup`)...</div>
+      </div>
+    </div>
+
+    <!-- Rechte Spalte: Anleitung & Funktionsweise -->
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div class="card">
+        <div class="card-header">
+          <h2>🚀 So funktioniert es auf jeder Website</h2>
+        </div>
+        <ol class="guide-list">
+          <li>
+            <strong>1. Chatverlauf & Eingabefeld wählen:</strong><br/>
+            Klicke im schwebenden Panel (unten rechts) auf <span class="code-inline">🎯 Chatverlauf wählen</span> und klicke auf den Nachrichtenbereich der Website. Klicke danach auf <span class="code-inline">⌨️ Eingabefeld wählen</span> und klicke in das Textfeld des Chats.
+            <em>(Die Auswahl wird für die Website automatisch gespeichert!)</em>
+          </li>
+          <li>
+            <strong>2. Automatisch mitlesen & Antwort erstellen:</strong><br/>
+            Sobald im Chat eine neue Nachricht erscheint (oder du auf <span class="code-inline">⚡ Jetzt Chat lesen & tippen</span> klickst), liest das Programm den bisherigen Verlauf und generiert über deine gewählte KI (OpenAI, Claude, Gemini oder lokaler Smart-Modus) die passende Antwort.
+          </li>
+          <li>
+            <strong>3. Buchstabe für Buchstabe über die Tastatur tippen:</strong><br/>
+            Das Programm simuliert für jedes Zeichen echte Tastatur-Events (<span class="code-inline">keydown</span>, <span class="code-inline">beforeinput</span>, <span class="code-inline">input</span>, <span class="code-inline">keyup</span>) mit natürlicher Tipp-Geschwindigkeit und kurzen Pausen bei Satzzeichen.
+          </li>
+          <li>
+            <strong>4. Stehen lassen & selbst absenden:</strong><br/>
+            Das Programm löst <strong>niemals</strong> <span class="code-inline">Enter</span> zum Senden aus. Der fertige Text bleibt im Eingabefeld stehen, sodass du ihn in Ruhe prüfen, bei Bedarf anpassen und selbst abschicken kannst.
+          </li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>📦 Installation in deinem Browser (2 Wege)</h2>
+        </div>
+        <ul class="guide-list">
+          <li>
+            <strong>Weg A: Als Chrome / Edge / Brave Erweiterung (Empfohlen)</strong><br/>
+            1. Lade oben <span class="code-inline">chat-autotyper-extension.zip</span> herunter und entpacke den Ordner (oder nutze direkt den Ordner <span class="code-inline">chat-autotyper/extension/</span> im Projekt).<br/>
+            2. Öffne in Chrome <span class="code-inline">chrome://extensions</span> (bzw. <span class="code-inline">edge://extensions</span>).<br/>
+            3. Aktiviere oben rechts den <strong>Entwicklermodus</strong>.<br/>
+            4. Klicke auf <strong>„Entpackte Erweiterung laden“</strong> und wähle den Ordner aus. Fertig!
+          </li>
+          <li>
+            <strong>Weg B: Als Tampermonkey Userscript (Alle Browser inkl. Firefox)</strong><br/>
+            1. Installiere die Erweiterung <em>Tampermonkey</em> oder <em>Violentmonkey</em>.<br/>
+            2. Klicke oben auf <span class="code-inline">Tampermonkey Userscript (.user.js)</span> oder füge den Inhalt von <span class="code-inline">chat-autotyper/userscript/chat-autotyper.user.js</span> als neues Skript ein.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live-Chat-Logik der Testseite -->
+  <script>
+    const chatHistory = document.getElementById('demo-chat-history');
+    const textareaInput = document.getElementById('demo-chat-input');
+    const ceInput = document.getElementById('demo-chat-contenteditable');
+    const toggleCe = document.getElementById('toggle-contenteditable');
+    const sendBtn = document.getElementById('demo-send-btn');
+    const eventLog = document.getElementById('keyboard-event-log');
+
+    let activeInput = textareaInput;
+    let keystrokeCount = 0;
+
+    function logKeyboardEvent(e) {
+      if (e.type === 'keydown') {
+        keystrokeCount++;
+        const line = document.createElement('div');
+        line.className = 'event-item';
+        const displayKey = e.key === ' ' ? 'Space (␣)' : e.key;
+        line.innerHTML = `#${keystrokeCount} <span class="event-key">[${displayKey}]</span> → keydown (code: ${e.code}, keyCode: ${e.keyCode}) + input + keyup`;
+        eventLog.appendChild(line);
+        while (eventLog.children.length > 35) {
+          eventLog.removeChild(eventLog.children[1]);
+        }
+        eventLog.scrollTop = eventLog.scrollHeight;
+      }
+    }
+
+    textareaInput.addEventListener('keydown', logKeyboardEvent);
+    ceInput.addEventListener('keydown', logKeyboardEvent);
+
+    // Umschalten zwischen <textarea> und contenteditable="true"
+    toggleCe.addEventListener('change', () => {
+      if (toggleCe.checked) {
+        textareaInput.style.display = 'none';
+        textareaInput.removeAttribute('data-autotyper-input');
+        ceInput.style.display = 'block';
+        ceInput.setAttribute('data-autotyper-input', 'true');
+        activeInput = ceInput;
+      } else {
+        ceInput.style.display = 'none';
+        ceInput.removeAttribute('data-autotyper-input');
+        textareaInput.style.display = 'block';
+        textareaInput.setAttribute('data-autotyper-input', 'true');
+        activeInput = textareaInput;
+      }
+    });
+
+    // Neue eingehende Kunden-Nachricht simulieren
+    document.querySelectorAll('.sim-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const text = btn.getAttribute('data-msg');
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble incoming';
+        bubble.setAttribute('data-sender', 'Kunde');
+        bubble.innerHTML = `
+          <div class="msg-sender">Kunde (Max Mustermann)</div>
+          <div>${text}</div>
+        `;
+        chatHistory.appendChild(bubble);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      });
+    });
+
+    // Selbst absenden (durch Klick des Nutzers nach Überprüfung)
+    sendBtn.addEventListener('click', () => {
+      const text = (activeInput === textareaInput ? textareaInput.value : ceInput.textContent).trim();
+      if (!text) return;
+
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble outgoing';
+      bubble.setAttribute('data-sender', 'Ich (Bisher)');
+      bubble.innerHTML = `
+        <div class="msg-sender">Ich (Überprüft & selbst abgesendet)</div>
+        <div></div>
+      `;
+      bubble.lastElementChild.textContent = text;
+      chatHistory.appendChild(bubble);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+      if (activeInput === textareaInput) textareaInput.value = '';
+      else ceInput.textContent = '';
+    });
+  </script>
+
+  <!-- Lade das echte Chat AutoTyper AI Content-Script direkt in die Seite -->
+  <script src="/extension/content.js"></script>
+</body>
+</html>

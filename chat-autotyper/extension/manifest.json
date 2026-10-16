@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Chat AutoTyper AI – Lesen & Buchstabe für Buchstabe tippen",
+  "version": "1.0.0",
+  "description": "Liest automatisch den Chatverlauf auf jeder Website, erstellt eine passende KI-Antwort und tippt sie Zeichen für Zeichen wie über eine echte Tastatur in das Chatfeld – ohne sie abzusenden.",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Chat AutoTyper AI öffnen"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

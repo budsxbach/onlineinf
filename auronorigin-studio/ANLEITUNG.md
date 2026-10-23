@@ -29,11 +29,23 @@ Vollautomatisches YouTube-Produktionsstudio für deine Marke **AuronOrigin** –
 Doppelklick auf **`START_AURON_STUDIO.bat`** im Ordner `auronorigin-studio`.  
 Das Browserfenster öffnet sich automatisch unter `http://localhost:8000`.
 
-### Linux / macOS
+### Ubuntu / Debian Linux (1-Befehl Komplett-Installation)
+Öffne ein Terminal (`STRG + ALT + T`) und füge diesen kompletten Befehl per Copy-Paste ein:
 ```bash
-cd auronorigin-studio
-chmod +x start_studio.sh
-./start_studio.sh
+sudo apt-get update && sudo apt-get install -y git curl && \
+if [ ! -d "$HOME/onlineinf/.git" ]; then \
+  git clone -b arena/6b00fd95-onlineinf https://github.com/budsxbach/onlineinf.git "$HOME/onlineinf"; \
+else \
+  git -C "$HOME/onlineinf" fetch origin arena/6b00fd95-onlineinf && \
+  git -C "$HOME/onlineinf" checkout arena/6b00fd95-onlineinf && \
+  git -C "$HOME/onlineinf" pull origin arena/6b00fd95-onlineinf; \
+fi && \
+bash "$HOME/onlineinf/auronorigin-studio/install_ubuntu.sh"
+```
+
+Später jederzeit wieder starten mit:
+```bash
+~/onlineinf/auronorigin-studio/start_studio.sh
 ```
 
 ---

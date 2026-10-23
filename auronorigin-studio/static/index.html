@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AuronOrigin Studio • YouTube Video Generator (Arena Router)</title>
+  <link rel="icon" type="image/png" href="/brand-assets/watermark_clean.png" />
+  <link rel="stylesheet" href="/static/fonts/cinzel-400.css" />
+  <link rel="stylesheet" href="/static/fonts/cinzel-600.css" />
+  <link rel="stylesheet" href="/static/fonts/cinzel-700.css" />
+  <link rel="stylesheet" href="/static/fonts/inter-300.css" />
+  <link rel="stylesheet" href="/static/fonts/inter-400.css" />
+  <link rel="stylesheet" href="/static/fonts/inter-600.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="cosmic-bg-glow" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-lockup">
+        <img src="/brand-assets/watermark_clean.png" alt="AuronOrigin Emblem" class="brand-seal" />
+        <div>
+          <div class="brand-kicker">SACRED-TECH VIDEO ENGINE</div>
+          <h1 class="brand-title">AURONORIGIN STUDIO</h1>
+          <p class="brand-claim">Fakten zuerst, Mystery als Deutung • Vollautomatische YouTube-Produktion</p>
+        </div>
+      </div>
+
+      <div class="telemetry-cluster">
+        <div class="status-pill" id="routerStatusPill">
+          <span class="status-dot" id="routerStatusDot"></span>
+          <span id="routerStatusText">Arena Router bereit</span>
+        </div>
+        <div class="credit-badge" title="Gezählte Arena Router Anfragen & Tokens in deinem Studio">
+          <span class="credit-label">ARENA ROUTER NUTZUNG</span>
+          <strong id="tokenUsageBadge">0 Anfragen • 0 Tokens</strong>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="studio-container">
+    <!-- PANEL 1: ARENA API & ROUTER KONFIGURATION -->
+    <section class="card card-gold-accent" id="arenaConfigCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">ARENA API &amp; ROUTER</span>
+          <h2>1. Arena API-Key &amp; Arena Router Verbindung</h2>
+          <p class="muted-note">
+            Trage hier deinen vorhandenen Arena API-Key ein. Standardmäßig ist <code>coding-router-preview</code> (Arena Router) aktiv, damit deine Arena-Credits optimal für Recherche, Skript-Architektur &amp; YouTube-SEO genutzt werden.
+          </p>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="toggleApiPanelBtn">Einklappen</button>
+      </div>
+
+      <div id="apiPanelBody" class="api-grid">
+        <div class="field-group field-span-2">
+          <label for="arenaApiKey">Dein Arena API-Key</label>
+          <div class="input-with-actions">
+            <input
+              type="password"
+              id="arenaApiKey"
+              placeholder="Arena API-Key hier einfügen (z. B. aus portal.api.preview.arena.ai)…"
+              autocomplete="off"
+            />
+            <button type="button" class="btn btn-secondary btn-sm" id="toggleKeyVisBtn" title="Key ein-/ausblenden">Auge</button>
+            <button type="button" class="btn btn-gold" id="verifyKeyBtn">Key prüfen &amp; speichern</button>
+          </div>
+          <small class="field-hint" id="apiVerifyFeedback">
+            Dein Key wird ausschließlich lokal in deinen geschützten Studio-Einstellungen gespeichert (niemals in Git).
+          </small>
+        </div>
+
+        <div class="field-group">
+          <label for="arenaGatewayUrl">Arena API Gateway</label>
+          <select id="arenaGatewayUrl">
+            <option value="https://api.preview.arena.ai">https://api.preview.arena.ai (Early Access / $1.000 Credits)</option>
+            <option value="https://api.arena.ai">https://api.arena.ai (Standard Gateway)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="arenaModel">Arena Router / Modell</label>
+          <select id="arenaModel">
+            <option value="coding-router-preview">coding-router-preview (Arena Coding Router • Empfohlen)</option>
+            <option value="claude-coding-router-preview">claude-coding-router-preview (Router Claude-Alias)</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: THEMA EINGEBEN & AUTOMATISCHE RECHERCHE -->
+    <section class="card">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">THEMA &amp; RECHERCHE</span>
+          <h2>2. Neues Thema eingeben &amp; automatisch recherchieren lassen</h2>
+          <p class="muted-note">
+            Gib einfach ein Stichwort, eine Entdeckung oder eine Frage ein – oder wähle unten einen AuronOrigin-Impuls.
+          </p>
+        </div>
+      </div>
+
+      <div class="topic-box">
+        <label for="topicInput" class="sr-only">Video-Thema</label>
+        <textarea
+          id="topicInput"
+          rows="2"
+          placeholder="z. B. Warum moderne Quantencomputer Zeitkristalle erzeugen – wackelt der Takt unserer Realität?"
+        ></textarea>
+
+        <div class="suggestions-bar">
+          <span class="suggestions-label">Schnellauswahl (3 Säulen):</span>
+          <div class="chip-list" id="topicChips"></div>
+        </div>
+      </div>
+
+      <div class="params-grid">
+        <div class="field-group">
+          <label for="videoFormat">YouTube-Format</label>
+          <select id="videoFormat">
+            <option value="9:16">9:16 Vertikal • YouTube Shorts / Reels (1080×1920)</option>
+            <option value="16:9">16:9 Breitbild • Klassisches YouTube-Video (1920×1080)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="durationTarget">Ziel-Länge &amp; Tiefe</label>
+          <select id="durationTarget">
+            <option value="short_60">Viraler Short (6 Szenen • ca. 50–65 Sek.)</option>
+            <option value="mid_180">Kompakt-Analyse (8 Szenen • ca. 2,5–3,5 Min.)</option>
+            <option value="long_300">Mini-Dokumentation (10 Szenen • ca. 4,5–6 Min.)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="pillarSelect">AuronOrigin Content-Säule</label>
+          <select id="pillarSelect">
+            <option value="">Automatisch passend erkennen</option>
+            <option value="Simulations-News">Simulations-News (KI, Quantenphysik &amp; Anomalien)</option>
+            <option value="Alte Codes">Alte Codes (Ägypten, Thoth, Gizeh &amp; heilige Geometrie)</option>
+            <option value="Bewusstseins-Hacks">Bewusstseins-Hacks (Schlaf, Gehirn &amp; Wahrnehmung)</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label for="editorialMode">Erzähl-Stil (Wiedererkennungswert)</label>
+          <select id="editorialMode">
+            <option value="fakten_mystery">Fakten zuerst, Mystery als Deutung (Seriöser Doku-Stil)</option>
+            <option value="matrix_narrativ">Auron – Der Code der Matrix (Ich-Erzähler • „Bleib wach“)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="action-bar-main">
+        <button type="button" class="btn btn-secondary btn-lg" id="researchAndScriptBtn">
+          🔍 Thema recherchieren &amp; Skript entwerfen
+        </button>
+        <button type="button" class="btn btn-gold btn-lg btn-glow" id="oneClickFullVideoBtn">
+          ⚡ Komplettes YouTube-Video in 1 Klick erstellen
+        </button>
+      </div>
+
+      <div id="workflowStatusBanner" class="status-banner hidden">
+        <div class="spinner"></div>
+        <div class="status-banner-body">
+          <strong id="workflowStatusTitle">Arbeite…</strong>
+          <span id="workflowStatusDetail">Bitte einen Moment Geduld.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: RECHERCHE-DOSSIER -->
+    <section class="card hidden" id="dossierCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge badge-violet">LIVE RECHERCHE-DOSSIER</span>
+          <h2 id="dossierHeadline">Recherchierte Fakten &amp; Mystery-Deutung</h2>
+        </div>
+        <span class="pillar-tag" id="dossierPillarBadge">Simulations-News</span>
+      </div>
+
+      <div class="dossier-columns">
+        <div class="dossier-col">
+          <h3>Belegte Fakten &amp; Studien <code>[FAKT]</code></h3>
+          <ul class="fact-list" id="dossierFactsList"></ul>
+        </div>
+        <div class="dossier-col">
+          <h3>Philosophische Perspektive <code>[MYSTERY-DEUTUNG]</code></h3>
+          <ul class="mystery-list" id="dossierMysteryList"></ul>
+          <div class="sources-mini">
+            <h4>Ausgewertete Quellen</h4>
+            <div id="dossierSourcesList" class="sources-chips"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 4: TONSTIMME, HINTERGRUNDMUSIK & SZENEN-REGIE -->
+    <section class="card" id="productionCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">TONSTIMME, MUSIK &amp; REGIE</span>
+          <h2>3. Stimme, Hintergrundmusik &amp; Szenen-Feinschliff</h2>
+          <p class="muted-note">
+            Alle AuronOrigin-Markenstandards (Conrad/Thorsten-Tonstimme, kosmischer Hall, „Glitch Horizon“-Soundtrack mit Auto-Ducking, Intro/Outro &amp; Wasserzeichen) sind bereits voreingestellt.
+          </p>
+        </div>
+      </div>
+
+      <div class="audio-brand-grid">
+        <!-- Voice Settings -->
+        <div class="subpanel">
+          <h3>🎙️ Tonstimme (Voiceover)</h3>
+          <div class="field-group">
+            <label for="ttsEngine">Sprach-Engine</label>
+            <select id="ttsEngine">
+              <option value="auto">Automatik (ConradNeural Cloud + Lokale Thorsten-KI-Stimme)</option>
+              <option value="browser_neural">Lokale KI-Stimme im Browser (Thorsten Neural VITS • Offlinefähig)</option>
+              <option value="edge">Microsoft ConradNeural (-15% Tempo • -3Hz Tiefe)</option>
+              <option value="elevenlabs">ElevenLabs Multilingual v2 (Eigener API-Key)</option>
+            </select>
+          </div>
+
+          <div id="browserVoiceRow" class="field-group">
+            <label for="browserVoiceSelect">Deutsche KI-Stimmfarbe (Browser Neural WASM)</label>
+            <div class="input-with-actions">
+              <select id="browserVoiceSelect">
+                <option value="de_DE-thorsten-medium">Thorsten Medium (Klar, ruhig &amp; schnell geladen)</option>
+                <option value="de_DE-thorsten_emotional-medium">Thorsten Emotional (Ausdrucksstark)</option>
+                <option value="de_DE-thorsten-high">Thorsten High-Studio (Maximale Detailtiefe)</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm" id="previewVoiceBtn">🔊 Vorhören</button>
+            </div>
+          </div>
+
+          <div id="elevenlabsExtra" class="field-group hidden">
+            <label>ElevenLabs API-Key &amp; Voice-ID</label>
+            <div class="dual-inputs">
+              <input type="password" id="elevenlabsKey" placeholder="xi-api-key…" />
+              <input type="text" id="elevenlabsVoiceId" placeholder="Voice ID…" />
+            </div>
+          </div>
+
+          <div class="slider-row">
+            <div class="field-group">
+              <label for="voiceRate">Sprechtempo: <strong id="voiceRateLabel">-15%</strong> (Auron-Standard)</label>
+              <input type="range" id="voiceRate" min="-30" max="10" step="1" value="-15" />
+            </div>
+            <label class="checkbox-line">
+              <input type="checkbox" id="voiceReverb" checked />
+              <span>Kosmischer Auron-Raumhall (<code>aecho</code> Mastering)</span>
+            </label>
+          </div>
+          <audio id="voicePreviewPlayer" controls class="mini-audio hidden"></audio>
+        </div>
+
+        <!-- Music & Brand Packaging -->
+        <div class="subpanel">
+          <h3>🎵 Hintergrundmusik &amp; Marken-Elemente</h3>
+          <div class="field-group">
+            <label for="musicPreset">Hintergrundmusik (mit Auto-Ducking unter der Stimme)</label>
+            <div class="input-with-actions">
+              <select id="musicPreset">
+                <option value="glitch_horizon">AuronOrigin Original – „Glitch Horizon“ (60 BPM)</option>
+                <option value="temple_drone_432">Tempel-Resonanz 432 Hz (Tiefen-Drone &amp; Puls)</option>
+                <option value="quantum_pulse">Quanten-Puls (Dark Sci-Fi Synth 60 BPM)</option>
+                <option value="custom">Eigene Musikdatei hochladen (MP3 / WAV)</option>
+                <option value="none">Ohne Hintergrundmusik</option>
+              </select>
+              <button type="button" class="btn btn-secondary btn-sm" id="previewMusicBtn">🎵 Anhören</button>
+            </div>
+          </div>
+
+          <div id="customMusicRow" class="field-group hidden">
+            <label for="customMusicInput">Eigene Hintergrundmusik (MP3/WAV)</label>
+            <input type="file" id="customMusicInput" accept=".mp3,.wav,.ogg,.m4a" />
+          </div>
+
+          <div class="field-group">
+            <label for="musicVolume">Musik-Pegel: <strong id="musicVolumeLabel">-17 dB</strong> (sanft unter Sprache geduckt)</label>
+            <input type="range" id="musicVolume" min="-28" max="-8" step="1" value="-17" />
+          </div>
+
+          <audio id="musicPreviewPlayer" src="/brand-assets/glitch_horizon.mp3" controls class="mini-audio hidden"></audio>
+
+          <div class="toggles-grid">
+            <label class="checkbox-line">
+              <input type="checkbox" id="includeIntro" checked />
+              <span>Offizielles AuronOrigin Intro</span>
+            </label>
+            <label class="checkbox-line">
+              <input type="checkbox" id="includeOutro" checked />
+              <span>Offizielles 7s AuronOrigin Outro</span>
+            </label>
+            <label class="checkbox-line">
+              <input type="checkbox" id="includeWatermark" checked />
+              <span>Goldenes Ouroboros-Wasserzeichen</span>
+            </label>
+            <label class="checkbox-line">
+              <input type="checkbox" id="includeSubtitles" checked />
+              <span>Eingebrannte Gold-Untertitel</span>
+            </label>
+            <label class="checkbox-line">
+              <input type="checkbox" id="includeGlitchSfx" checked />
+              <span>RGB-Glitch &amp; Sub-Whoosh Übergänge</span>
+            </label>
+            <div class="quality-inline">
+              <label for="renderQuality">Auflösung:</label>
+              <select id="renderQuality">
+                <option value="hd">720p HD (Schnell-Render)</option>
+                <option value="fullhd">1080p Full-HD (Master)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editable Blueprint Metadata & Scenes -->
+      <div id="blueprintEditorWrap" class="blueprint-editor">
+        <div class="blueprint-meta-grid">
+          <div class="field-group field-span-2">
+            <label for="videoTitleInput">YouTube-Haupttitel (jederzeit anpassbar)</label>
+            <input type="text" id="videoTitleInput" placeholder="Wird bei der Skript-Erstellung automatisch ausgefüllt…" />
+          </div>
+          <div class="field-group">
+            <label for="thumbTextInput">Thumbnail-Trigger (2–3 Worte Versalien)</label>
+            <input type="text" id="thumbTextInput" placeholder="DER ZEIT-CODE" />
+          </div>
+          <div class="field-group">
+            <label for="thumbSubInput">Thumbnail-Unterzeile</label>
+            <input type="text" id="thumbSubInput" placeholder="FAKTEN &amp; MYSTERIUM" />
+          </div>
+        </div>
+
+        <div class="scenes-header-bar">
+          <h3>🎬 Szenen-Ablauf &amp; Sprechertext (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
+          <button type="button" class="btn btn-secondary btn-sm" id="addSceneBtn">+ Szene hinzufügen</button>
+        </div>
+
+        <div id="scenesContainer" class="scenes-list"></div>
+
+        <div class="render-cta-box">
+          <button type="button" class="btn btn-gold btn-xl btn-glow" id="renderVideoBtn">
+            🎬 Fertiges AuronOrigin YouTube-Video (MP4) jetzt rendern
+          </button>
+          <div id="renderProgressBox" class="progress-wrap hidden">
+            <div class="progress-labels">
+              <span id="renderProgressMsg">Starte Render-Pipeline…</span>
+              <strong id="renderProgressPct">0%</strong>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="renderProgressBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 5: FERTIGES VIDEO, THUMBNAIL & YOUTUBE UPLOAD-PAKET -->
+    <section class="card card-gold-accent hidden" id="outputCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">FERTIGES YOUTUBE-PAKET</span>
+          <h2 id="outputVideoTitle">Dein fertiges AuronOrigin Video</h2>
+          <p class="muted-note" id="outputTechMeta"></p>
+        </div>
+        <a id="downloadZipBtn" href="#" class="btn btn-gold" download>📦 Komplettes YouTube-Paket (.ZIP) laden</a>
+      </div>
+
+      <div class="output-media-grid">
+        <div class="player-column">
+          <h3>Fertiges MP4-Video (inkl. Tonstimme &amp; Musik)</h3>
+          <div class="video-stage" id="videoStageBox">
+            <video id="finalVideoPlayer" controls playsinline></video>
+          </div>
+          <div class="download-strip">
+            <a id="downloadMp4Btn" href="#" class="btn btn-gold btn-sm" download>⬇️ Video (.MP4)</a>
+            <a id="downloadThumbBtn" href="#" class="btn btn-secondary btn-sm" download>🖼️ Thumbnail (.PNG)</a>
+            <a id="downloadVoiceBtn" href="#" class="btn btn-secondary btn-sm" download>🎙️ Tonstimme (.WAV)</a>
+            <a id="downloadSrtBtn" href="#" class="btn btn-secondary btn-sm" download>💬 Untertitel (.SRT)</a>
+          </div>
+        </div>
+
+        <div class="seo-column">
+          <h3>1280×720 High-CTR Thumbnail</h3>
+          <img id="finalThumbnailImg" alt="Generiertes YouTube Thumbnail" class="thumb-preview" />
+
+          <div class="seo-copy-stack">
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>Alternative Klickraten-Titel (A/B-Test)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoAltTitles">Kopieren</button>
+              </div>
+              <textarea id="seoAltTitles" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>YouTube-Beschreibung &amp; Hashtags</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoDescription">Kopieren</button>
+              </div>
+              <textarea id="seoDescription" rows="4" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>Angepinnter Kommentar <code>[FAKT / DEUTUNG]</code> (Boostet Kommentare &amp; Abos)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoPinnedComment">Kopieren</button>
+              </div>
+              <textarea id="seoPinnedComment" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>YouTube-Tags &amp; Community-Umfrage</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoTagsAndPoll">Kopieren</button>
+              </div>
+              <textarea id="seoTagsAndPoll" rows="3" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 6: BISHERIGE PRODUKTIONEN -->
+    <section class="card" id="historyCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">STUDIO-ARCHIV</span>
+          <h2>Zuletzt produzierte AuronOrigin Videos</h2>
+        </div>
+      </div>
+      <div id="historyList" class="history-grid">
+        <p class="muted-note">Noch keine gerenderten Videos in dieser Sitzung vorhanden.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="studio-footer">
+    <span>AURONORIGIN YOUTUBE STUDIO • CINZEL &amp; INTER BRAND SYSTEM (#0B0C10 / #1F2833 / #D4AF37 / #4A235A)</span>
+    <span>Powered by Arena API &amp; Arena Router (<code>coding-router-preview</code>)</span>
+  </footer>
+
+  <script type="module" src="/static/vendor/vits-client.js"></script>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

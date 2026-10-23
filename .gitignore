@@ -1,11 +1,19 @@
 # Dependencies
 node_modules/
 functions/node_modules/
+auronorigin-studio/node_modules/
+auronorigin-studio/.venv/
+.venv/
+__pycache__/
+*.pyc
+.cache/
+.output/
 
 # Build outputs
 dist/
 build/
 chat-autotyper/downloads/
+auronorigin-studio/outputs/
 
 # Firebase
 .firebase/

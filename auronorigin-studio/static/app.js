@@ -5,6 +5,11 @@ const state = {
   blueprint: null,
   customMusicFileId: null,
   motifCache: new Map(),
+  previewQueue: [],
+  activePreviews: 0,
+  modalTargetSceneIndex: null,
+  modalCurrentDir: "",
+  modalParentDir: "",
 };
 
 const el = (id) => document.getElementById(id);
@@ -37,7 +42,7 @@ function currentRawApiKey() {
   return val.startsWith("••••") ? "" : val;
 }
 
-// Live Browser-Side Wikipedia DE/EN & Crossref Research (works even if cloud preview restricts backend egress)
+// Live Browser-Side Wikipedia DE/EN & Crossref Research
 async function fetchLiveBrowserSources(topic) {
   const results = [];
   const clean = topic.trim();
@@ -61,9 +66,7 @@ async function fetchLiveBrowserSources(topic) {
           });
         }
       }
-    } catch (_) {
-      // Ignore browser network/CORS errors; backend supplements automatically
-    }
+    } catch (_) {}
   };
 
   const crossrefFetch = async () => {
@@ -93,7 +96,6 @@ async function fetchLiveBrowserSources(topic) {
   return results;
 }
 
-// Optional Browser-Direct Arena Router call if backend reports cloud preview egress restriction
 async function tryBrowserDirectArenaRouter(systemPrompt, userPrompt) {
   const rawKey = currentRawApiKey();
   if (!rawKey) return null;
@@ -113,7 +115,7 @@ async function tryBrowserDirectArenaRouter(systemPrompt, userPrompt) {
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
         ],
-        max_tokens: 4096,
+        max_tokens: 6144,
       }),
     });
     if (!resp.ok) return null;
@@ -163,7 +165,6 @@ async function initStudio() {
   renderTopicSuggestions(data.topic_suggestions || []);
   renderHistory(data.history || []);
 
-  // Load initial default blueprint for the first topic suggestion so scenes editor is immediately tangible
   if (data.topic_suggestions?.length) {
     const first = data.topic_suggestions[0];
     el("topicInput").value = first.topic;
@@ -240,22 +241,59 @@ function renderDossier(dossier) {
   }
 }
 
-async function fetchMotifPreviewUrl(motif, videoFormat, customImageId) {
-  const key = `${motif}|${videoFormat}|${customImageId || ""}`;
-  if (state.motifCache.has(key)) return state.motifCache.get(key);
-  const resp = await fetch("/api/preview-motif", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      visual_motif: motif,
-      video_format: videoFormat,
-      custom_image_id: customImageId || null,
-    }),
+// Concurrency-limited motif preview loader (prevents HTTP socket queuing even with 20+ scenes)
+function pumpPreviewQueue() {
+  while (state.activePreviews < 2 && state.previewQueue.length > 0) {
+    const job = state.previewQueue.shift();
+    state.activePreviews++;
+    job().finally(() => {
+      state.activePreviews--;
+      pumpPreviewQueue();
+    });
+  }
+}
+
+function fetchMotifPreviewUrl(motif, videoFormat, customImageId) {
+  // Instant direct image URL whenever a custom image is set on this scene
+  if (customImageId) {
+    return Promise.resolve(`/api/uploads/${encodeURIComponent(customImageId)}`);
+  }
+
+  const key = `${motif}|${videoFormat}`;
+  if (state.motifCache.has(key)) {
+    return Promise.resolve(state.motifCache.get(key));
+  }
+
+  return new Promise((resolve) => {
+    state.previewQueue.push(async () => {
+      if (state.motifCache.has(key)) {
+        resolve(state.motifCache.get(key));
+        return;
+      }
+      try {
+        const resp = await fetch("/api/preview-motif", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            visual_motif: motif,
+            video_format: videoFormat,
+            custom_image_id: null,
+          }),
+        });
+        if (!resp.ok) {
+          resolve("/brand-assets/watermark_clean.png");
+          return;
+        }
+        const blob = await resp.blob();
+        const objUrl = URL.createObjectURL(blob);
+        state.motifCache.set(key, objUrl);
+        resolve(objUrl);
+      } catch (_) {
+        resolve("/brand-assets/watermark_clean.png");
+      }
+    });
+    pumpPreviewQueue();
   });
-  const blob = await resp.blob();
-  const objUrl = URL.createObjectURL(blob);
-  state.motifCache.set(key, objUrl);
-  return objUrl;
 }
 
 function updateEstimatedStats() {
@@ -284,7 +322,290 @@ function syncBlueprintFromDom() {
   if (el("pillarSelect").value) {
     state.blueprint.pillar = el("pillarSelect").value;
   }
+  (state.blueprint.scenes || []).forEach((sc, idx) => {
+    sc.scene_number = idx + 1;
+  });
   return state.blueprint;
+}
+
+async function uploadImageBlobToBackend(fileOrBlob, fallbackName = "szene_bild.jpg") {
+  const fd = new FormData();
+  const fname = fileOrBlob.name || fallbackName;
+  fd.append("file", fileOrBlob, fname);
+  fd.append("kind", "image");
+  const resp = await fetch("/api/upload/media", { method: "POST", body: fd });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok || !data.ok) {
+    throw new Error(data.detail || `Bild-Upload fehlgeschlagen (HTTP ${resp.status}).`);
+  }
+  return data;
+}
+
+async function uploadImageSourceToBackend(sourceStr) {
+  const resp = await fetch("/api/upload/from-source", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source: sourceStr }),
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok || !data.ok) {
+    throw new Error(data.detail || `Quelle konnte nicht geladen werden (HTTP ${resp.status}).`);
+  }
+  return data;
+}
+
+function applyCustomImageToSceneUI(sc, card, uploadResult) {
+  sc.custom_image_id = uploadResult.file_id;
+  sc.custom_image_name = uploadResult.original_name || uploadResult.file_id;
+
+  const thumbImg = card.querySelector(".scene-motif-thumb");
+  const statusEl = card.querySelector(".scene-img-status");
+  const clearBtn = card.querySelector(".scene-clear-img-btn");
+
+  card.classList.add("has-custom-img");
+  thumbImg.src = `${uploadResult.preview_url || `/api/uploads/${uploadResult.file_id}`}?t=${Date.now()}`;
+  statusEl.textContent = `✓ ${sc.custom_image_name}`;
+  statusEl.title = `Eigenes Bild aktiv: ${sc.custom_image_name}`;
+  statusEl.classList.add("custom-active");
+  clearBtn.classList.remove("hidden");
+}
+
+async function clearCustomImageOnSceneUI(sc, card) {
+  sc.custom_image_id = "";
+  sc.custom_image_name = "";
+
+  const thumbImg = card.querySelector(".scene-motif-thumb");
+  const statusEl = card.querySelector(".scene-img-status");
+  const clearBtn = card.querySelector(".scene-clear-img-btn");
+
+  card.classList.remove("has-custom-img");
+  statusEl.textContent = "Drop / Datei / URL";
+  statusEl.title = "";
+  statusEl.classList.remove("custom-active");
+  clearBtn.classList.add("hidden");
+  thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, state.blueprint?.video_format || "9:16", "");
+}
+
+function buildSceneCardElement(sc, idx, bp) {
+  const card = document.createElement("div");
+  card.className = `scene-card${sc.custom_image_id ? " has-custom-img" : ""}`;
+  card.dataset.sceneIndex = String(idx);
+
+  const motifs = state.bootstrap?.visual_motifs || [];
+  const motifOpts = motifs
+    .map((m) => `<option value="${m.id}" ${m.id === sc.visual_motif ? "selected" : ""}>${m.label}</option>`)
+    .join("");
+
+  const motions = [
+    ["zoom_in", "Kamera: Langsamer Zoom-In"],
+    ["zoom_out", "Kamera: Kosmischer Zoom-Out"],
+    ["pan_up", "Kamera: Aufwärtsschwenk"],
+    ["drift_right", "Kamera: Sanfter Seitwärts-Drift"],
+  ]
+    .map(([v, lbl]) => `<option value="${v}" ${v === sc.camera_motion ? "selected" : ""}>${lbl}</option>`)
+    .join("");
+
+  const hasCustom = Boolean(sc.custom_image_id);
+  const statusLabel = hasCustom ? `✓ ${sc.custom_image_name || "Eigenes Bild"}` : "Drop / Datei / URL";
+
+  card.innerHTML = `
+    <div class="scene-preview-col">
+      <img class="scene-motif-thumb" alt="Szene ${idx + 1}" title="Klicken zum Auswählen eines eigenen Bildes (oder Bild hierher ziehen)" />
+      <input type="file" class="visually-hidden-file scene-img-input" />
+      <div class="scene-img-btn-row">
+        <button type="button" class="btn btn-secondary btn-xs sc-pick-file-btn" title="Bilddatei über den Browser auswählen">📷 Datei</button>
+        <button type="button" class="btn btn-secondary btn-xs sc-pick-any-btn" title="Bild von beliebigem PC-Ordner, USB-Laufwerk (/media, /mnt) oder per Web-URL wählen">🗂️ PC / URL</button>
+      </div>
+      <div class="scene-img-status ${hasCustom ? "custom-active" : ""}" title="${escapeAttr(statusLabel)}">${escapeHtml(statusLabel)}</div>
+      <button type="button" class="btn btn-ghost btn-xs scene-clear-img-btn ${hasCustom ? "" : "hidden"}" title="Eigenes Bild entfernen und AuronOrigin-Symbol nutzen">↺ Standard-Motiv</button>
+    </div>
+    <div class="scene-fields-col">
+      <div class="scene-top-row">
+        <span class="scene-num-pill">SZENE ${idx + 1}</span>
+        <input type="text" class="sc-headline" value="${escapeAttr(sc.on_screen_headline || "")}" placeholder="CINZEL ON-SCREEN TITEL" />
+        <input type="text" class="sc-badge" value="${escapeAttr(sc.fact_badge || "FAKT")}" placeholder="FAKT / DEUTUNG" title="Badge oben links" />
+        <select class="sc-motif">${motifOpts}</select>
+        <select class="sc-motion">${motions}</select>
+        <div class="scene-row-actions">
+          <button type="button" class="btn btn-ghost btn-xs sc-move-up" title="Szene nach oben schieben">↑</button>
+          <button type="button" class="btn btn-ghost btn-xs sc-move-down" title="Szene nach unten schieben">↓</button>
+          <button type="button" class="btn btn-ghost btn-xs sc-insert-after" title="Neue Szene direkt darunter einfügen">+</button>
+          <button type="button" class="btn btn-ghost btn-xs sc-delete" title="Szene entfernen">✕</button>
+        </div>
+      </div>
+      <textarea rows="2" class="sc-narration" placeholder="Gesprochener deutscher Sprechertext dieser Szene…">${escapeHtml(sc.narration || "")}</textarea>
+    </div>
+  `;
+
+  const thumbImg = card.querySelector(".scene-motif-thumb");
+  const fileInput = card.querySelector(".scene-img-input");
+  const pickFileBtn = card.querySelector(".sc-pick-file-btn");
+  const pickAnyBtn = card.querySelector(".sc-pick-any-btn");
+  const clearImgBtn = card.querySelector(".scene-clear-img-btn");
+  const statusEl = card.querySelector(".scene-img-status");
+
+  fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", sc.custom_image_id).then((u) => {
+    thumbImg.src = u;
+  });
+
+  const openNativeFilePicker = () => {
+    // Always clear previous value so picking even the same filename fires 'change' every single time
+    fileInput.value = "";
+    fileInput.click();
+  };
+
+  pickFileBtn.addEventListener("click", openNativeFilePicker);
+  thumbImg.addEventListener("click", openNativeFilePicker);
+
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    statusEl.textContent = "⏳ Lade Bild…";
+    try {
+      const res = await uploadImageBlobToBackend(file);
+      applyCustomImageToSceneUI(sc, card, res);
+    } catch (err) {
+      statusEl.textContent = "⚠️ Fehler (nutze 🗂️ PC/URL)";
+      alert(
+        `Bild für Szene ${idx + 1} konnte über den Browser-Dialog nicht gelesen werden:\n${err.message}\n\n` +
+        `Tipp für Ubuntu (Snap-Browser): Klicke auf „🗂️ PC / URL“, um Bilder direkt von jedem Ordner oder Laufwerk zu laden!`
+      );
+    } finally {
+      fileInput.value = "";
+    }
+  });
+
+  pickAnyBtn.addEventListener("click", () => {
+    openUniversalImageModal(idx);
+  });
+
+  clearImgBtn.addEventListener("click", async () => {
+    await clearCustomImageOnSceneUI(sc, card);
+  });
+
+  // Drag & Drop support (files from file manager OR image URLs/files dragged from browser)
+  card.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    card.classList.add("drag-over");
+  });
+  card.addEventListener("dragleave", () => {
+    card.classList.remove("drag-over");
+  });
+  card.addEventListener("drop", async (e) => {
+    e.preventDefault();
+    card.classList.remove("drag-over");
+
+    const droppedFile = e.dataTransfer?.files?.[0];
+    if (droppedFile) {
+      statusEl.textContent = "⏳ Lade Drop-Bild…";
+      try {
+        const res = await uploadImageBlobToBackend(droppedFile);
+        applyCustomImageToSceneUI(sc, card, res);
+      } catch (err) {
+        statusEl.textContent = "⚠️ Fehler beim Laden";
+        alert(`Drag & Drop Fehler bei Szene ${idx + 1}: ${err.message}`);
+      }
+      return;
+    }
+
+    const uriText = (e.dataTransfer?.getData("text/uri-list") || e.dataTransfer?.getData("text/plain") || "").trim();
+    if (uriText) {
+      const firstLine = uriText.split(/\r?\n/)[0].trim();
+      statusEl.textContent = "⏳ Lade Quelle…";
+      try {
+        const res = await uploadImageSourceToBackend(firstLine);
+        applyCustomImageToSceneUI(sc, card, res);
+      } catch (err) {
+        statusEl.textContent = "⚠️ Fehler beim Laden";
+        alert(`Konnte gezogene Quelle für Szene ${idx + 1} nicht laden: ${err.message}`);
+      }
+    }
+  });
+
+  // Clipboard Paste (STRG+V) support directly on any scene card
+  card.addEventListener("paste", async (e) => {
+    const items = e.clipboardData?.items || [];
+    for (const item of items) {
+      if (item.type && item.type.startsWith("image/")) {
+        e.preventDefault();
+        const blob = item.getAsFile();
+        if (!blob) return;
+        statusEl.textContent = "⏳ Füge Bild ein…";
+        try {
+          const res = await uploadImageBlobToBackend(blob, `zwischenablage_szene_${idx + 1}.png`);
+          applyCustomImageToSceneUI(sc, card, res);
+        } catch (err) {
+          alert(`Zwischenablage-Bild Fehler: ${err.message}`);
+        }
+        return;
+      }
+    }
+  });
+
+  card.querySelector(".sc-headline").addEventListener("input", (e) => {
+    sc.on_screen_headline = e.target.value.toUpperCase();
+  });
+  card.querySelector(".sc-badge").addEventListener("input", (e) => {
+    sc.fact_badge = e.target.value.toUpperCase();
+  });
+  card.querySelector(".sc-motif").addEventListener("change", async (e) => {
+    sc.visual_motif = e.target.value;
+    if (!sc.custom_image_id) {
+      thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", "");
+    }
+  });
+  card.querySelector(".sc-motion").addEventListener("change", (e) => {
+    sc.camera_motion = e.target.value;
+  });
+  card.querySelector(".sc-narration").addEventListener("input", (e) => {
+    sc.narration = e.target.value;
+    updateEstimatedStats();
+  });
+
+  card.querySelector(".sc-move-up").addEventListener("click", () => {
+    if (idx <= 0) return;
+    const tmp = bp.scenes[idx - 1];
+    bp.scenes[idx - 1] = bp.scenes[idx];
+    bp.scenes[idx] = tmp;
+    renderBlueprintEditor(bp);
+  });
+
+  card.querySelector(".sc-move-down").addEventListener("click", () => {
+    if (idx >= bp.scenes.length - 1) return;
+    const tmp = bp.scenes[idx + 1];
+    bp.scenes[idx + 1] = bp.scenes[idx];
+    bp.scenes[idx] = tmp;
+    renderBlueprintEditor(bp);
+  });
+
+  card.querySelector(".sc-insert-after").addEventListener("click", () => {
+    bp.scenes.splice(idx + 1, 0, {
+      scene_number: idx + 2,
+      phase: "VERTIEFUNG",
+      fact_badge: "FAKT",
+      on_screen_headline: `SZENE ${idx + 2}`,
+      on_screen_subline: "AuronOrigin Analyse",
+      narration: "Hier kannst du deinen gesprochenen Text für diese Szene eintragen.",
+      pause_after: 0.85,
+      visual_motif: "ouroboros_seal",
+      camera_motion: "zoom_in",
+      glitch_transition: true,
+      custom_image_id: "",
+      custom_image_name: "",
+    });
+    renderBlueprintEditor(bp);
+  });
+
+  card.querySelector(".sc-delete").addEventListener("click", () => {
+    if (bp.scenes.length <= 2) {
+      alert("Ein Video sollte mindestens 2 Szenen besitzen.");
+      return;
+    }
+    bp.scenes.splice(idx, 1);
+    renderBlueprintEditor(bp);
+  });
+
+  return card;
 }
 
 async function renderBlueprintEditor(bp) {
@@ -295,94 +616,119 @@ async function renderBlueprintEditor(bp) {
 
   const container = el("scenesContainer");
   container.innerHTML = "";
-  const motifs = state.bootstrap?.visual_motifs || [];
 
   (bp.scenes || []).forEach((sc, idx) => {
-    const card = document.createElement("div");
-    card.className = "scene-card";
-
-    const motifOpts = motifs
-      .map((m) => `<option value="${m.id}" ${m.id === sc.visual_motif ? "selected" : ""}>${m.label}</option>`)
-      .join("");
-
-    const motions = [
-      ["zoom_in", "Kamera: Langsamer Zoom-In"],
-      ["zoom_out", "Kamera: Kosmischer Zoom-Out"],
-      ["pan_up", "Kamera: Aufwärtsschwenk"],
-      ["drift_right", "Kamera: Sanfter Seitwärts-Drift"],
-    ]
-      .map(([v, lbl]) => `<option value="${v}" ${v === sc.camera_motion ? "selected" : ""}>${lbl}</option>`)
-      .join("");
-
-    card.innerHTML = `
-      <div class="scene-preview-col">
-        <img class="scene-motif-thumb" alt="Szene ${idx + 1}" />
-        <label class="scene-upload-label">
-          📷 Eigenes Bild
-          <input type="file" accept="image/*" class="hidden scene-img-input" />
-        </label>
-      </div>
-      <div class="scene-fields-col">
-        <div class="scene-top-row">
-          <span class="scene-num-pill">SZENE ${idx + 1}</span>
-          <input type="text" class="sc-headline" value="${escapeAttr(sc.on_screen_headline || "")}" placeholder="CINZEL ON-SCREEN TITEL" />
-          <input type="text" class="sc-badge" value="${escapeAttr(sc.fact_badge || "FAKT")}" placeholder="FAKT / DEUTUNG" title="Badge oben links" />
-          <select class="sc-motif">${motifOpts}</select>
-          <select class="sc-motion">${motions}</select>
-          <button type="button" class="btn btn-ghost btn-xs sc-delete" title="Szene entfernen">✕</button>
-        </div>
-        <textarea rows="2" class="sc-narration" placeholder="Gesprochener deutscher Sprechertext dieser Szene…">${escapeHtml(sc.narration || "")}</textarea>
-      </div>
-    `;
-
-    const thumbImg = card.querySelector(".scene-motif-thumb");
-    fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", sc.custom_image_id).then((u) => {
-      thumbImg.src = u;
-    });
-
-    card.querySelector(".sc-headline").addEventListener("input", (e) => {
-      sc.on_screen_headline = e.target.value.toUpperCase();
-    });
-    card.querySelector(".sc-badge").addEventListener("input", (e) => {
-      sc.fact_badge = e.target.value.toUpperCase();
-    });
-    card.querySelector(".sc-motif").addEventListener("change", async (e) => {
-      sc.visual_motif = e.target.value;
-      thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", sc.custom_image_id);
-    });
-    card.querySelector(".sc-motion").addEventListener("change", (e) => {
-      sc.camera_motion = e.target.value;
-    });
-    card.querySelector(".sc-narration").addEventListener("input", (e) => {
-      sc.narration = e.target.value;
-      updateEstimatedStats();
-    });
-    card.querySelector(".sc-delete").addEventListener("click", () => {
-      if (bp.scenes.length <= 2) {
-        alert("Ein Video sollte mindestens 2 Szenen besitzen.");
-        return;
-      }
-      bp.scenes.splice(idx, 1);
-      renderBlueprintEditor(bp);
-    });
-    card.querySelector(".scene-img-input").addEventListener("change", async (e) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("kind", "image");
-      const r = await fetch("/api/upload/media", { method: "POST", body: fd });
-      const d = await r.json();
-      if (d.ok) {
-        sc.custom_image_id = d.file_id;
-        thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", sc.custom_image_id);
-      }
-    });
-
+    sc.scene_number = idx + 1;
+    const card = buildSceneCardElement(sc, idx, bp);
     container.appendChild(card);
   });
 
   updateEstimatedStats();
+}
+
+// Universal PC-Folder & URL Picker Modal Logic
+async function loadLocalBrowserDirectory(dirPath = "") {
+  const listWrap = el("modalFileList");
+  listWrap.innerHTML = `<div class="muted-note" style="padding:0.6rem;">Lade Ordnerinhalt…</div>`;
+  try {
+    const resp = await fetch("/api/local-browser", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ directory: dirPath || null }),
+    });
+    const data = await resp.json();
+    if (!resp.ok || !data.ok) {
+      throw new Error(data.detail || "Ordner konnte nicht geöffnet werden.");
+    }
+
+    state.modalCurrentDir = data.current_dir;
+    state.modalParentDir = data.parent_dir;
+    el("modalCurrentDirInput").value = data.current_dir;
+
+    const scWrap = el("modalShortcuts");
+    scWrap.innerHTML = "";
+    for (const scItem of data.shortcuts || []) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "topic-chip";
+      b.textContent = scItem.label;
+      b.addEventListener("click", () => loadLocalBrowserDirectory(scItem.path));
+      scWrap.appendChild(b);
+    }
+
+    listWrap.innerHTML = "";
+    const dirs = data.directories || [];
+    const files = data.files || [];
+
+    if (!dirs.length && !files.length) {
+      listWrap.innerHTML = `<div class="muted-note" style="padding:0.7rem;">Keine Unterordner oder Bilder in diesem Verzeichnis gefunden.</div>`;
+      return;
+    }
+
+    for (const d of dirs) {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "browser-entry";
+      row.innerHTML = `<span>📁 ${escapeHtml(d.name)}</span><span class="browser-entry-meta">Ordner öffnen →</span>`;
+      row.addEventListener("click", () => loadLocalBrowserDirectory(d.path));
+      listWrap.appendChild(row);
+    }
+
+    for (const f of files) {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "browser-entry";
+      row.innerHTML = `<span>🖼️ ${escapeHtml(f.name)}</span><span class="browser-entry-meta">${f.size_kb} KB • Auswählen</span>`;
+      row.addEventListener("click", async () => {
+        await applySourceForModalScene(f.path);
+      });
+      listWrap.appendChild(row);
+    }
+  } catch (err) {
+    listWrap.innerHTML = `<div class="muted-note" style="padding:0.7rem;color:#e74c3c;">${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function openUniversalImageModal(sceneIdx) {
+  state.modalTargetSceneIndex = sceneIdx;
+  el("modalSceneTitle").textContent = `Eigenes Bild wählen für Szene ${sceneIdx + 1}`;
+  el("modalSourceInput").value = "";
+  el("imageSourceModal").classList.remove("hidden");
+  loadLocalBrowserDirectory(state.modalCurrentDir || "");
+}
+
+function closeUniversalImageModal() {
+  el("imageSourceModal").classList.add("hidden");
+  state.modalTargetSceneIndex = null;
+}
+
+async function applySourceForModalScene(sourceStr) {
+  const idx = state.modalTargetSceneIndex;
+  if (idx === null || !state.blueprint?.scenes?.[idx]) return;
+
+  const btn = el("modalApplySourceBtn");
+  const prevTxt = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Lade…";
+  try {
+    const res = await uploadImageSourceToBackend(sourceStr);
+    const sc = state.blueprint.scenes[idx];
+    const cards = el("scenesContainer").querySelectorAll(".scene-card");
+    const targetCard = cards[idx];
+    if (targetCard) {
+      applyCustomImageToSceneUI(sc, targetCard, res);
+    } else {
+      sc.custom_image_id = res.file_id;
+      sc.custom_image_name = res.original_name || res.file_id;
+      await renderBlueprintEditor(state.blueprint);
+    }
+    closeUniversalImageModal();
+  } catch (err) {
+    alert(`Bild konnte nicht übernommen werden:\n${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = prevTxt;
+  }
 }
 
 function escapeHtml(s) {
@@ -400,6 +746,9 @@ async function runResearchAndScript({ silentInit = false } = {}) {
     el("topicInput").focus();
     return null;
   }
+
+  const desiredScenes = Math.max(2, Math.min(30, Number(el("sceneCountInput").value || 6)));
+  el("sceneCountInput").value = String(desiredScenes);
 
   try {
     if (!silentInit) {
@@ -434,7 +783,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
 
     if (!silentInit) {
       showWorkflowStatus(
-        "Schritt 2/2: Arena Router entwirft AuronOrigin-Skript & Szenen-Architektur…",
+        `Schritt 2/2: Arena Router entwirft AuronOrigin-Skript (${desiredScenes} Szenen)…`,
         `Modell: ${el("arenaModel").value} • Format: ${el("videoFormat").value}`
       );
     }
@@ -447,6 +796,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
         dossier: resData.dossier,
         video_format: el("videoFormat").value,
         duration_target: el("durationTarget").value,
+        scene_count: desiredScenes,
         editorial_mode: el("editorialMode").value,
         pillar: el("pillarSelect").value || resData.dossier.pillar,
         arena_api_key: el("arenaApiKey").value.trim() || null,
@@ -456,7 +806,6 @@ async function runResearchAndScript({ silentInit = false } = {}) {
     });
     let scriptData = await scriptResp.json();
 
-    // If running inside a cloud sandbox where backend egress is restricted AND user entered a fresh key, try browser-direct Arena Router!
     if (
       scriptData?.blueprint?.sandbox_network_restricted &&
       scriptData?.blueprint?.prompts_for_browser_router &&
@@ -477,6 +826,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
             dossier: resData.dossier,
             video_format: el("videoFormat").value,
             duration_target: el("durationTarget").value,
+            scene_count: desiredScenes,
             editorial_mode: el("editorialMode").value,
             pillar: el("pillarSelect").value || resData.dossier.pillar,
             arena_model: el("arenaModel").value,
@@ -508,7 +858,6 @@ async function runResearchAndScript({ silentInit = false } = {}) {
 
 async function synthesizeBrowserSceneAudioIfNeeded(scenes, progressCb) {
   const mode = el("ttsEngine").value;
-  // Synthesize genuine German neural speech via WASM VITS when 'browser_neural' or 'auto' is selected
   if (mode !== "browser_neural" && mode !== "auto") {
     return {};
   }
@@ -580,7 +929,7 @@ async function runFullVideoRender() {
 
     const uploadedSceneAudio = await synthesizeBrowserSceneAudioIfNeeded(bp.scenes, setProg);
 
-    setProg(34, "Übergebe Szenen, Tonstimme & Soundtrack an die MP4-Render-Engine…");
+    setProg(34, "Übergebe Szenen, eigene Bilder, Tonstimme & Soundtrack an die MP4-Render-Engine…");
     const startResp = await fetch("/api/render", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -725,6 +1074,20 @@ async function saveCurrentSettingsQuietly() {
 }
 
 // Event Listeners
+el("durationTarget").addEventListener("change", () => {
+  const val = el("durationTarget").value;
+  if (val === "short_60") el("sceneCountInput").value = "6";
+  else if (val === "mid_180") el("sceneCountInput").value = "8";
+  else el("sceneCountInput").value = "10";
+});
+
+el("videoFormat").addEventListener("change", () => {
+  if (state.blueprint) {
+    state.blueprint.video_format = el("videoFormat").value;
+    renderBlueprintEditor(state.blueprint);
+  }
+});
+
 el("toggleApiPanelBtn").addEventListener("click", () => {
   const body = el("apiPanelBody");
   const hidden = body.classList.toggle("hidden");
@@ -832,21 +1195,118 @@ el("previewVoiceBtn").addEventListener("click", async () => {
 el("includeIntro").addEventListener("change", updateEstimatedStats);
 el("includeOutro").addEventListener("change", updateEstimatedStats);
 
+// Add new scene cleanly without wiping existing uploaded images
 el("addSceneBtn").addEventListener("click", () => {
   if (!state.blueprint) return;
-  state.blueprint.scenes.push({
-    scene_number: state.blueprint.scenes.length + 1,
+  const nextNum = state.blueprint.scenes.length + 1;
+  const newScene = {
+    scene_number: nextNum,
     phase: "ZUSATZ",
     fact_badge: "FAKT",
-    on_screen_headline: "NEUER BEFUND",
+    on_screen_headline: `SZENE ${nextNum}`,
     on_screen_subline: "AuronOrigin Analyse",
-    narration: "Hier kannst du einen weiteren gesprochenen Satz für diese Szene eintragen.",
+    narration: "Hier kannst du deinen gesprochenen Text für diese Szene eintragen.",
     pause_after: 0.85,
     visual_motif: "ouroboros_seal",
     camera_motion: "zoom_in",
     glitch_transition: true,
-  });
-  renderBlueprintEditor(state.blueprint);
+    custom_image_id: "",
+    custom_image_name: "",
+  };
+  state.blueprint.scenes.push(newScene);
+  el("sceneCountInput").value = String(state.blueprint.scenes.length);
+  const card = buildSceneCardElement(newScene, state.blueprint.scenes.length - 1, state.blueprint);
+  el("scenesContainer").appendChild(card);
+  updateEstimatedStats();
+  card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+});
+
+// Multi-image batch upload across scenes 1..N (sorted naturally: 1, 2, ..., 8, 9, 10)
+el("batchUploadImagesBtn").addEventListener("click", () => {
+  const inp = el("batchImagesInput");
+  inp.value = "";
+  inp.click();
+});
+
+el("batchImagesInput").addEventListener("change", async (e) => {
+  const rawFiles = Array.from(e.target.files || []);
+  if (!rawFiles.length || !state.blueprint) return;
+
+  // Natural sort so 'bild_2.png' comes before 'bild_10.png'
+  rawFiles.sort((a, b) => a.name.localeCompare(b.name, "de", { numeric: true, sensitivity: "base" }));
+
+  const btn = el("batchUploadImagesBtn");
+  const origLabel = btn.textContent;
+  btn.disabled = true;
+
+  try {
+    // Expand scene list automatically if user selected more images than current scenes
+    while (state.blueprint.scenes.length < rawFiles.length && state.blueprint.scenes.length < 30) {
+      const n = state.blueprint.scenes.length + 1;
+      state.blueprint.scenes.push({
+        scene_number: n,
+        phase: "ZUSATZ",
+        fact_badge: "FAKT",
+        on_screen_headline: `SZENE ${n}`,
+        on_screen_subline: "AuronOrigin Analyse",
+        narration: "Gesprochener Text für diese Szene.",
+        pause_after: 0.85,
+        visual_motif: "ouroboros_seal",
+        camera_motion: "zoom_in",
+        glitch_transition: true,
+        custom_image_id: "",
+        custom_image_name: "",
+      });
+    }
+
+    await renderBlueprintEditor(state.blueprint);
+    const cards = el("scenesContainer").querySelectorAll(".scene-card");
+
+    for (let i = 0; i < rawFiles.length && i < state.blueprint.scenes.length; i++) {
+      btn.textContent = `⏳ Lade Bild ${i + 1}/${rawFiles.length}…`;
+      const res = await uploadImageBlobToBackend(rawFiles[i]);
+      applyCustomImageToSceneUI(state.blueprint.scenes[i], cards[i], res);
+    }
+  } catch (err) {
+    alert(`Fehler beim Verteilen der Bilder: ${err.message}`);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origLabel;
+    e.target.value = "";
+  }
+});
+
+// Modal controls
+el("closeImageModalBtn").addEventListener("click", closeUniversalImageModal);
+el("imageSourceModal").addEventListener("click", (e) => {
+  if (e.target === el("imageSourceModal")) closeUniversalImageModal();
+});
+el("modalApplySourceBtn").addEventListener("click", async () => {
+  const src = el("modalSourceInput").value.trim();
+  if (!src) {
+    alert("Bitte gib oben eine Bild-URL oder einen Dateipfad ein – oder klicke unten direkt auf eine Bilddatei.");
+    return;
+  }
+  await applySourceForModalScene(src);
+});
+el("modalSourceInput").addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const src = el("modalSourceInput").value.trim();
+    if (src) await applySourceForModalScene(src);
+  }
+});
+el("modalUpDirBtn").addEventListener("click", () => {
+  if (state.modalParentDir) loadLocalBrowserDirectory(state.modalParentDir);
+});
+el("modalOpenDirBtn").addEventListener("click", () => {
+  loadLocalBrowserDirectory(el("modalCurrentDirInput").value.trim());
+});
+el("modalCurrentDirInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    loadLocalBrowserDirectory(el("modalCurrentDirInput").value.trim());
+  }
 });
 
 el("researchAndScriptBtn").addEventListener("click", async () => {

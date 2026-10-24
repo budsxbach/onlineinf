@@ -127,11 +127,22 @@
 
         <div class="field-group">
           <label for="durationTarget">Ziel-Länge &amp; Tiefe</label>
-          <select id="durationTarget">
-            <option value="short_60">Viraler Short (6 Szenen • ca. 50–65 Sek.)</option>
-            <option value="mid_180">Kompakt-Analyse (8 Szenen • ca. 2,5–3,5 Min.)</option>
-            <option value="long_300">Mini-Dokumentation (10 Szenen • ca. 4,5–6 Min.)</option>
-          </select>
+          <div class="dual-select-num">
+            <select id="durationTarget">
+              <option value="short_60">Viraler Short (6 Szenen • ca. 50–65 Sek.)</option>
+              <option value="mid_180">Kompakt-Analyse (8 Szenen • ca. 2,5–3,5 Min.)</option>
+              <option value="long_300">Mini-Dokumentation (10 Szenen • ca. 4,5–6 Min.)</option>
+            </select>
+            <input
+              type="number"
+              id="sceneCountInput"
+              min="2"
+              max="30"
+              value="6"
+              title="Exakte Anzahl der Szenen (2 bis 30)"
+            />
+          </div>
+          <small class="field-hint">Rechts daneben: Exakte Szenen-Anzahl (z. B. 6, 8, 10 oder bis zu 30 Szenen).</small>
         </div>
 
         <div class="field-group">
@@ -335,8 +346,19 @@
         </div>
 
         <div class="scenes-header-bar">
-          <h3>🎬 Szenen-Ablauf &amp; Sprechertext (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
-          <button type="button" class="btn btn-secondary btn-sm" id="addSceneBtn">+ Szene hinzufügen</button>
+          <div>
+            <h3>🎬 Szenen-Ablauf &amp; Eigene Bilder (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
+            <p class="muted-note scenes-subhint">
+              Für <strong>jede Szene (1 bis 30)</strong> frei wählbar: Klicke auf <strong>„📷 Datei wählen“</strong>, nutze <strong>„🗂️ PC-Ordner / URL“</strong> (auch für USB-Laufwerke, <code>/media</code>, <code>/mnt</code> &amp; Web-Links), ziehe Bilder per <strong>Drag &amp; Drop</strong> direkt auf eine Szene oder füge sie mit <strong>STRG+V</strong> ein.
+            </p>
+          </div>
+          <div class="scenes-toolbar-btns">
+            <input type="file" id="batchImagesInput" multiple class="visually-hidden-file" />
+            <button type="button" class="btn btn-secondary btn-sm" id="batchUploadImagesBtn" title="Mehrere Bilder gleichzeitig auswählen und der Reihe nach auf Szene 1, 2, 3 … verteilen">
+              🖼️ Mehrere Bilder verteilen
+            </button>
+            <button type="button" class="btn btn-gold btn-sm" id="addSceneBtn">+ Szene hinzufügen</button>
+          </div>
         </div>
 
         <div id="scenesContainer" class="scenes-list"></div>
@@ -437,6 +459,42 @@
       </div>
     </section>
   </main>
+
+  <!-- MODAL: BILD VON ÜBERALL WÄHLEN (PC-ORDNER, EXTERNE LAUFWERKE ODER WEB-URL) -->
+  <div id="imageSourceModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <div>
+          <span class="step-badge">UNIVERSAL BILD-AUSWAHL</span>
+          <h3 id="modalSceneTitle">Eigenes Bild wählen für Szene 1</h3>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="closeImageModalBtn">✕ Schließen</button>
+      </div>
+
+      <div class="modal-section">
+        <label for="modalSourceInput">Option A: Bild-URL (<code>https://…</code>) oder direkter Dateipfad auf deinem PC (<code>/home/…</code>, <code>/media/…</code>, <code>/mnt/…</code>)</label>
+        <div class="input-with-actions">
+          <input
+            type="text"
+            id="modalSourceInput"
+            placeholder="z. B. https://.../bild.jpg oder /media/usb/mein_bild.png"
+          />
+          <button type="button" class="btn btn-gold btn-sm" id="modalApplySourceBtn">Übernehmen</button>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <label>Option B: Direkt alle Ordner &amp; Laufwerke deines PCs durchsuchen (umgeht Browser-/Snap-Sperren)</label>
+        <div id="modalShortcuts" class="chip-list modal-shortcuts"></div>
+        <div class="browser-path-bar">
+          <button type="button" class="btn btn-secondary btn-xs" id="modalUpDirBtn">⬆️ Ordner hoch</button>
+          <input type="text" id="modalCurrentDirInput" placeholder="/home/..." />
+          <button type="button" class="btn btn-secondary btn-xs" id="modalOpenDirBtn">Öffnen</button>
+        </div>
+        <div id="modalFileList" class="local-browser-list"></div>
+      </div>
+    </div>
+  </div>
 
   <footer class="studio-footer">
     <span>AURONORIGIN YOUTUBE STUDIO • CINZEL &amp; INTER BRAND SYSTEM (#0B0C10 / #1F2833 / #D4AF37 / #4A235A)</span>

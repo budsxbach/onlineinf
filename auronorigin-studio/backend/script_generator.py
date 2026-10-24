@@ -15,6 +15,19 @@ VISUAL_MOTIFS = [
 ]
 
 
+def resolve_target_scene_count(duration_target: str = "short_60", scene_count: int | None = None) -> int:
+    if scene_count is not None:
+        try:
+            return max(2, min(30, int(scene_count)))
+        except (TypeError, ValueError):
+            pass
+    if duration_target == "short_60":
+        return 6
+    if duration_target == "mid_180":
+        return 8
+    return 10
+
+
 def build_auron_script_prompts(
     *,
     topic: str,
@@ -23,20 +36,20 @@ def build_auron_script_prompts(
     duration_target: str = "short_60",
     editorial_mode: str = "fakten_mystery",
     pillar: str | None = None,
+    scene_count: int | None = None,
 ) -> tuple[str, str]:
-    """Construct the official AuronOrigin Showrunner System & User prompts.
-
-    Exported so both backend Arena Router calls and browser-direct Arena Router calls
-    share the exact same brand DNA.
-    """
+    """Construct the official AuronOrigin Showrunner System & User prompts."""
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(topic)
+    target_n = resolve_target_scene_count(duration_target, scene_count)
 
-    if duration_target == "short_60":
-        scene_count_spec = "exakt 6 Szenen (Gesamt-Sprechtext ca. 110–145 Wörter für ein 48–60 Sekunden YouTube Short / Reel)"
-    elif duration_target == "mid_180":
-        scene_count_spec = "exakt 8 Szenen (Gesamt-Sprechtext ca. 280–360 Wörter für ein 2,5–3,5 Minuten YouTube Video)"
+    if target_n <= 6:
+        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 110–150 Wörter für ein 48–65 Sekunden YouTube Short / Reel)"
+    elif target_n <= 8:
+        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 260–350 Wörter für ein 2,5–3,5 Minuten YouTube Video)"
     else:
-        scene_count_spec = "exakt 10 Szenen (Gesamt-Sprechtext ca. 480–620 Wörter für eine tiefgehende 4,5–6 Minuten Mini-Doku)"
+        est_words_min = target_n * 45
+        est_words_max = target_n * 60
+        scene_count_spec = f"exakt {target_n} Szenen (nummeriert von 1 bis {target_n}, Gesamt-Sprechtext ca. {est_words_min}–{est_words_max} Wörter)"
 
     if editorial_mode == "matrix_narrativ":
         persona_block = (
@@ -65,6 +78,7 @@ Marken-DNA von AuronOrigin:
   3. Wendepunkt: Philosophische Simulations-/Bewusstseins-Deutung (`fact_badge`: `"DEUTUNG"` oder `"GEDANKENEXPERIMENT"`).
   4. Finale Szene: Gänsehaut-Konklusion + eleganter Abonnenten-Trigger ("Wenn du solche Codes zwischen Wissenschaft und Mysterium entschlüsseln willst – abonniere AuronOrigin") + offene Kommentar-Frage für den Algorithmus.
 
+WICHTIG: Das Array `"scenes"` MUSS exakt {target_n} Szenen enthalten!
 Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt (kein Text außerhalb des JSON)."""
 
     user_prompt = f"""Erstelle ein komplettes, produktionsfertiges YouTube-Videopaket für **AuronOrigin**:
@@ -86,7 +100,7 @@ Erlaubte Werte für `visual_motif` pro Szene (abwechslungsreich wählen):
 Erlaubte Werte für `camera_motion`:
 `zoom_in`, `zoom_out`, `pan_up`, `drift_right`
 
-Liefere EXAKT dieses JSON-Format:
+Liefere EXAKT dieses JSON-Format mit exakt {target_n} Einträgen in `"scenes"`:
 {{
   "title": "Haupttitel des Videos (max. 68 Zeichen, hohe Klickrate, seriös-mystisch)",
   "alt_titles": [
@@ -135,7 +149,7 @@ def normalize_blueprint(
     editorial_mode: str = "fakten_mystery",
     pillar: str | None = None,
 ) -> dict[str, Any]:
-    """Guarantee all required fields exist and sanitize narration/headlines for clean rendering."""
+    """Guarantee all required fields exist across any number of scenes without dropping user scenes."""
     chosen_pillar = raw.get("pillar") or pillar or detect_pillar(topic)
     scenes_in = raw.get("scenes") if isinstance(raw.get("scenes"), list) else []
     normalized_scenes: list[dict[str, Any]] = []
@@ -145,9 +159,11 @@ def normalize_blueprint(
     for idx, sc in enumerate(scenes_in):
         if not isinstance(sc, dict):
             continue
+        headline = str(sc.get("on_screen_headline") or f"SEQUENZ {idx + 1}").strip().upper()
         narration = str(sc.get("narration") or "").strip()
         if not narration:
-            continue
+            narration = headline.title()
+
         motif = str(sc.get("visual_motif") or VISUAL_MOTIFS[idx % len(VISUAL_MOTIFS)]).strip()
         if motif not in VISUAL_MOTIFS:
             motif = VISUAL_MOTIFS[idx % len(VISUAL_MOTIFS)]
@@ -156,11 +172,10 @@ def normalize_blueprint(
             motion = motions[idx % len(motions)]
         pause_val = sc.get("pause_after", 0.85)
         try:
-            pause_after = max(0.3, min(2.0, float(pause_val)))
+            pause_after = max(0.3, min(2.5, float(pause_val)))
         except (TypeError, ValueError):
             pause_after = 0.85
 
-        headline = str(sc.get("on_screen_headline") or f"SEQUENZ {idx + 1}").strip().upper()
         subline = str(sc.get("on_screen_subline") or "").strip()
         badge = str(sc.get("fact_badge") or ("FAKT" if idx in (1, 2, 3) else "DEUTUNG")).strip().upper()
 
@@ -180,7 +195,8 @@ def normalize_blueprint(
                     sc.get("image_prompt_en")
                     or f"Dark sacred geometry {motif}, obsidian #0B0C10 background, subtle #D4AF37 gold light, cinematic 8k"
                 ),
-                "custom_image_id": sc.get("custom_image_id") or "",
+                "custom_image_id": str(sc.get("custom_image_id") or "").strip(),
+                "custom_image_name": str(sc.get("custom_image_name") or "").strip(),
             }
         )
 
@@ -252,6 +268,101 @@ def _default_description(title: str, topic: str, pillar: str) -> str:
     )
 
 
+def _pad_or_trim_scenes_to_count(
+    scenes: list[dict[str, Any]],
+    target_n: int,
+    topic: str,
+    dossier: dict[str, Any] | None,
+    pillar: str,
+) -> list[dict[str, Any]]:
+    """Ensure the generated blueprint matches the requested number of scenes (e.g., 10 scenes)."""
+    if len(scenes) == target_n:
+        return scenes
+    if len(scenes) > target_n and target_n >= 2:
+        # Keep Hook (first) and CTA (last), trim middle
+        trimmed = scenes[: target_n - 1] + [scenes[-1]]
+        for i, sc in enumerate(trimmed):
+            sc["scene_number"] = i + 1
+        return trimmed
+
+    facts = (dossier or {}).get("verified_facts") or []
+    mysteries = (dossier or {}).get("mystery_interpretation") or []
+    motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
+
+    expansion_pool = [
+        (
+            "HISTORISCHE PARALLELE",
+            "KONTEXT",
+            f"Betrachtet man die überlieferten Strukturen rund um {topic}, zeigt sich über Epochen hinweg dieselbe präzise Geometrie.",
+            "sacred_archive",
+        ),
+        (
+            "MESSBARE SIGNATUR",
+            "STUDIE",
+            (facts[3].split(" (")[0] if len(facts) > 3 else f"Moderne Messverfahren legen bei {topic} Muster frei, die mit bloßem Auge unsichtbar bleiben."),
+            "quantum_lattice",
+        ),
+        (
+            "DIE SCHNITTSTELLE",
+            "ANALYSE",
+            "Genau an diesem Punkt berühren sich objektive Messung, Informationstheorie und die Frage nach dem Beobachter.",
+            "neural_cosmos",
+        ),
+        (
+            "DAS TIEFERE MUSTER",
+            "DEUTUNG",
+            (mysteries[1] if len(mysteries) > 1 else f"Vielleicht ist {topic} kein isoliertes Rätsel, sondern Teil einer größeren Informations-Architektur."),
+            "ouroboros_seal",
+        ),
+        (
+            "OFFENE FRAGE",
+            "IMPULS",
+            "Je mehr Daten wir sammeln, desto deutlicher wird: Unsere bisherigen Modelle beschreiben nur die Oberfläche.",
+            "pyramid_radar",
+        ),
+    ]
+
+    out = list(scenes[:-1]) if scenes else []
+    cta_scene = scenes[-1] if scenes else {
+        "phase": "OUTRO & CTA",
+        "fact_badge": "AURONORIGIN",
+        "on_screen_headline": "ABONNIERE AURONORIGIN",
+        "on_screen_subline": "Deine Sicht in die Kommentare ↓",
+        "narration": "Abonniere jetzt AuronOrigin und schreib deine Deutung in die Kommentare.",
+        "pause_after": 0.85,
+        "visual_motif": "eye_of_horus",
+        "camera_motion": "zoom_out",
+        "glitch_transition": False,
+    }
+
+    pool_idx = 0
+    while len(out) + 1 < target_n:
+        head, badge, narr, motif = expansion_pool[pool_idx % len(expansion_pool)]
+        seq_num = len(out) + 1
+        out.append(
+            {
+                "scene_number": seq_num,
+                "phase": f"VERTIEFUNG {seq_num}",
+                "fact_badge": badge,
+                "on_screen_headline": head if pool_idx < len(expansion_pool) else f"{head} {seq_num}",
+                "on_screen_subline": pillar.upper(),
+                "narration": narr,
+                "pause_after": 0.9,
+                "visual_motif": VISUAL_MOTIFS[(seq_num + 1) % len(VISUAL_MOTIFS)] if pool_idx >= len(expansion_pool) else motif,
+                "camera_motion": motions[seq_num % len(motions)],
+                "glitch_transition": True,
+                "custom_image_id": "",
+                "custom_image_name": "",
+            }
+        )
+        pool_idx += 1
+
+    out.append(cta_scene)
+    for i, sc in enumerate(out):
+        sc["scene_number"] = i + 1
+    return out
+
+
 def _build_local_auron_blueprint(
     *,
     topic: str,
@@ -260,8 +371,11 @@ def _build_local_auron_blueprint(
     duration_target: str,
     editorial_mode: str,
     pillar: str,
+    scene_count: int | None = None,
 ) -> dict[str, Any]:
-    """High-craft deterministic AuronOrigin script builder used when offline or without API key."""
+    """High-craft deterministic AuronOrigin script builder matching the exact requested scene count."""
+    target_n = resolve_target_scene_count(duration_target, scene_count)
+
     facts = (dossier or {}).get("verified_facts") or [
         f"Messbare Befunde rund um {topic} zeigen präzise Muster, die selbst Fachleute überraschen.",
         "Unabhängige Analysen dokumentieren dabei Zusammenhänge zwischen Struktur, Energie und Information.",
@@ -284,7 +398,7 @@ def _build_local_auron_blueprint(
     words_upper = [w.upper() for w in topic.replace(":", " ").replace("&", " ").replace("-", " ").split() if len(w) >= 3]
     short_trigger = " ".join(words_upper[:4])[:28].strip() if len(words_upper) >= 2 else "DER REALITÄTS-CODE"
 
-    scenes = [
+    base_scenes = [
         {
             "scene_number": 1,
             "phase": "HOOK",
@@ -364,23 +478,7 @@ def _build_local_auron_blueprint(
         },
     ]
 
-    if duration_target in ("mid_180", "long_300") and len(facts) > 3:
-        extra_fact = facts[3].split(" (")[0]
-        scenes.insert(
-            4,
-            {
-                "scene_number": 5,
-                "phase": "KONTEXT",
-                "fact_badge": "QUELLE",
-                "on_screen_headline": "DER GRÖSSERE KONTEXT",
-                "on_screen_subline": "Vergleich alter & moderner Modelle",
-                "narration": f"Ein weiteres Detail wird dabei oft übersehen: {extra_fact}",
-                "pause_after": 0.9,
-                "visual_motif": "neural_cosmos",
-                "camera_motion": "pan_up",
-                "glitch_transition": True,
-            },
-        )
+    scenes = _pad_or_trim_scenes_to_count(base_scenes, target_n, topic, dossier, pillar)
 
     short_topic = topic if len(topic) <= 56 else topic[:56].rsplit(" ", 1)[0]
     raw = {
@@ -407,6 +505,7 @@ def generate_video_blueprint(
     duration_target: str = "short_60",
     editorial_mode: str = "fakten_mystery",
     pillar: str | None = None,
+    scene_count: int | None = None,
     arena_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate a complete AuronOrigin script & visual scene blueprint via Arena Router."""
@@ -415,6 +514,7 @@ def generate_video_blueprint(
         raise ValueError("Bitte gib ein Thema ein.")
 
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(clean_topic)
+    target_n = resolve_target_scene_count(duration_target, scene_count)
     sys_prompt, usr_prompt = build_auron_script_prompts(
         topic=clean_topic,
         dossier=dossier,
@@ -422,6 +522,7 @@ def generate_video_blueprint(
         duration_target=duration_target,
         editorial_mode=editorial_mode,
         pillar=chosen_pillar,
+        scene_count=target_n,
     )
 
     cfg = arena_settings or {}
@@ -435,11 +536,11 @@ def generate_video_blueprint(
             gateway_url=cfg.get("arena_gateway_url", "https://api.preview.arena.ai"),
             model=cfg.get("arena_model", "coding-router-preview"),
             protocol=cfg.get("arena_protocol", "auto"),
-            max_tokens=4096,
+            max_tokens=8192 if target_n > 8 else 4096,
         )
         if router_res.get("ok"):
             parsed = extract_json_object(router_res.get("text", ""))
-            if parsed and isinstance(parsed.get("scenes"), list) and len(parsed["scenes"]) >= 3:
+            if parsed and isinstance(parsed.get("scenes"), list) and len(parsed["scenes"]) >= 2:
                 bp = normalize_blueprint(
                     parsed,
                     topic=clean_topic,
@@ -447,6 +548,10 @@ def generate_video_blueprint(
                     editorial_mode=editorial_mode,
                     pillar=chosen_pillar,
                 )
+                if len(bp["scenes"]) < target_n:
+                    bp["scenes"] = _pad_or_trim_scenes_to_count(
+                        bp["scenes"], target_n, clean_topic, dossier, chosen_pillar
+                    )
                 bp["arena_router_used"] = True
                 bp["arena_model_used"] = router_res.get("routed_model")
                 bp["arena_gateway_used"] = router_res.get("gateway")
@@ -454,7 +559,6 @@ def generate_video_blueprint(
                 bp["cumulative_usage"] = router_res.get("cumulative_usage")
                 return bp
 
-        # Fallback to deterministic AuronOrigin blueprint with clear diagnostics
         fallback = _build_local_auron_blueprint(
             topic=clean_topic,
             dossier=dossier,
@@ -462,6 +566,7 @@ def generate_video_blueprint(
             duration_target=duration_target,
             editorial_mode=editorial_mode,
             pillar=chosen_pillar,
+            scene_count=target_n,
         )
         fallback["arena_router_used"] = False
         fallback["arena_warning"] = router_res.get("error")
@@ -479,6 +584,7 @@ def generate_video_blueprint(
         duration_target=duration_target,
         editorial_mode=editorial_mode,
         pillar=chosen_pillar,
+        scene_count=target_n,
     )
     fallback["arena_router_used"] = False
     fallback["arena_warning"] = "Kein Arena API-Key gesetzt – lokaler AuronOrigin Studio-Entwurf erstellt."

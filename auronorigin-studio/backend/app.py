@@ -1,24 +1,30 @@
 from __future__ import annotations
 
+import base64
 import io
 import json
+import os
 import re
 import shutil
+import subprocess
 import threading
 import time
+import urllib.parse
 import uuid
 import zipfile
 from pathlib import Path
 from typing import Any
 
+import requests
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
+from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from .arena_client import DEFAULT_ARENA_MODELS, discover_arena_models, extract_json_object
-from .audio_engine import build_master_audio_timeline
+from .audio_engine import FFMPEG_BIN, build_master_audio_timeline
 from .config import (
     BRAND_DIR,
     BRAND_IDENTITY,
@@ -46,7 +52,7 @@ from .visual_engine import generate_youtube_thumbnail, render_complete_auron_vid
 app = FastAPI(
     title="AuronOrigin YouTube Video Studio",
     description="Automatisierte YouTube-Videoproduktion für AuronOrigin mit Arena API & Arena Router",
-    version="1.0.0",
+    version="1.1.0",
 )
 
 app.add_middleware(
@@ -70,6 +76,12 @@ app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 RENDER_JOBS: dict[str, dict[str, Any]] = {}
 JOBS_LOCK = threading.Lock()
+
+IMAGE_BROWSE_EXTS = {
+    ".jpg", ".jpeg", ".png", ".webp", ".avif", ".heic", ".heif",
+    ".bmp", ".gif", ".tiff", ".tif", ".jfif", ".ico", ".svg",
+    ".mp4", ".webm", ".mov", ".mkv",
+}
 
 
 class SettingsPayload(BaseModel):
@@ -116,6 +128,7 @@ class ScriptPayload(BaseModel):
     dossier: dict[str, Any] | None = None
     video_format: str = "9:16"
     duration_target: str = "short_60"
+    scene_count: int | None = None
     editorial_mode: str = "fakten_mystery"
     pillar: str | None = None
     arena_api_key: str | None = None
@@ -140,6 +153,14 @@ class PreviewMotifPayload(BaseModel):
     custom_image_id: str | None = None
 
 
+class UploadFromSourcePayload(BaseModel):
+    source: str
+
+
+class LocalBrowserPayload(BaseModel):
+    directory: str | None = None
+
+
 def _public_settings_view(cfg: dict[str, Any]) -> dict[str, Any]:
     out = dict(cfg)
     raw_key = str(cfg.get("arena_api_key") or "")
@@ -160,6 +181,81 @@ def _effective_arena_cfg(inline_key: str | None, inline_gw: str | None, inline_m
     if inline_model:
         saved["arena_model"] = inline_model.strip()
     return saved
+
+
+def _normalize_and_store_image(raw_bytes: bytes, original_name: str = "bild.jpg") -> dict[str, Any]:
+    """Decode ANY image/frame format (JPG, PNG, WEBP, AVIF, HEIC, BMP, TIFF, GIF, MP4/MOV still) into clean RGB JPG."""
+    if not raw_bytes:
+        raise HTTPException(status_code=400, detail="Die ausgewählte Bilddatei ist leer (0 Bytes).")
+
+    file_id = f"image_{uuid.uuid4().hex[:12]}.jpg"
+    dest = UPLOADS_DIR / file_id
+    clean_orig = Path(original_name or "bild").name
+
+    # Pass 1: Direct Pillow decode + EXIF auto-orient + RGBA-safe compositing over #0B0C10
+    decoded_ok = False
+    try:
+        with Image.open(io.BytesIO(raw_bytes)) as im:
+            im = ImageOps.exif_transpose(im)
+            if im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info):
+                rgba = im.convert("RGBA")
+                bg = Image.new("RGBA", rgba.size, (11, 12, 16, 255))
+                im_rgb = Image.alpha_composite(bg, rgba).convert("RGB")
+            else:
+                im_rgb = im.convert("RGB")
+
+            max_edge = max(im_rgb.width, im_rgb.height)
+            if max_edge > 2400:
+                scale = 2400.0 / float(max_edge)
+                nw = max(2, int(round(im_rgb.width * scale)))
+                nh = max(2, int(round(im_rgb.height * scale)))
+                im_rgb = im_rgb.resize((nw, nh), Image.Resampling.LANCZOS)
+
+            im_rgb.save(str(dest), format="JPEG", quality=92, optimize=True)
+            decoded_ok = True
+    except Exception:
+        decoded_ok = False
+
+    # Pass 2: FFmpeg universal decoder fallback (handles .avif, .heic, .svg, .bmp, .tiff, video frames, etc.)
+    if not decoded_ok:
+        ext = Path(clean_orig).suffix.lower() or ".bin"
+        tmp_in = UPLOADS_DIR / f"_tmp_{uuid.uuid4().hex[:10]}{ext}"
+        try:
+            tmp_in.write_bytes(raw_bytes)
+            cmd = [
+                FFMPEG_BIN,
+                "-y",
+                "-i",
+                str(tmp_in),
+                "-frames:v",
+                "1",
+                "-vf",
+                "scale='min(2400,iw)':-2",
+                "-q:v",
+                "2",
+                str(dest),
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=20)
+            if res.returncode == 0 and dest.exists() and dest.stat().st_size > 128:
+                decoded_ok = True
+        except Exception:
+            decoded_ok = False
+        finally:
+            tmp_in.unlink(missing_ok=True)
+
+    if not decoded_ok or not dest.exists():
+        raise HTTPException(
+            status_code=415,
+            detail=f"Die Datei '{clean_orig}' konnte nicht als Bild gelesen werden. Bitte wähle ein gültiges Bild (JPG, PNG, WEBP, AVIF, BMP, GIF, TIFF oder Video-Frame).",
+        )
+
+    return {
+        "ok": True,
+        "file_id": file_id,
+        "original_name": clean_orig,
+        "preview_url": f"/api/uploads/{file_id}",
+        "size_bytes": dest.stat().st_size,
+    }
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -279,6 +375,7 @@ def api_script_prompts(payload: ScriptPayload) -> dict[str, Any]:
         duration_target=payload.duration_target,
         editorial_mode=payload.editorial_mode,
         pillar=payload.pillar,
+        scene_count=payload.scene_count,
     )
     return {"ok": True, "system_prompt": sys_p, "user_prompt": usr_p}
 
@@ -288,7 +385,6 @@ def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
     if not payload.topic.strip():
         raise HTTPException(status_code=400, detail="Bitte gib ein Thema ein.")
 
-    # If the browser executed the Arena Router call directly (e.g. inside cloud sandbox iframe), parse & normalize
     if payload.browser_raw_llm_text:
         parsed = extract_json_object(payload.browser_raw_llm_text)
         if not parsed or not isinstance(parsed.get("scenes"), list):
@@ -317,9 +413,29 @@ def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
         duration_target=payload.duration_target,
         editorial_mode=payload.editorial_mode,
         pillar=payload.pillar,
+        scene_count=payload.scene_count,
         arena_settings=eff_cfg,
     )
     return {"ok": True, "blueprint": bp, "settings": _public_settings_view(load_settings())}
+
+
+@app.get("/api/uploads/{file_id}")
+def api_get_uploaded_media(file_id: str) -> Response:
+    safe_name = Path(file_id).name
+    target = UPLOADS_DIR / safe_name
+    if not target.exists() or not target.is_file():
+        raise HTTPException(status_code=404, detail="Hochgeladene Datei nicht gefunden.")
+    ext = target.suffix.lower()
+    mime = "image/jpeg"
+    if ext == ".png":
+        mime = "image/png"
+    elif ext == ".webp":
+        mime = "image/webp"
+    elif ext == ".wav":
+        mime = "audio/wav"
+    elif ext == ".mp3":
+        mime = "audio/mpeg"
+    return FileResponse(str(target), media_type=mime)
 
 
 @app.post("/api/upload/media")
@@ -327,25 +443,149 @@ async def api_upload_media(
     file: UploadFile = File(...),
     kind: str = Form("image"),
 ) -> dict[str, Any]:
-    raw_name = file.filename or "upload.bin"
-    ext = Path(raw_name).suffix.lower()
-    allowed_exts = {".png", ".jpg", ".jpeg", ".webp", ".wav", ".mp3", ".ogg", ".m4a"}
-    if ext not in allowed_exts:
-        ext = ".wav" if kind == "audio" else ".png"
-
-    file_id = f"{kind}_{uuid.uuid4().hex[:12]}{ext}"
-    dest = UPLOADS_DIR / file_id
+    raw_name = file.filename or ("upload.wav" if kind == "audio" else "bild.jpg")
     data = await file.read()
-    if len(data) > 60 * 1024 * 1024:
-        raise HTTPException(status_code=413, detail="Datei ist größer als 60 MB.")
+    if len(data) > 150 * 1024 * 1024:
+        raise HTTPException(status_code=413, detail="Datei ist größer als 150 MB.")
+
+    if kind == "image":
+        return _normalize_and_store_image(data, original_name=raw_name)
+
+    ext = Path(raw_name).suffix.lower()
+    allowed_audio = {".wav", ".mp3", ".ogg", ".m4a", ".flac", ".aac", ".opus"}
+    if ext not in allowed_audio:
+        ext = ".wav"
+    file_id = f"audio_{uuid.uuid4().hex[:12]}{ext}"
+    dest = UPLOADS_DIR / file_id
     dest.write_bytes(data)
-    return {"ok": True, "file_id": file_id, "size_bytes": len(data)}
+    return {"ok": True, "file_id": file_id, "original_name": Path(raw_name).name, "size_bytes": len(data)}
+
+
+@app.post("/api/upload/from-source")
+def api_upload_from_source(payload: UploadFromSourcePayload) -> dict[str, Any]:
+    """Load an image from ANY source: Web URL (https://...), Data-URI, file:// URI, or local PC/drive path."""
+    src = (payload.source or "").strip()
+    if not src:
+        raise HTTPException(status_code=400, detail="Bitte gib eine Bild-URL oder einen Dateipfad an.")
+
+    # Strip surrounding quotes if copied from terminal / file manager
+    if (src.startswith('"') and src.endswith('"')) or (src.startswith("'") and src.endswith("'")):
+        src = src[1:-1].strip()
+
+    # 1. Data URI (e.g. pasted base64 image)
+    if src.startswith("data:image/"):
+        try:
+            header, b64_part = src.split(",", 1)
+            raw_bytes = base64.b64decode(b64_part)
+            return _normalize_and_store_image(raw_bytes, original_name="clipboard_bild.png")
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Ungültige Bild-Daten: {exc}")
+
+    # 2. HTTP / HTTPS Web Image URL
+    if src.startswith("http://") or src.startswith("https://"):
+        try:
+            resp = requests.get(
+                src,
+                headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AuronOriginStudio/1.1"},
+                timeout=20,
+            )
+            if resp.status_code != 200:
+                raise HTTPException(status_code=400, detail=f"Bild-URL antwortete mit HTTP {resp.status_code}.")
+            url_name = Path(urllib.parse.urlparse(src).path).name or "web_bild.jpg"
+            return _normalize_and_store_image(resp.content, original_name=url_name)
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Konnte Bild-URL nicht laden: {exc}")
+
+    # 3. Local file path or file:// URI (bypasses Ubuntu Snap browser sandbox limits on /media, /mnt, etc.)
+    if src.startswith("file://"):
+        parsed_uri = urllib.parse.urlparse(src)
+        local_str = urllib.parse.unquote(parsed_uri.path)
+    else:
+        local_str = src
+
+    cand_path = Path(local_str).expanduser()
+    if not cand_path.exists():
+        raise HTTPException(status_code=404, detail=f"Lokale Datei wurde nicht gefunden: {cand_path}")
+    if not cand_path.is_file():
+        raise HTTPException(status_code=400, detail=f"Pfad ist ein Ordner und keine Bilddatei: {cand_path}")
+
+    try:
+        raw_bytes = cand_path.read_bytes()
+    except PermissionError:
+        raise HTTPException(status_code=403, detail=f"Keine Leseberechtigung für: {cand_path}")
+
+    return _normalize_and_store_image(raw_bytes, original_name=cand_path.name)
+
+
+@app.post("/api/local-browser")
+def api_local_browser(payload: LocalBrowserPayload) -> dict[str, Any]:
+    """List folders and image files on the local machine so users can pick images from any folder or drive."""
+    home = Path.home()
+    raw_dir = (payload.directory or "").strip()
+    target_dir = Path(raw_dir).expanduser() if raw_dir else home
+    if not target_dir.exists() or not target_dir.is_dir():
+        target_dir = home
+
+    target_dir = target_dir.resolve()
+
+    shortcuts: list[dict[str, str]] = [{"label": "🏠 Persönlicher Ordner", "path": str(home)}]
+    for label, sub in [
+        ("🖼️ Bilder", "Bilder"),
+        ("🖼️ Pictures", "Pictures"),
+        ("⬇️ Downloads", "Downloads"),
+        ("🖥️ Schreibtisch", "Schreibtisch"),
+        ("🖥️ Desktop", "Desktop"),
+    ]:
+        p = home / sub
+        if p.exists() and p.is_dir():
+            shortcuts.append({"label": label, "path": str(p)})
+
+    for mount_label, mount_root in [("💾 Laufwerke (/media)", "/media"), ("💾 Mounts (/mnt)", "/mnt")]:
+        mp = Path(mount_root)
+        if mp.exists() and mp.is_dir():
+            shortcuts.append({"label": mount_label, "path": str(mp)})
+
+    dirs: list[dict[str, str]] = []
+    files: list[dict[str, Any]] = []
+
+    try:
+        for entry in sorted(target_dir.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower())):
+            if entry.name.startswith("."):
+                continue
+            if entry.is_dir():
+                dirs.append({"name": entry.name, "path": str(entry)})
+            elif entry.is_file() and entry.suffix.lower() in IMAGE_BROWSE_EXTS:
+                try:
+                    sz = entry.stat().st_size
+                except OSError:
+                    sz = 0
+                files.append(
+                    {
+                        "name": entry.name,
+                        "path": str(entry),
+                        "size_kb": round(sz / 1024.0, 1),
+                    }
+                )
+    except PermissionError:
+        raise HTTPException(status_code=403, detail=f"Zugriff auf Ordner verweigert: {target_dir}")
+
+    parent_path = str(target_dir.parent) if target_dir.parent != target_dir else str(target_dir)
+    return {
+        "ok": True,
+        "current_dir": str(target_dir),
+        "parent_dir": parent_path,
+        "shortcuts": shortcuts,
+        "directories": dirs[:200],
+        "files": files[:300],
+    }
 
 
 @app.post("/api/preview-motif")
 def api_preview_motif(payload: PreviewMotifPayload) -> Response:
     w, h = (360, 640) if payload.video_format == "9:16" else (640, 360)
-    custom_path = (UPLOADS_DIR / payload.custom_image_id) if payload.custom_image_id else None
+    custom_path = (UPLOADS_DIR / Path(payload.custom_image_id).name) if payload.custom_image_id else None
     img = render_sacred_motif_plate(
         motif=payload.visual_motif if payload.visual_motif in VISUAL_MOTIFS else "eye_of_horus",
         width=w,
@@ -413,7 +653,6 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             progress_cb=on_prog,
         )
 
-        # Copy mastered voiceover WAV to job root for clean single-click download
         voice_export = job_dir / "voiceover_master.wav"
         shutil.copy2(audio_bundle["voice_only_wav"], voice_export)
 
@@ -430,7 +669,6 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             progress_cb=on_prog,
         )
 
-        # Persist blueprint & SEO metadata inside job directory
         meta = {
             "job_id": job_id,
             "created_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
@@ -447,7 +685,6 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
         }
         (job_dir / "metadata.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
 
-        # Clean intermediate work files to save disk space
         shutil.rmtree(work_dir, ignore_errors=True)
 
         urls = {
@@ -515,7 +752,6 @@ def api_get_job(job_id: str) -> dict[str, Any]:
         if job:
             return {"ok": True, "job": dict(job)}
 
-    # Check persisted job on disk if server restarted
     meta_file = RENDERS_DIR / Path(job_id).name / "metadata.json"
     if meta_file.exists():
         meta = json.loads(meta_file.read_text(encoding="utf-8"))

@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
 
 from .audio_engine import FFMPEG_BIN, SAMPLE_RATE
 from .config import BRAND_IDENTITY, UPLOADS_DIR
@@ -160,45 +160,50 @@ def render_sacred_motif_plate(
     cx, cy = w // 2, int(h * (0.43 if height > width else 0.47))
     min_dim = min(w, h)
 
-    # Optional user-uploaded custom scene image graded in AuronOrigin Dark-Gold Cinema LUT
+    # Optional user-uploaded custom scene image graded in AuronOrigin Cinema Look
+    has_custom_image = False
     if custom_image_path and custom_image_path.exists():
         try:
-            u_img = Image.open(custom_image_path).convert("RGB")
-            src_ratio = u_img.width / float(u_img.height)
-            dst_ratio = w / float(h)
+            raw_img = Image.open(custom_image_path)
+            raw_img = ImageOps.exif_transpose(raw_img)
+            u_img = raw_img.convert("RGB")
+            src_ratio = u_img.width / float(max(1, u_img.height))
+            dst_ratio = w / float(max(1, h))
             if src_ratio > dst_ratio:
                 nh = h
-                nw = int(h * src_ratio)
+                nw = max(w, int(round(h * src_ratio)))
             else:
                 nw = w
-                nh = int(w / src_ratio)
+                nh = max(h, int(round(w / src_ratio)))
             u_img = u_img.resize((nw, nh), Image.Resampling.LANCZOS)
-            left = (nw - w) // 2
-            top = (nh - h) // 2
+            left = max(0, (nw - w) // 2)
+            top = max(0, (nh - h) // 2)
             u_img = u_img.crop((left, top, left + w, top + h))
-            u_img = ImageEnhance.Brightness(u_img).enhance(0.56)
-            u_img = ImageEnhance.Contrast(u_img).enhance(1.15)
-            plate = Image.blend(plate, u_img, alpha=0.80)
+            u_img = ImageEnhance.Brightness(u_img).enhance(0.84)
+            u_img = ImageEnhance.Contrast(u_img).enhance(1.08)
+            plate = Image.blend(plate, u_img, alpha=0.94)
+            has_custom_image = True
         except Exception:
-            pass
+            has_custom_image = False
 
     overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
 
-    # Subtle sacred-geometry background grid lines
-    step = max(48, min_dim // 12)
-    for gx in range(0, w, step):
-        draw.line([(gx, 0), (gx, h)], fill=(31, 40, 51, 34), width=1)
-    for gy in range(0, h, step):
-        draw.line([(0, gy), (w, gy)], fill=(31, 40, 51, 34), width=1)
+    if has_custom_image:
+        # Subtle gold corner framing + top/bottom vignette so headlines & subtitles stay crisp
+        r_outer = int(min_dim * 0.41)
+        draw.ellipse([cx - r_outer, cy - r_outer, cx + r_outer, cy + r_outer], outline=(*C_GOLD, 55), width=2)
+    else:
+        # Subtle sacred-geometry background grid lines
+        step = max(48, min_dim // 12)
+        for gx in range(0, w, step):
+            draw.line([(gx, 0), (gx, h)], fill=(31, 40, 51, 34), width=1)
+        for gy in range(0, h, step):
+            draw.line([(0, gy), (w, gy)], fill=(31, 40, 51, 34), width=1)
 
-    if custom_image_path and custom_image_path.exists():
-        # Add subtle gold sacred ring framing around custom visual
-        r_outer = int(min_dim * 0.38)
-        draw.ellipse([cx - r_outer, cy - r_outer, cx + r_outer, cy + r_outer], outline=(*C_GOLD, 70), width=2)
-        return Image.alpha_composite(plate.convert("RGBA"), overlay).convert("RGB")
-
-    if motif == "eye_of_horus":
+    if has_custom_image:
+        pass
+    elif motif == "eye_of_horus":
         avatar_path = Path(BRAND_IDENTITY["assets"]["avatar_jpg"])
         diam = int(min_dim * 0.56)
         _blend_brand_emblem(plate, avatar_path, (cx, cy), diam, opacity=0.88)
@@ -640,8 +645,8 @@ def generate_youtube_thumbnail(
     w, h = 1280, 720
     scenes = blueprint.get("scenes") or []
     first_motif = scenes[0].get("visual_motif", "eye_of_horus") if scenes else "eye_of_horus"
-    custom_id = scenes[0].get("custom_image_id") if scenes else ""
-    custom_path = (UPLOADS_DIR / custom_id) if custom_id else None
+    custom_id = str(scenes[0].get("custom_image_id") or "").strip() if scenes else ""
+    custom_path = (UPLOADS_DIR / Path(custom_id).name) if custom_id else None
 
     # Render dramatic artwork shifted slightly right so bold left/center text pops
     bg = render_sacred_motif_plate(
@@ -751,7 +756,7 @@ def render_complete_auron_video(
                 f"Generiere Sacred-Tech Szene {idx + 1}/{len(scenes)} ({sc.get('visual_motif')})…",
             )
         custom_id = str(sc.get("custom_image_id") or "").strip()
-        custom_img_path = (UPLOADS_DIR / custom_id) if custom_id else None
+        custom_img_path = (UPLOADS_DIR / Path(custom_id).name) if custom_id else None
 
         plate_img = render_sacred_motif_plate(
             motif=str(sc.get("visual_motif") or "eye_of_horus"),

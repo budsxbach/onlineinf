@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -62,6 +62,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def disable_stale_ui_cache(request: Request, call_next: Any) -> Response:
+    """Ensure UI code (/static/*.js, /static/*.css, /) always loads fresh with 200 OK instead of 304 Not Modified."""
+    path = request.url.path
+    is_ui_code = path == "/" or (path.startswith("/static/") and (path.endswith(".js") or path.endswith(".css")))
+    if is_ui_code:
+        # Strip conditional cache headers so Starlette StaticFiles always serves a fresh 200 OK
+        request.scope["headers"] = [
+            (k, v)
+            for (k, v) in request.scope.get("headers", [])
+            if k.lower() not in (b"if-none-match", b"if-modified-since")
+        ]
+    response: Response = await call_next(request)
+    if is_ui_code:
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+    return response
 
 # Mount ONNX Runtime Web WASM files for browser-side neural German TTS
 ORT_DIST_DIR = STUDIO_DIR / "node_modules" / "onnxruntime-web" / "dist"
@@ -263,7 +281,14 @@ def serve_index() -> HTMLResponse:
     index_file = STATIC_DIR / "index.html"
     if not index_file.exists():
         return HTMLResponse("<h1>AuronOrigin Studio wird initialisiert…</h1>")
-    return HTMLResponse(index_file.read_text(encoding="utf-8"))
+    html_text = index_file.read_text(encoding="utf-8")
+    css_file = STATIC_DIR / "styles.css"
+    js_file = STATIC_DIR / "app.js"
+    v_css = int(css_file.stat().st_mtime) if css_file.exists() else int(time.time())
+    v_js = int(js_file.stat().st_mtime) if js_file.exists() else int(time.time())
+    html_text = html_text.replace('href="/static/styles.css"', f'href="/static/styles.css?v={v_css}"')
+    html_text = html_text.replace('src="/static/app.js"', f'src="/static/app.js?v={v_js}"')
+    return HTMLResponse(html_text, headers={"Cache-Control": "no-store, max-age=0"})
 
 
 @app.get("/api/bootstrap")

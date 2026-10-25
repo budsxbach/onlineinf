@@ -99,54 +99,54 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     },
 }
 
-# Keyword impulses — entering even a single keyword triggers live current-topic discovery
+# Focused single-topic impulses — each suggestion launches ONE cohesive, self-contained topic
 TOPIC_SUGGESTIONS = [
     {
         "pillar": "Simulations-News",
-        "title": "Quantencomputer",
-        "topic": "Quantencomputer",
+        "title": "Quantenverschränkung",
+        "topic": "Quantenverschränkung",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Alte Codes",
-        "title": "Pyramiden von Gizeh",
-        "topic": "Pyramiden von Gizeh",
+        "title": "Cheops-Pyramide: Geheime Kammer",
+        "topic": "Geheime Kammer der Cheops-Pyramide",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Simulations-News",
-        "title": "James Webb Teleskop",
-        "topic": "James Webb Teleskop",
+        "title": "James-Webb-Teleskop",
+        "topic": "James Webb Teleskop frühe Galaxien",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Bewusstseins-Hacks",
-        "title": "Gehirn & Bewusstsein",
-        "topic": "Gehirn und Bewusstsein im Schlaf",
+        "title": "Das 100-ms-Gehirn",
+        "topic": "Gehirn Vorhersage Wahrnehmung",
         "mode": "matrix_narrativ",
     },
     {
         "pillar": "Simulations-News",
-        "title": "Künstliche Intelligenz",
-        "topic": "Künstliche Intelligenz Forschung",
+        "title": "Zeitkristalle",
+        "topic": "Zeitkristall im Quantencomputer",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Alte Codes",
-        "title": "Thoth & Alte Tempelcodes",
-        "topic": "Ägypten Thoth Tempelwissen",
+        "title": "Göbekli Tepe",
+        "topic": "Göbekli Tepe Tempel",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Simulations-News",
-        "title": "Schwarze Löcher & Zeit",
-        "topic": "Schwarze Löcher und Zeitdilatation",
+        "title": "Schwarzes Loch: Ereignishorizont",
+        "topic": "Schwarzes Loch Ereignishorizont",
         "mode": "matrix_narrativ",
     },
     {
         "pillar": "Bewusstseins-Hacks",
-        "title": "Klarträumen (REM-Forschung)",
-        "topic": "Luzides Träumen Schlaflabor",
+        "title": "Klarträumen im Labor",
+        "topic": "Klarträumen Schlaflabor",
         "mode": "fakten_mystery",
     },
 ]

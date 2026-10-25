@@ -843,7 +843,7 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
 
         social_suite = build_social_publishing_suite(
             blueprint=bp,
-            scene_timings=audio_bundle.get("scene_timings", []),
+            scene_timings=vis_bundle.get("synced_scene_timings") or audio_bundle.get("scene_timings", []),
             total_final_dur_sec=float(vis_bundle["duration_sec"]),
             intro_offset_sec=float(vis_bundle.get("intro_offset_sec", 0.0)),
             outro_dur_sec=float(vis_bundle.get("outro_dur_sec", 0.0)),
@@ -936,22 +936,24 @@ def api_social_preview(payload: SocialPreviewPayload) -> dict[str, Any]:
         pillar=payload.blueprint.get("pillar"),
     )
     scenes = bp.get("scenes") or []
-    # Estimate realistic scene timings (~14.5 chars/sec German voiceover + pause) prior to final audio render
+    # Estimate realistic scene timings (~12.2 chars/sec calm Wise-Elder German voiceover + pause) + 2.2s post-Cold-Open stinger
     cursor = 0.0
+    stinger_s = 2.2 if (cfg.get("include_brand_intro", True) and len(scenes) >= 2) else 0.0
     est_timings: list[dict[str, Any]] = []
-    for sc in scenes:
-        words_len = max(18, len(str(sc.get("narration") or "")))
-        dur = round(max(4.0, words_len / 14.5 + float(sc.get("pause_after") or 0.85)), 2)
+    for idx_s, sc in enumerate(scenes):
+        if idx_s == 1 and stinger_s > 0.0:
+            cursor = round(cursor + stinger_s, 2)
+        chars_len = max(18, len(str(sc.get("narration") or "")))
+        dur = round(max(4.0, chars_len / 12.2 + float(sc.get("pause_after") or 1.0)), 2)
         est_timings.append({"visual_start": cursor, "visual_end": round(cursor + dur, 2), "total_duration": dur})
         cursor = round(cursor + dur, 2)
 
-    intro_off = (2.5 if bp.get("video_format") == "9:16" else 5.0) if cfg.get("include_intro", True) else 0.0
-    outro_dur = 7.0 if cfg.get("include_outro", True) else 0.0
+    outro_dur = 5.5 if cfg.get("include_brand_outro", True) else 0.0
     suite = build_social_publishing_suite(
         blueprint=bp,
         scene_timings=est_timings,
-        total_final_dur_sec=round(cursor + intro_off + outro_dur, 2),
-        intro_offset_sec=intro_off,
+        total_final_dur_sec=round(cursor + outro_dur, 2),
+        intro_offset_sec=0.0,
         outro_dur_sec=outro_dur,
     )
     return {"ok": True, "social_suite": suite}

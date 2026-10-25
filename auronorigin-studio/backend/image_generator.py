@@ -457,19 +457,19 @@ def _draw_motif_scene(
         bl = (cx - pyr_w // 2, cy + int(pyr_h * 0.44))
         br = (cx + pyr_w // 2, cy + int(pyr_h * 0.44))
         bm = (cx + skew, cy + int(pyr_h * 0.58))
-        crisp_draw.polygon([apex, bl, bm], fill=(15, 28, 48, 175), outline=(*T_GOLD_BRIGHT, 225), width=2)
-        crisp_draw.polygon([apex, bm, br], fill=(10, 18, 34, 205), outline=(*T_GOLD, 210), width=2)
+        crisp_draw.polygon([apex, bl, bm], fill=(16, 30, 52, 188), outline=(*T_GOLD_BRIGHT, 248), width=4)
+        crisp_draw.polygon([apex, bm, br], fill=(10, 18, 34, 215), outline=(*T_GOLD, 235), width=4)
         for i in range(1, 14):
             f = i / 14.0
             lx, ly = int(apex[0] + (bl[0] - apex[0]) * f), int(apex[1] + (bl[1] - apex[1]) * f)
             mx, my = int(apex[0] + (bm[0] - apex[0]) * f), int(apex[1] + (bm[1] - apex[1]) * f)
             rx, ry = int(apex[0] + (br[0] - apex[0]) * f), int(apex[1] + (br[1] - apex[1]) * f)
-            crisp_draw.line([(lx, ly), (mx, my), (rx, ry)], fill=(*T_GOLD, 78), width=1)
+            crisp_draw.line([(lx, ly), (mx, my), (rx, ry)], fill=(*T_GOLD, 95), width=2)
         # Glowing internal chamber + vertical cosmic alignment beam from apex
-        glow_draw.line([(apex[0], 0), apex], fill=(*T_GOLD_BRIGHT, 170), width=4)
+        glow_draw.line([(apex[0], 0), apex], fill=(*T_GOLD_BRIGHT, 195), width=6)
         ch_y = cy + int(pyr_h * 0.04)
-        glow_draw.rectangle([cx - 26, ch_y - 14, cx + 26, ch_y + 14], fill=(*T_GOLD_BRIGHT, 195))
-        crisp_draw.rectangle([cx - 26, ch_y - 14, cx + 26, ch_y + 14], outline=(*T_GOLD_BRIGHT, 255), width=2)
+        glow_draw.rectangle([cx - 42, ch_y - 20, cx + 42, ch_y + 20], fill=(*T_GOLD_BRIGHT, 235))
+        crisp_draw.rectangle([cx - 38, ch_y - 16, cx + 38, ch_y + 16], fill=(*T_GOLD_BRIGHT, 110), outline=(*T_GOLD_BRIGHT, 255), width=4)
 
     elif motif in ("neural_cosmos", "synapse_pulse"):
         # Luminous Neural Constellation & Golden Consciousness Wavefronts
@@ -581,11 +581,14 @@ def render_bespoke_auron_artwork(
     seed: int,
     prompt_en: str = "",
     scene_image_mode: str = "auto_ai_brand",
+    focal_x_ratio: float | None = None,
+    luminance_boost: float = 1.0,
 ) -> Image.Image:
     """Create or load a cached unique AuronOrigin Dark-Blue & Gold scene artwork for `(motif, seed, width, height)`."""
     cache_sub = CACHE_DIR / "scene_art_v3"
     cache_sub.mkdir(parents=True, exist_ok=True)
-    sig_raw = f"{motif}|{seed}|{width}x{height}|{scene_image_mode}|{prompt_en[:160]}"
+    fx_tag = f"{focal_x_ratio:.2f}" if focal_x_ratio is not None else "auto"
+    sig_raw = f"{motif}|{seed}|{width}x{height}|{scene_image_mode}|fx={fx_tag}|lb={luminance_boost:.2f}|{prompt_en[:160]}"
     sig = hashlib.sha1(sig_raw.encode("utf-8")).hexdigest()[:16]
     cache_file = cache_sub / f"art_{sig}.jpg"
     if cache_file.exists() and cache_file.stat().st_size > 2048:
@@ -598,6 +601,9 @@ def render_bespoke_auron_artwork(
     if scene_image_mode == "auto_ai_brand" and prompt_en:
         ai_img = _try_fetch_ai_scene_image(prompt_en, width, height, seed=seed)
         if ai_img is not None:
+            if abs(luminance_boost - 1.0) > 0.04:
+                ai_img = ImageEnhance.Brightness(ai_img).enhance(luminance_boost)
+                ai_img = ImageEnhance.Contrast(ai_img).enhance(min(1.32, 1.0 + (luminance_boost - 1.0) * 0.55))
             try:
                 ai_img.save(str(cache_file), format="JPEG", quality=92)
             except Exception:
@@ -608,10 +614,14 @@ def render_bespoke_auron_artwork(
     rng = np.random.default_rng(abs(int(seed)) % (2**31 - 1))
     neb_arr = _domain_warped_nebula(width, height, rng)
 
-    cx = int(width * float(rng.uniform(0.38, 0.62)))
-    cy = int(height * float(rng.uniform(0.40, 0.50) if height > width else rng.uniform(0.43, 0.53)))
+    if focal_x_ratio is not None:
+        cx = int(width * max(0.22, min(0.82, float(focal_x_ratio))))
+    else:
+        cx = int(width * float(rng.uniform(0.38, 0.62)))
+    cy = int(height * float(rng.uniform(0.40, 0.50) if height > width else rng.uniform(0.44, 0.52)))
 
-    neb_arr = _add_volumetric_god_rays(neb_arr, cx, cy, rng, intensity=float(rng.uniform(0.22, 0.38)))
+    ray_gain = float(rng.uniform(0.24, 0.40)) * max(0.8, min(1.6, float(luminance_boost)))
+    neb_arr = _add_volumetric_god_rays(neb_arr, cx, cy, rng, intensity=min(0.58, ray_gain))
     base_rgba = Image.fromarray(neb_arr.astype(np.uint8), mode="RGB").convert("RGBA")
 
     # Render geometric & star layers at 2x resolution then LANCZOS-downsample for razor-sharp anti-aliased curves
@@ -639,8 +649,11 @@ def render_bespoke_auron_artwork(
     composed = Image.alpha_composite(composed, crisp_layer)
     rgb_out = composed.convert("RGB")
 
-    bright_pass = ImageEnhance.Brightness(rgb_out).enhance(0.42).filter(ImageFilter.GaussianBlur(radius=blur_radius // 2 + 2))
+    bloom_gain = 0.42 * max(0.85, min(1.55, float(luminance_boost)))
+    bright_pass = ImageEnhance.Brightness(rgb_out).enhance(bloom_gain).filter(ImageFilter.GaussianBlur(radius=blur_radius // 2 + 2))
     rgb_out = ImageChops.screen(rgb_out, bright_pass)
+    if luminance_boost > 1.05:
+        rgb_out = ImageEnhance.Contrast(rgb_out).enhance(min(1.28, 1.0 + (luminance_boost - 1.0) * 0.45))
 
     try:
         rgb_out.save(str(cache_file), format="JPEG", quality=92)

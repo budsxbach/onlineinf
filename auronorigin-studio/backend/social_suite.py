@@ -19,7 +19,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 from .config import BRAND_IDENTITY, UPLOADS_DIR
-from .visual_engine import render_sacred_motif_plate
+from .visual_engine import generate_youtube_thumbnail, render_sacred_motif_plate
 
 # AuronOrigin Brand Colors
 C_BG_DEEP = (11, 12, 16)         # #0B0C10
@@ -31,10 +31,22 @@ C_TEXT = (214, 218, 224)
 C_MUTED = (138, 154, 176)
 
 
-def _load_font(family: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+def _load_font(family: str, size: int, weight: int = 800) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     font_path = BRAND_IDENTITY["fonts"].get(family, "")
     try:
-        return ImageFont.truetype(font_path, size=size)
+        f = ImageFont.truetype(font_path, size=size)
+        try:
+            axes = f.get_variation_axes()
+            if len(axes) == 2:
+                opt = min(axes[0]["maximum"], max(axes[0]["minimum"], min(32, max(14, size))))
+                w_val = min(axes[1]["maximum"], max(axes[1]["minimum"], weight))
+                f.set_variation_by_axes([opt, w_val])
+            elif len(axes) == 1:
+                w_val = min(axes[0]["maximum"], max(axes[0]["minimum"], weight))
+                f.set_variation_by_axes([w_val])
+        except Exception:
+            pass
+        return f
     except Exception:
         return ImageFont.load_default()
 
@@ -449,13 +461,31 @@ def render_all_social_covers(
     youtube_16x9_filename: str,
     scene_image_mode: str = "auto_ai_brand",
 ) -> dict[str, dict[str, str]]:
-    """Generate dedicated, safe-zone-accurate Covers & Thumbnails for YouTube, TikTok, Instagram, and Facebook."""
+    """Generate 3 A/B/C High-CTR YouTube 16:9 Thumbnails + safe-zone Covers for Shorts, TikTok, Instagram & Facebook."""
+    yt_thumb_b_fn = f"{safe_slug}_youtube_thumbnail_B_anomalie_1280x720.png"
+    yt_thumb_c_fn = f"{safe_slug}_youtube_thumbnail_C_mysterium_1280x720.png"
     yt_short_fn = f"{safe_slug}_youtube_shorts_cover_1080x1920.png"
     tt_cover_fn = f"{safe_slug}_tiktok_cover_1080x1920.png"
     ig_reel_fn = f"{safe_slug}_instagram_reel_cover_1080x1920.png"
     ig_feed_fn = f"{safe_slug}_instagram_feed_cover_1080x1350.png"
     fb_thumb_fn = f"{safe_slug}_facebook_thumbnail_1200x675.png"
     fb_reel_fn = f"{safe_slug}_facebook_reel_cover_1080x1920.png"
+
+    # YouTube 16:9 Thumbnail B (Anomalie-Fokusring + Pfeil für YouTube „Testen & Vergleichen“)
+    generate_youtube_thumbnail(
+        blueprint=blueprint,
+        out_png=job_dir / yt_thumb_b_fn,
+        scene_image_mode=scene_image_mode,
+        variant="B",
+    )
+
+    # YouTube 16:9 Thumbnail C (Monumentaler Mysterium-Zentralfokus für YouTube „Testen & Vergleichen“)
+    generate_youtube_thumbnail(
+        blueprint=blueprint,
+        out_png=job_dir / yt_thumb_c_fn,
+        scene_image_mode=scene_image_mode,
+        variant="C",
+    )
 
     # YouTube Shorts 9:16 Cover
     _render_vertical_safezone_cover(
@@ -526,7 +556,17 @@ def render_all_social_covers(
     return {
         "youtube_16x9": {
             "filename": youtube_16x9_filename,
-            "label": "YouTube Thumbnail (16:9 • 1280×720)",
+            "label": "YouTube Thumbnail A • Kontrast-Hook (1280×720)",
+            "dimensions": "1280×720",
+        },
+        "youtube_16x9_b": {
+            "filename": yt_thumb_b_fn,
+            "label": "YouTube Thumbnail B • Anomalie-Fokus (1280×720)",
+            "dimensions": "1280×720",
+        },
+        "youtube_16x9_c": {
+            "filename": yt_thumb_c_fn,
+            "label": "YouTube Thumbnail C • Mysterium-Zentrum (1280×720)",
             "dimensions": "1280×720",
         },
         "youtube_shorts_9x16": {
@@ -701,13 +741,24 @@ def build_social_publishing_suite(
     if len(tags_csv) > 490:
         tags_csv = tags_csv[:490].rsplit(",", 1)[0]
 
+    thumb_vars = blueprint.get("thumbnail_variants") or [blueprint.get("thumbnail_text", ""), "KEIN ZUFALL?", "DER BEWEIS"]
+    midroll_note = (
+        "\n• 9-Minuten Retention & Mid-Rolls (ab 8:00 Min.): Setze Mid-Roll-Werbung NUR an die beiden natürlichen Akt-Übergänge (nach Open Loop #2 ca. Min. 2:15 und nach dem Halbzeit-Twist ca. Min. 4:30) – niemals mitten in einen Gedanken!"
+        if total_final_dur_sec >= 460.0
+        else ""
+    )
     yt_settings_checklist = (
+        f"• CTR-BOOSTER („Testen & Vergleichen“ für > 5 % Startseiten-CTR): Lade in YouTube Studio unter Thumbnail → „Testen & Vergleichen“ ALLE 3 generierten 16:9-Thumbnails hoch:\n"
+        f"    1) Thumbnail A (Kontrast-Hook: „{thumb_vars[0]}“)\n"
+        f"    2) Thumbnail B (Anomalie-Fokusring: „{thumb_vars[1] if len(thumb_vars) > 1 else thumb_vars[0]}“)\n"
+        f"    3) Thumbnail C (Mysterium-Zentrum: „{thumb_vars[2] if len(thumb_vars) > 2 else thumb_vars[0]}“)\n"
+        "  YouTube ermittelt vollautomatisch die Kombination mit der höchsten Klickrate & Watchtime!\n"
         "• Zielgruppe: „Nein, es ist nicht speziell für Kinder“ (WICHTIG: sonst deaktiviert YouTube Kommentare, Quiz & Abspann!)\n"
         "• Veränderte oder synthetische Inhalte (Pflichtfeld 2026): „Nein“ bei abstrakten/symbolischen Kosmos-Grafiken; „Ja“ wählen, falls fotorealistisch wirkende KI-Realszenen gezeigt werden.\n"
-        "• Videosprache & Titel-/Beschreibungssprache: Deutsch\n"
-        "• Kategorie: Wissenschaft & Technik\n"
+        "• Videosprache & Titel-/Beschreibungssprache: Deutsch | Kategorie: Wissenschaft & Technik\n"
         "• Untertitel hochladen: Videoelemente → Untertitel → „Datei hochladen“ → „Mit Zeitangaben“ → die enthaltene .SRT-Datei auswählen\n"
-        "• Kommentare: „Ein“ (Moderation: Grundlegend) + direkt nach Veröffentlichung den angepinnten Kommentar oben fixieren"
+        "• Kommentare: „Ein“ + direkt nach Veröffentlichung den angepinnten Entscheidungs-Kommentar oben fixieren"
+        + midroll_note
     )
 
     poll_q = str(poll.get("question") or f"Wie ordnest du diesen Befund in „{pillar}“ ein?")

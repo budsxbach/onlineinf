@@ -688,9 +688,36 @@ def _add_cinematic_heartbeat(left: np.ndarray, right: np.ndarray, period_sec: fl
             right[s_i:e_i] += pulse
 
 
+def _tile_stereo_seamlessly(cycle: np.ndarray, target_samples: int, xfade_sec: float = 2.4) -> np.ndarray:
+    """Crossfade-tile a polyphonic harmonic cycle seamlessly to any longform duration (e.g. 9-min videos)."""
+    if len(cycle) >= target_samples:
+        return cycle[:target_samples]
+    xf = min(int(xfade_sec * SAMPLE_RATE), len(cycle) // 4)
+    step = len(cycle) - xf
+    out = np.zeros((target_samples, 2), dtype=np.float32)
+    fade_in = 0.5 - 0.5 * np.cos(np.linspace(0.0, math.pi, xf, dtype=np.float32))
+    fade_out = 1.0 - fade_in
+
+    pos = 0
+    first = True
+    while pos < target_samples:
+        avail = min(len(cycle), target_samples - pos)
+        chunk = cycle[:avail].copy()
+        if not first and xf > 0 and avail > xf:
+            out[pos : pos + xf] = out[pos : pos + xf] * fade_out[:, None] + chunk[:xf] * fade_in[:, None]
+            out[pos + xf : pos + avail] = chunk[xf:avail]
+        else:
+            out[pos : pos + avail] = chunk
+        first = False
+        pos += step
+    return out
+
+
 def generate_procedural_music(preset: str, duration_sec: float, out_wav: Path) -> Path:
-    """Synthesize lush, polyphonic 48 kHz stereo AuronOrigin film-score soundtracks."""
-    dur = max(5.0, float(duration_sec))
+    """Synthesize lush, polyphonic 48 kHz stereo AuronOrigin film-score soundtracks (fast even for 9+ min)."""
+    full_dur = max(5.0, float(duration_sec))
+    # For longform 9-minute documentaries, synthesize a rich 96s harmonic cycle and crossfade-tile seamlessly
+    dur = min(full_dur, 98.4) if full_dur > 108.0 else full_dur
 
     # Map legacy preset IDs seamlessly to the upgraded compositions
     preset_key = preset
@@ -787,6 +814,9 @@ def generate_procedural_music(preset: str, duration_sec: float, out_wav: Path) -
         wet = 0.45
 
     stereo = _apply_cosmic_hall(np.column_stack([left, right]), wet=wet)
+    target_n = int(full_dur * SAMPLE_RATE)
+    if len(stereo) < target_n:
+        stereo = _tile_stereo_seamlessly(stereo, target_n, xfade_sec=2.6)
 
     # Smooth fade-in (1.4s) and fade-out (2.2s) + soft normalization
     n = len(stereo)
@@ -1186,8 +1216,14 @@ def build_master_audio_timeline(
         duck_env[s_i:e_i] = duck_ratio
 
     smooth_win = max(1, int(0.22 * SAMPLE_RATE))
-    kernel = np.ones(smooth_win, dtype=np.float32) / float(smooth_win)
-    duck_env_smooth = np.convolve(duck_env, kernel, mode="same")
+    # O(N) cumulative-sum moving average (instantaneous even on 9+ minute 48kHz audio timelines!)
+    pad_l = smooth_win // 2
+    pad_r = smooth_win - 1 - pad_l
+    padded_env = np.pad(duck_env.astype(np.float64), (pad_l, pad_r), mode="edge")
+    csum = np.empty(len(padded_env) + 1, dtype=np.float64)
+    csum[0] = 0.0
+    np.cumsum(padded_env, out=csum[1:])
+    duck_env_smooth = ((csum[smooth_win:] - csum[:-smooth_win]) / float(smooth_win)).astype(np.float32)
 
     mixed = voice_track * 1.04 + music_track * (base_music_gain * duck_env_smooth[:, None])
 

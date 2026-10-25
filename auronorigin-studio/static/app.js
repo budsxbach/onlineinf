@@ -378,12 +378,18 @@ function updateEstimatedStats() {
   let pauses = 0;
   for (const sc of scenes) {
     words += (sc.narration || "").trim().split(/\s+/).filter(Boolean).length;
-    pauses += Number(sc.pause_after || 0.85);
+    pauses += Number(sc.pause_after || 1.0);
   }
-  const introSec = el("includeIntro").checked ? (state.blueprint.video_format === "9:16" ? 2.5 : 5.0) : 0;
-  const outroSec = el("includeOutro").checked ? 7.0 : 0;
-  const est = Math.round(words / 2.2 + pauses + introSec + outroSec);
-  el("estDurationBadge").textContent = String(est);
+  const stingerSec = el("includeIntro").checked && scenes.length >= 2 ? 2.2 : 0;
+  const outroSec = el("includeOutro").checked ? 5.5 : 0;
+  const est = Math.round(words / 1.92 + pauses + stingerSec + outroSec);
+  if (est >= 90) {
+    const mins = Math.floor(est / 60);
+    const secs = est % 60;
+    el("estDurationBadge").textContent = `${mins} Min. ${secs} Sek.`;
+  } else {
+    el("estDurationBadge").textContent = `${est} Sek.`;
+  }
 }
 
 function syncBlueprintFromDom() {
@@ -830,7 +836,7 @@ function selectPlatformCover(coverKey) {
   }
   if (el("activeCoverHint")) {
     el("activeCoverHint").innerHTML =
-      `<strong>${escapeHtml(info.label || coverKey)}</strong> – Safe-Zone geprüft. Alle 7 Plattform-Cover liegen zusätzlich im <code>.ZIP</code>-Paket unter <code>02_Covers_und_Thumbnails/</code>.`;
+      `<strong>${escapeHtml(info.label || coverKey)}</strong> – High-CTR &amp; Safe-Zone optimiert. Alle 9 Cover (inkl. YouTube A/B/C Test-Thumbnails) liegen im <code>.ZIP</code>-Paket unter <code>02_Covers_und_Thumbnails/</code>.`;
   }
 }
 
@@ -1320,9 +1326,18 @@ async function saveCurrentSettingsQuietly() {
 // Event Listeners
 el("durationTarget").addEventListener("change", () => {
   const val = el("durationTarget").value;
-  if (val === "short_60") el("sceneCountInput").value = "6";
-  else if (val === "mid_180") el("sceneCountInput").value = "8";
-  else el("sceneCountInput").value = "10";
+  if (val === "short_60") {
+    el("sceneCountInput").value = "6";
+  } else if (val === "mid_180") {
+    el("sceneCountInput").value = "8";
+    el("videoFormat").value = "16:9";
+  } else if (val === "long_300") {
+    el("sceneCountInput").value = "10";
+    el("videoFormat").value = "16:9";
+  } else if (val === "docu_540") {
+    el("sceneCountInput").value = "18";
+    el("videoFormat").value = "16:9";
+  }
 });
 
 el("videoFormat").addEventListener("change", () => {

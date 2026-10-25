@@ -66,19 +66,21 @@ app.add_middleware(
 
 @app.middleware("http")
 async def disable_stale_ui_cache(request: Request, call_next: Any) -> Response:
-    """Ensure UI code (/static/*.js, /static/*.css, /) always loads fresh with 200 OK instead of 304 Not Modified."""
-    path = request.url.path
-    is_ui_code = path == "/" or (path.startswith("/static/") and (path.endswith(".js") or path.endswith(".css")))
-    if is_ui_code:
-        # Strip conditional cache headers so Starlette StaticFiles always serves a fresh 200 OK
-        request.scope["headers"] = [
-            (k, v)
-            for (k, v) in request.scope.get("headers", [])
-            if k.lower() not in (b"if-none-match", b"if-modified-since")
-        ]
+    """Ensure all Studio assets, fonts, brand emblems & UI files return 200 OK instead of yellow 304 Not Modified."""
+    # Strip conditional revalidation headers on all requests (preserving Range headers for MP4 video seeking)
+    request.scope["headers"] = [
+        (k, v)
+        for (k, v) in request.scope.get("headers", [])
+        if k.lower() not in (b"if-none-match", b"if-modified-since")
+    ]
     response: Response = await call_next(request)
-    if is_ui_code:
+    path = request.url.path
+    if not path.startswith("/api/renders/"):
         response.headers["Cache-Control"] = "no-store, max-age=0"
+        if "etag" in response.headers:
+            del response.headers["etag"]
+        if "last-modified" in response.headers:
+            del response.headers["last-modified"]
     return response
 
 # Mount ONNX Runtime Web WASM files for browser-side neural German TTS

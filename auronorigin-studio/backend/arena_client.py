@@ -244,7 +244,7 @@ def call_arena_router(
         selected_model = selected_model.split("/", 1)[1]
 
     gateways = list(dict.fromkeys([base] + GATEWAY_CANDIDATES))
-    protocols = ["openai", "responses", "anthropic"] if protocol == "auto" else [protocol]
+    protocols = ["openai", "anthropic"] if protocol == "auto" else [protocol]
 
     network_blocked = False
     errors: list[str] = []
@@ -260,15 +260,6 @@ def call_arena_router(
                         system_prompt=system_prompt,
                         user_prompt=user_prompt,
                         temperature=temperature,
-                        max_tokens=max_tokens,
-                    )
-                elif proto == "responses":
-                    res = _call_responses_compat(
-                        gw=gw,
-                        token=token,
-                        model=selected_model,
-                        system_prompt=system_prompt,
-                        user_prompt=user_prompt,
                         max_tokens=max_tokens,
                     )
                 else:
@@ -326,30 +317,28 @@ def _call_openai_compat(
     max_tokens: int,
 ) -> dict[str, Any]:
     url = f"{gw}/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "User-Agent": "opencode/1.0 arenarouter",
-    }
     body: dict[str, Any] = {
         "model": model,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "max_tokens": max(4096, max_tokens),
+        "max_tokens": max_tokens,
     }
+    # Router aliases manage reasoning automatically; only set temperature when non-router or standard
     if model not in ROUTER_MODEL_IDS:
         body["temperature"] = temperature
 
-    resp = requests.post(url, headers=headers, json=body, timeout=90)
-    # Some routed reasoning models reject 'max_tokens' in favor of 'max_completion_tokens'
-    if resp.status_code == 400 and "max_tokens" in resp.text:
-        body.pop("max_tokens", None)
-        body["max_completion_tokens"] = max(4096, max_tokens)
-        resp = requests.post(url, headers=headers, json=body, timeout=90)
-
+    resp = requests.post(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        json=body,
+        timeout=75,
+    )
     if resp.status_code != 200:
         return {
             "ok": False,
@@ -366,8 +355,6 @@ def _call_openai_compat(
     content = msg.get("content") or ""
     if isinstance(content, list):
         content = "".join(part.get("text", "") for part in content if isinstance(part, dict))
-    if not str(content).strip() and msg.get("reasoning_content"):
-        content = str(msg.get("reasoning_content"))
 
     usage_raw = data.get("usage") or {}
     prompt_toks = int(usage_raw.get("prompt_tokens") or 0)
@@ -387,69 +374,6 @@ def _call_openai_compat(
     }
 
 
-def _call_responses_compat(
-    *,
-    gw: str,
-    token: str,
-    model: str,
-    system_prompt: str,
-    user_prompt: str,
-    max_tokens: int,
-) -> dict[str, Any]:
-    url = f"{gw}/v1/responses"
-    body: dict[str, Any] = {
-        "model": model,
-        "instructions": system_prompt,
-        "input": user_prompt,
-        "max_output_tokens": max(4096, max_tokens),
-    }
-    resp = requests.post(
-        url,
-        headers={
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "User-Agent": "codex-cli/1.0 arenarouter",
-        },
-        json=body,
-        timeout=90,
-    )
-    if resp.status_code != 200:
-        return {
-            "ok": False,
-            "status_code": resp.status_code,
-            "error": f"HTTP {resp.status_code}: {resp.text[:350]}",
-        }
-    data = resp.json()
-    out_text = str(data.get("output_text") or "").strip()
-    if not out_text:
-        chunks: list[str] = []
-        for item in data.get("output") or []:
-            if isinstance(item, dict):
-                for c in item.get("content") or []:
-                    if isinstance(c, dict) and c.get("text"):
-                        chunks.append(str(c["text"]))
-        out_text = "\n".join(chunks).strip()
-    if not out_text:
-        return {"ok": False, "error": "Leere Antwort vom Arena Gateway (/v1/responses)."}
-
-    usage_raw = data.get("usage") or {}
-    prompt_toks = int(usage_raw.get("input_tokens") or 0)
-    comp_toks = int(usage_raw.get("output_tokens") or 0)
-    return {
-        "ok": True,
-        "text": out_text,
-        "routed_model": data.get("model") or model,
-        "gateway": gw,
-        "protocol": "responses",
-        "usage": {
-            "prompt_tokens": prompt_toks,
-            "completion_tokens": comp_toks,
-            "total_tokens": prompt_toks + comp_toks,
-        },
-    }
-
-
 def _call_anthropic_compat(
     *,
     gw: str,
@@ -461,45 +385,34 @@ def _call_anthropic_compat(
     max_tokens: int,
 ) -> dict[str, Any]:
     url = f"{gw}/v1/messages"
-    # On Anthropic /v1/messages, Arena maps router alias to claude-coding-router-preview
-    anth_models = ["claude-coding-router-preview", model] if model == "coding-router-preview" else [model]
-    last_resp = None
-    for m_id in dict.fromkeys(anth_models):
-        body: dict[str, Any] = {
-            "model": m_id,
-            "system": system_prompt,
-            "messages": [{"role": "user", "content": user_prompt}],
-            "max_tokens": max(4096, max_tokens),
-        }
-        if m_id not in ROUTER_MODEL_IDS:
-            body["temperature"] = temperature
+    body: dict[str, Any] = {
+        "model": model,
+        "system": system_prompt,
+        "messages": [{"role": "user", "content": user_prompt}],
+        "max_tokens": max_tokens,
+    }
+    if model not in ROUTER_MODEL_IDS:
+        body["temperature"] = temperature
 
-        resp = requests.post(
-            url,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "x-api-key": token,
-                "anthropic-version": "2023-06-01",
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "User-Agent": "claude-cli/1.0 arenarouter",
-            },
-            json=body,
-            timeout=90,
-        )
-        last_resp = resp
-        if resp.status_code == 200:
-            break
-
-    assert last_resp is not None
-    if last_resp.status_code != 200:
+    resp = requests.post(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "anthropic-version": "2023-06-01",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        json=body,
+        timeout=75,
+    )
+    if resp.status_code != 200:
         return {
             "ok": False,
-            "status_code": last_resp.status_code,
-            "error": f"HTTP {last_resp.status_code}: {last_resp.text[:350]}",
+            "status_code": resp.status_code,
+            "error": f"HTTP {resp.status_code}: {resp.text[:350]}",
         }
 
-    data = last_resp.json()
+    data = resp.json()
     blocks = data.get("content") or []
     text_parts = [b.get("text", "") for b in blocks if isinstance(b, dict) and b.get("type") == "text"]
     content = "\n".join(text_parts).strip()
@@ -525,27 +438,27 @@ def _call_anthropic_compat(
 
 
 def extract_json_object(raw_text: str) -> dict[str, Any] | None:
-    """Robustly extract a JSON object from LLM output, tolerating literal newlines and trailing commas."""
+    """Robustly extract a JSON object from LLM markdown/code-fenced output."""
     if not raw_text:
         return None
     cleaned = raw_text.strip()
-    candidates: list[str] = []
-
     fence_match = re.search(r"```(?:json)?\s*(\{[\s\S]*\})\s*```", cleaned, flags=re.IGNORECASE)
     if fence_match:
-        candidates.append(fence_match.group(1))
-
+        try:
+            return json.loads(fence_match.group(1))
+        except json.JSONDecodeError:
+            pass
     start = cleaned.find("{")
     end = cleaned.rfind("}")
     if start != -1 and end != -1 and end > start:
-        candidates.append(cleaned[start : end + 1])
-
-    for cand in candidates:
-        for attempt in (cand, re.sub(r",\s*([}\]])", r"\1", cand)):
+        candidate = cleaned[start : end + 1]
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError:
+            # Remove trailing commas before } or ]
+            repaired = re.sub(r",\s*([}\]])", r"\1", candidate)
             try:
-                parsed = json.loads(attempt, strict=False)
-                if isinstance(parsed, dict):
-                    return parsed
+                return json.loads(repaired)
             except json.JSONDecodeError:
-                continue
+                return None
     return None

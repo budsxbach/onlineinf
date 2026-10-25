@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -24,7 +24,7 @@ from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from .arena_client import DEFAULT_ARENA_MODELS, discover_arena_models, extract_json_object
-from .audio_engine import FFMPEG_BIN, build_master_audio_timeline
+from .audio_engine import FFMPEG_BIN, MUSIC_PRESETS, build_master_audio_timeline, get_or_create_music_preview
 from .config import (
     BRAND_DIR,
     BRAND_IDENTITY,
@@ -47,6 +47,12 @@ from .script_generator import (
     generate_video_blueprint,
     normalize_blueprint,
 )
+from .social_suite import (
+    build_social_publishing_suite,
+    format_social_suite_text_files,
+    render_all_social_covers,
+    write_subtitle_bundle,
+)
 from .visual_engine import generate_youtube_thumbnail, render_complete_auron_video, render_sacred_motif_plate
 
 app = FastAPI(
@@ -62,6 +68,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def disable_stale_ui_cache(request: Request, call_next: Any) -> Response:
+    """Ensure all Studio assets, fonts, brand emblems & UI files return 200 OK instead of yellow 304 Not Modified."""
+    # Strip conditional revalidation headers on all requests (preserving Range headers for MP4 video seeking)
+    request.scope["headers"] = [
+        (k, v)
+        for (k, v) in request.scope.get("headers", [])
+        if k.lower() not in (b"if-none-match", b"if-modified-since")
+    ]
+    response: Response = await call_next(request)
+    path = request.url.path
+    if not path.startswith("/api/renders/"):
+        response.headers["Cache-Control"] = "no-store, max-age=0"
+        if "etag" in response.headers:
+            del response.headers["etag"]
+        if "last-modified" in response.headers:
+            del response.headers["last-modified"]
+    return response
 
 # Mount ONNX Runtime Web WASM files for browser-side neural German TTS
 ORT_DIST_DIR = STUDIO_DIR / "node_modules" / "onnxruntime-web" / "dist"
@@ -100,6 +126,7 @@ class SettingsPayload(BaseModel):
     openai_tts_api_key: str | None = None
     music_preset: str | None = None
     music_volume_db: float | None = None
+    scene_image_mode: str | None = None
     include_brand_intro: bool | None = None
     include_brand_outro: bool | None = None
     include_watermark: bool | None = None
@@ -114,7 +141,7 @@ class VerifyKeyPayload(BaseModel):
 
 
 class ResearchPayload(BaseModel):
-    topic: str
+    topic: str = ""
     pillar: str | None = None
     editorial_mode: str = "fakten_mystery"
     browser_sources: list[dict[str, Any]] = Field(default_factory=list)
@@ -124,7 +151,7 @@ class ResearchPayload(BaseModel):
 
 
 class ScriptPayload(BaseModel):
-    topic: str
+    topic: str = ""
     dossier: dict[str, Any] | None = None
     video_format: str = "9:16"
     duration_target: str = "short_60"
@@ -150,6 +177,9 @@ class RenderPayload(BaseModel):
 class PreviewMotifPayload(BaseModel):
     visual_motif: str = "eye_of_horus"
     video_format: str = "9:16"
+    visual_seed: int | None = None
+    image_prompt_en: str = ""
+    scene_image_mode: str | None = None
     custom_image_id: str | None = None
 
 
@@ -263,7 +293,14 @@ def serve_index() -> HTMLResponse:
     index_file = STATIC_DIR / "index.html"
     if not index_file.exists():
         return HTMLResponse("<h1>AuronOrigin Studio wird initialisiert…</h1>")
-    return HTMLResponse(index_file.read_text(encoding="utf-8"))
+    html_text = index_file.read_text(encoding="utf-8")
+    css_file = STATIC_DIR / "styles.css"
+    js_file = STATIC_DIR / "app.js"
+    v_css = int(css_file.stat().st_mtime) if css_file.exists() else int(time.time())
+    v_js = int(js_file.stat().st_mtime) if js_file.exists() else int(time.time())
+    html_text = html_text.replace('href="/static/styles.css"', f'href="/static/styles.css?v={v_css}"')
+    html_text = html_text.replace('src="/static/app.js"', f'src="/static/app.js?v={v_js}"')
+    return HTMLResponse(html_text, headers={"Cache-Control": "no-store, max-age=0"})
 
 
 @app.get("/api/bootstrap")
@@ -282,19 +319,31 @@ def api_bootstrap() -> dict[str, Any]:
         "default_models": DEFAULT_ARENA_MODELS,
         "topic_suggestions": TOPIC_SUGGESTIONS,
         "visual_motifs": [
-            {"id": "eye_of_horus", "label": "Auge des Horus • Hologramm-Linse"},
-            {"id": "ouroboros_seal", "label": "Ouroboros • Goldenes Siegel"},
-            {"id": "quantum_lattice", "label": "Quanten-Gitter • Zeitkristall"},
-            {"id": "pyramid_radar", "label": "Gizeh-Pyramide • SAR-Radarscan"},
-            {"id": "neural_cosmos", "label": "Bewusstseins-Netz • Thalamus-Kosmos"},
-            {"id": "sacred_archive", "label": "Tempel-Archiv • Hieroglyphen-Code"},
+            {"id": "solar_eclipse_crown", "label": "Kosmische Korona-Finsternis (Gold & Dunkelblau)"},
+            {"id": "event_horizon", "label": "Ereignishorizont • Raumzeit-Linse"},
+            {"id": "atomic_clock", "label": "Atomuhr-Resonator • Goldene Laser-Ringe"},
+            {"id": "quantum_lattice", "label": "Quanten-Gitter • Zeitkristall-Matrix"},
+            {"id": "deep_telescope", "label": "Weltraum-Spiegel • Tiefraum-Galaxien"},
+            {"id": "pyramid_radar", "label": "Gizeh-Pyramide • Myonen-Radarscan"},
+            {"id": "temple_monolith", "label": "Obsidian-Monolith • Goldene Schaltkreise"},
+            {"id": "sacred_archive", "label": "Tempel-Archiv • Leuchtende Glyphen"},
+            {"id": "ouroboros_seal", "label": "Ouroboros • Kosmisches Ring-Portal"},
+            {"id": "eye_of_horus", "label": "Horus-Linse • Geometrische Iris"},
+            {"id": "neural_cosmos", "label": "Bewusstseins-Netz • Synapsen-Kosmos"},
+            {"id": "synapse_pulse", "label": "Gehirnwellen-Impuls • Goldene Resonanz"},
+            {"id": "dna_biophoton", "label": "Goldene Doppelhelix • Biophotonen"},
+            {"id": "astral_labyrinth", "label": "Metatrons Geometrie • Astrolabium"},
+            {"id": "cymatic_resonance", "label": "Kymatische Klangwelle • Mandala"},
+            {"id": "simulation_horizon", "label": "Simulations-Horizont • Matrix-Fäden"},
         ],
         "music_presets": [
-            {"id": "glitch_horizon", "label": "AuronOrigin Original – 'Glitch Horizon' (60 BPM Dark Cosmic)"},
-            {"id": "temple_drone_432", "label": "Tempel-Resonanz 432 Hz (Tiefen-Drone & Herzschlag)"},
-            {"id": "quantum_pulse", "label": "Quanten-Puls (Dunkler Sci-Fi Arpeggio-Takt)"},
-            {"id": "custom", "label": "Eigene Musikdatei hochladen (MP3/WAV)"},
-            {"id": "none", "label": "Keine Hintergrundmusik (Nur Tonstimme)"},
+            *[
+                {"id": m["id"], "label": m["name"], "mood": m["mood"]}
+                for m in MUSIC_PRESETS
+                if m["id"] != "none"
+            ],
+            {"id": "custom", "label": "Eigene Musikdatei hochladen (MP3 / WAV / M4A)", "mood": "Eigener Soundtrack"},
+            {"id": "none", "label": "Keine Hintergrundmusik (Nur deutsche Tonstimme)", "mood": "Reines Voiceover"},
         ],
         "voice_presets": [
             {
@@ -345,8 +394,6 @@ def api_verify_arena(payload: VerifyKeyPayload) -> dict[str, Any]:
 
 @app.post("/api/research")
 def api_research(payload: ResearchPayload) -> dict[str, Any]:
-    if not payload.topic.strip():
-        raise HTTPException(status_code=400, detail="Bitte gib ein Thema ein.")
     eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
     if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
         save_settings({"arena_api_key": payload.arena_api_key.strip()})
@@ -357,6 +404,7 @@ def api_research(payload: ResearchPayload) -> dict[str, Any]:
         editorial_mode=payload.editorial_mode,
         browser_sources=payload.browser_sources,
         arena_settings=eff_cfg,
+        auto_expand_keyword=True,
     )
     return {
         "ok": True,
@@ -368,8 +416,9 @@ def api_research(payload: ResearchPayload) -> dict[str, Any]:
 @app.post("/api/script/prompts")
 def api_script_prompts(payload: ScriptPayload) -> dict[str, Any]:
     """Return official AuronOrigin Showrunner prompts so browser-direct Arena Router mode can call api.arena.ai."""
+    resolved_t = payload.topic.strip() or (payload.dossier or {}).get("topic") or "Quantenphysik & Zeit"
     sys_p, usr_p = build_auron_script_prompts(
-        topic=payload.topic,
+        topic=resolved_t,
         dossier=payload.dossier,
         video_format=payload.video_format,
         duration_target=payload.duration_target,
@@ -382,8 +431,20 @@ def api_script_prompts(payload: ScriptPayload) -> dict[str, Any]:
 
 @app.post("/api/script")
 def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
-    if not payload.topic.strip():
-        raise HTTPException(status_code=400, detail="Bitte gib ein Thema ein.")
+    eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
+    if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
+        save_settings({"arena_api_key": payload.arena_api_key.strip()})
+
+    dossier = payload.dossier
+    if not dossier:
+        dossier = run_topic_research(
+            topic=payload.topic,
+            pillar=payload.pillar,
+            editorial_mode=payload.editorial_mode,
+            arena_settings=eff_cfg,
+            auto_expand_keyword=True,
+        )
+    resolved_topic = (dossier or {}).get("topic") or payload.topic.strip() or "Rätsel der Raumzeit"
 
     if payload.browser_raw_llm_text:
         parsed = extract_json_object(payload.browser_raw_llm_text)
@@ -392,31 +453,27 @@ def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
         totals = record_token_usage(payload.prompt_tokens, payload.completion_tokens)
         bp = normalize_blueprint(
             parsed,
-            topic=payload.topic,
+            topic=resolved_topic,
             video_format=payload.video_format,
             editorial_mode=payload.editorial_mode,
-            pillar=payload.pillar,
+            pillar=payload.pillar or (dossier or {}).get("pillar"),
         )
         bp["arena_router_used"] = True
         bp["arena_model_used"] = payload.arena_model or "coding-router-preview (Browser-Direkt)"
         bp["cumulative_usage"] = totals
-        return {"ok": True, "blueprint": bp, "settings": _public_settings_view(load_settings())}
-
-    eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
-    if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
-        save_settings({"arena_api_key": payload.arena_api_key.strip()})
+        return {"ok": True, "blueprint": bp, "dossier": dossier, "settings": _public_settings_view(load_settings())}
 
     bp = generate_video_blueprint(
-        topic=payload.topic,
-        dossier=payload.dossier,
+        topic=resolved_topic,
+        dossier=dossier,
         video_format=payload.video_format,
         duration_target=payload.duration_target,
         editorial_mode=payload.editorial_mode,
-        pillar=payload.pillar,
+        pillar=payload.pillar or (dossier or {}).get("pillar"),
         scene_count=payload.scene_count,
         arena_settings=eff_cfg,
     )
-    return {"ok": True, "blueprint": bp, "settings": _public_settings_view(load_settings())}
+    return {"ok": True, "blueprint": bp, "dossier": dossier, "settings": _public_settings_view(load_settings())}
 
 
 @app.get("/api/uploads/{file_id}")
@@ -582,16 +639,32 @@ def api_local_browser(payload: LocalBrowserPayload) -> dict[str, Any]:
     }
 
 
+@app.get("/api/music-preview/{preset_id}")
+def api_music_preview(preset_id: str) -> Response:
+    """Stream a 16-second browser preview of any AuronOrigin background music preset."""
+    audio_file = get_or_create_music_preview(preset_id)
+    if audio_file is None or not audio_file.exists():
+        raise HTTPException(status_code=404, detail="Keine Musik-Vorschau für diese Auswahl verfügbar.")
+    mime = "audio/mpeg" if audio_file.suffix.lower() == ".mp3" else "audio/wav"
+    return FileResponse(str(audio_file), media_type=mime)
+
+
 @app.post("/api/preview-motif")
 def api_preview_motif(payload: PreviewMotifPayload) -> Response:
     w, h = (360, 640) if payload.video_format == "9:16" else (640, 360)
     custom_path = (UPLOADS_DIR / Path(payload.custom_image_id).name) if payload.custom_image_id else None
+    cfg = load_settings()
+    img_mode = payload.scene_image_mode or str(cfg.get("scene_image_mode") or "auto_ai_brand")
+    seed_val = int(payload.visual_seed) if payload.visual_seed is not None else 424242
+
     img = render_sacred_motif_plate(
-        motif=payload.visual_motif if payload.visual_motif in VISUAL_MOTIFS else "eye_of_horus",
+        motif=payload.visual_motif if payload.visual_motif in VISUAL_MOTIFS else "solar_eclipse_crown",
         width=w,
         height=h,
-        seed=42,
+        seed=seed_val,
         custom_image_path=custom_path if (custom_path and custom_path.exists()) else None,
+        prompt_en=payload.image_prompt_en,
+        scene_image_mode=img_mode,
     ).resize((w, h))
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=88)
@@ -669,6 +742,32 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             progress_cb=on_prog,
         )
 
+        on_prog(95, "Erstelle Cover & Thumbnails für YouTube, TikTok, Instagram & Facebook + Untertitel…")
+        scene_img_mode = str(cfg.get("scene_image_mode") or "auto_ai_brand")
+
+        sub_files = write_subtitle_bundle(
+            all_captions=vis_bundle.get("captions", []),
+            job_dir=job_dir,
+            safe_slug=safe_slug,
+            offset_sec=float(vis_bundle.get("intro_offset_sec", 0.0)),
+        )
+
+        covers_meta = render_all_social_covers(
+            blueprint=bp,
+            job_dir=job_dir,
+            safe_slug=safe_slug,
+            youtube_16x9_filename=vis_bundle["thumbnail_path"].name,
+            scene_image_mode=scene_img_mode,
+        )
+
+        social_suite = build_social_publishing_suite(
+            blueprint=bp,
+            scene_timings=audio_bundle.get("scene_timings", []),
+            total_final_dur_sec=float(vis_bundle["duration_sec"]),
+            intro_offset_sec=float(vis_bundle.get("intro_offset_sec", 0.0)),
+            outro_dur_sec=float(vis_bundle.get("outro_dur_sec", 0.0)),
+        )
+
         meta = {
             "job_id": job_id,
             "created_at": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
@@ -680,20 +779,17 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             "tts_engines_used": audio_bundle["tts_engines_used"],
             "video_filename": final_mp4.name,
             "thumbnail_filename": vis_bundle["thumbnail_path"].name,
-            "srt_filename": vis_bundle["srt_path"].name,
+            "srt_filename": sub_files["srt_filename"],
+            "subtitles": sub_files,
+            "covers": covers_meta,
+            "social_suite": social_suite,
             "blueprint": bp,
         }
         (job_dir / "metadata.json").write_text(json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8")
 
         shutil.rmtree(work_dir, ignore_errors=True)
 
-        urls = {
-            "video_url": f"/api/renders/{job_id}/video.mp4",
-            "thumbnail_url": f"/api/renders/{job_id}/thumbnail.png",
-            "voiceover_url": f"/api/renders/{job_id}/voiceover.wav",
-            "srt_url": f"/api/renders/{job_id}/subtitles.srt",
-            "zip_url": f"/api/renders/{job_id}/package.zip",
-        }
+        urls = _build_job_urls(job_id, meta)
 
         append_history(
             {
@@ -712,7 +808,7 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             job_id,
             status="completed",
             progress=100,
-            message="Video erfolgreich gerendert & bereit für YouTube!",
+            message="Video, 7 Plattform-Cover, Untertitel & Copy-Paste-Pakete erfolgreich erstellt!",
             result={**meta, **urls},
         )
     except Exception as exc:
@@ -722,6 +818,62 @@ def _execute_render_job(job_id: str, payload: RenderPayload) -> None:
             message=f"Render-Fehler: {exc}",
             error=str(exc),
         )
+
+
+def _build_job_urls(job_id: str, meta: dict[str, Any]) -> dict[str, Any]:
+    covers = meta.get("covers") or {}
+    cover_urls = {
+        key: f"/api/renders/{job_id}/cover_{key}.png"
+        for key in covers.keys()
+    }
+    return {
+        "video_url": f"/api/renders/{job_id}/video.mp4",
+        "thumbnail_url": f"/api/renders/{job_id}/thumbnail.png",
+        "voiceover_url": f"/api/renders/{job_id}/voiceover.wav",
+        "srt_url": f"/api/renders/{job_id}/subtitles.srt",
+        "fb_srt_url": f"/api/renders/{job_id}/subtitles.de_DE.srt",
+        "vtt_url": f"/api/renders/{job_id}/subtitles.vtt",
+        "transcript_url": f"/api/renders/{job_id}/transcript.txt",
+        "zip_url": f"/api/renders/{job_id}/package.zip",
+        "cover_urls": cover_urls,
+    }
+
+
+class SocialPreviewPayload(BaseModel):
+    blueprint: dict[str, Any]
+
+
+@app.post("/api/social-preview")
+def api_social_preview(payload: SocialPreviewPayload) -> dict[str, Any]:
+    """Generate instant copy-paste metadata preview (YouTube Quiz, Abspann, TikTok, IG, FB) directly from blueprint."""
+    cfg = load_settings()
+    bp = normalize_blueprint(
+        payload.blueprint,
+        topic=payload.blueprint.get("title") or "AuronOrigin",
+        video_format=payload.blueprint.get("video_format") or "9:16",
+        editorial_mode=payload.blueprint.get("editorial_mode") or "fakten_mystery",
+        pillar=payload.blueprint.get("pillar"),
+    )
+    scenes = bp.get("scenes") or []
+    # Estimate realistic scene timings (~14.5 chars/sec German voiceover + pause) prior to final audio render
+    cursor = 0.0
+    est_timings: list[dict[str, Any]] = []
+    for sc in scenes:
+        words_len = max(18, len(str(sc.get("narration") or "")))
+        dur = round(max(4.0, words_len / 14.5 + float(sc.get("pause_after") or 0.85)), 2)
+        est_timings.append({"visual_start": cursor, "visual_end": round(cursor + dur, 2), "total_duration": dur})
+        cursor = round(cursor + dur, 2)
+
+    intro_off = (2.5 if bp.get("video_format") == "9:16" else 5.0) if cfg.get("include_intro", True) else 0.0
+    outro_dur = 7.0 if cfg.get("include_outro", True) else 0.0
+    suite = build_social_publishing_suite(
+        blueprint=bp,
+        scene_timings=est_timings,
+        total_final_dur_sec=round(cursor + intro_off + outro_dur, 2),
+        intro_offset_sec=intro_off,
+        outro_dur_sec=outro_dur,
+    )
+    return {"ok": True, "social_suite": suite}
 
 
 @app.post("/api/render")
@@ -755,13 +907,7 @@ def api_get_job(job_id: str) -> dict[str, Any]:
     meta_file = RENDERS_DIR / Path(job_id).name / "metadata.json"
     if meta_file.exists():
         meta = json.loads(meta_file.read_text(encoding="utf-8"))
-        urls = {
-            "video_url": f"/api/renders/{job_id}/video.mp4",
-            "thumbnail_url": f"/api/renders/{job_id}/thumbnail.png",
-            "voiceover_url": f"/api/renders/{job_id}/voiceover.wav",
-            "srt_url": f"/api/renders/{job_id}/subtitles.srt",
-            "zip_url": f"/api/renders/{job_id}/package.zip",
-        }
+        urls = _build_job_urls(job_id, meta)
         return {
             "ok": True,
             "job": {
@@ -792,45 +938,82 @@ def api_get_render_artifact(job_id: str, artifact: str) -> Response:
         tp = job_dir / meta["thumbnail_filename"]
         return FileResponse(str(tp), media_type="image/png", filename=tp.name)
 
+    if artifact.startswith("cover_") and artifact.endswith(".png"):
+        cover_key = artifact[len("cover_") : -len(".png")]
+        covers = meta.get("covers") or {}
+        if cover_key in covers:
+            cp = job_dir / covers[cover_key]["filename"]
+            if cp.exists():
+                return FileResponse(str(cp), media_type="image/png", filename=cp.name)
+        raise HTTPException(status_code=404, detail="Cover nicht gefunden.")
+
     if artifact == "voiceover.wav":
         wp = job_dir / "voiceover_master.wav"
         return FileResponse(str(wp), media_type="audio/wav", filename=f"{Path(meta['video_filename']).stem}_voiceover.wav")
 
+    subs = meta.get("subtitles") or {}
     if artifact == "subtitles.srt":
-        sp = job_dir / meta["srt_filename"]
+        sp = job_dir / (subs.get("srt_filename") or meta["srt_filename"])
         return FileResponse(str(sp), media_type="text/plain; charset=utf-8", filename=sp.name)
+
+    if artifact == "subtitles.de_DE.srt":
+        sp = job_dir / (subs.get("fb_srt_filename") or meta["srt_filename"])
+        return FileResponse(str(sp), media_type="text/plain; charset=utf-8", filename=sp.name)
+
+    if artifact == "subtitles.vtt":
+        vp_vtt = job_dir / subs.get("vtt_filename", "")
+        if vp_vtt.exists():
+            return FileResponse(str(vp_vtt), media_type="text/vtt; charset=utf-8", filename=vp_vtt.name)
+
+    if artifact == "transcript.txt":
+        tp_txt = job_dir / subs.get("txt_filename", "")
+        if tp_txt.exists():
+            return FileResponse(str(tp_txt), media_type="text/plain; charset=utf-8", filename=tp_txt.name)
 
     if artifact == "package.zip":
         bp = meta.get("blueprint", {})
-        seo = bp.get("youtube_seo", {})
-        poll = seo.get("community_poll", {})
-        seo_txt = (
-            f"=== AURONORIGIN YOUTUBE UPLOAD-PAKET ===\n\n"
-            f"HAUPTTITEL:\n{bp.get('title', '')}\n\n"
-            f"ALTERNATIVE CTR-TITEL:\n"
-            + "\n".join(f"- {t}" for t in bp.get("alt_titles", []))
-            + f"\n\nTHUMBNAIL-TEXT:\n{bp.get('thumbnail_text', '')} ({bp.get('thumbnail_subtext', '')})\n\n"
-            f"YOUTUBE-BESCHREIBUNG:\n{seo.get('description', '')}\n\n"
-            f"ANGEPINNTER KOMMENTAR ([FAKT / DEUTUNG]):\n{seo.get('pinned_comment', '')}\n\n"
-            f"COMMUNITY-UMFRAGE:\nFrage: {poll.get('question', '')}\n"
-            + "\n".join(f"  [ ] {opt}" for opt in poll.get("options", []))
-            + f"\n\nTAGS (Kommagetrennt zum Kopieren):\n{', '.join(seo.get('tags', []))}\n"
+        suite = meta.get("social_suite") or build_social_publishing_suite(
+            blueprint=bp,
+            scene_timings=[],
+            total_final_dur_sec=float(meta.get("duration_sec", 45.0)),
         )
+        txt_files = format_social_suite_text_files(suite)
+
         buf = io.BytesIO()
         with zipfile.ZipFile(buf, "w", compression=zipfile.ZIP_DEFLATED) as zf:
             vp = job_dir / meta["video_filename"]
-            tp = job_dir / meta["thumbnail_filename"]
-            sp = job_dir / meta["srt_filename"]
+            wp = job_dir / "voiceover_master.wav"
             if vp.exists():
-                zf.write(vp, arcname=vp.name)
-            if tp.exists():
-                zf.write(tp, arcname=tp.name)
-            if sp.exists():
-                zf.write(sp, arcname=sp.name)
-            zf.writestr("YouTube_SEO_Upload_Infos.txt", seo_txt)
-            zf.writestr("Skript_Blueprint.json", json.dumps(bp, indent=2, ensure_ascii=False))
+                zf.write(vp, arcname=f"01_Video_Master/{vp.name}")
+            if wp.exists():
+                zf.write(wp, arcname=f"01_Video_Master/{Path(meta['video_filename']).stem}_voiceover.wav")
 
-        zip_name = f"{Path(meta['video_filename']).stem}_YouTube_Paket.zip"
+            covers = meta.get("covers") or {}
+            if covers:
+                for idx_c, (_ck, cinfo) in enumerate(covers.items(), start=1):
+                    cp = job_dir / cinfo["filename"]
+                    if cp.exists():
+                        zf.write(cp, arcname=f"02_Covers_und_Thumbnails/{idx_c:02d}_{cp.name}")
+            else:
+                tp = job_dir / meta["thumbnail_filename"]
+                if tp.exists():
+                    zf.write(tp, arcname=f"02_Covers_und_Thumbnails/{tp.name}")
+
+            for sub_key in ("srt_filename", "fb_srt_filename", "vtt_filename", "txt_filename"):
+                fn = subs.get(sub_key)
+                if fn and (job_dir / fn).exists():
+                    zf.write(job_dir / fn, arcname=f"03_Untertitel/{fn}")
+            if not subs:
+                sp = job_dir / meta["srt_filename"]
+                if sp.exists():
+                    zf.write(sp, arcname=f"03_Untertitel/{sp.name}")
+
+            for arc_path, content_str in txt_files.items():
+                zf.writestr(arc_path, content_str)
+
+            zf.writestr("05_Projekt_Daten/Skript_Blueprint.json", json.dumps(bp, indent=2, ensure_ascii=False))
+
+        zip_name = f"{Path(meta['video_filename']).stem}_MultiPlattform_Paket.zip"
         return Response(
             content=buf.getvalue(),
             media_type="application/zip",

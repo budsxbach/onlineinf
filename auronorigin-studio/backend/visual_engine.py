@@ -11,6 +11,7 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
 
 from .audio_engine import FFMPEG_BIN, SAMPLE_RATE
 from .config import BRAND_IDENTITY, UPLOADS_DIR
+from .image_generator import render_bespoke_auron_artwork
 
 # Brand RGB Constants (strictly from AuronOrigin Brand Identity Kit)
 C_BG_DEEP = (11, 12, 16)         # #0B0C10 Deep Space Black (60%)
@@ -148,22 +149,24 @@ def render_sacred_motif_plate(
     height: int,
     seed: int = 42,
     custom_image_path: Path | None = None,
+    prompt_en: str = "",
+    scene_image_mode: str = "auto_ai_brand",
 ) -> Image.Image:
-    """Generate an oversized (1.14x) Sacred-Tech AuronOrigin artwork plate for smooth Ken Burns camera motion."""
+    """Generate an oversized (1.14x) unique AuronOrigin Dark-Blue & Gold artwork plate (or grade a custom upload)."""
     w = int(width * 1.14)
     h = int(height * 1.14)
-    # Ensure even dimensions
     w += w % 2
     h += h % 2
 
-    plate = _create_cosmic_backdrop(w, h, seed=seed)
     cx, cy = w // 2, int(h * (0.43 if height > width else 0.47))
     min_dim = min(w, h)
 
-    # Optional user-uploaded custom scene image graded in AuronOrigin Cinema Look
+    # Priority 1: User-uploaded custom scene image graded in AuronOrigin Cinema Look
     has_custom_image = False
+    plate: Image.Image | None = None
     if custom_image_path and custom_image_path.exists():
         try:
+            backdrop = _create_cosmic_backdrop(w, h, seed=seed)
             raw_img = Image.open(custom_image_path)
             raw_img = ImageOps.exif_transpose(raw_img)
             u_img = raw_img.convert("RGB")
@@ -181,179 +184,33 @@ def render_sacred_motif_plate(
             u_img = u_img.crop((left, top, left + w, top + h))
             u_img = ImageEnhance.Brightness(u_img).enhance(0.84)
             u_img = ImageEnhance.Contrast(u_img).enhance(1.08)
-            plate = Image.blend(plate, u_img, alpha=0.94)
+            plate = Image.blend(backdrop, u_img, alpha=0.94)
             has_custom_image = True
         except Exception:
             has_custom_image = False
 
+    # Priority 2: Automatically generated unique AuronOrigin Dark-Blue & Gold scene artwork
+    if not has_custom_image or plate is None:
+        plate = render_bespoke_auron_artwork(
+            motif=motif,
+            width=w,
+            height=h,
+            seed=seed,
+            prompt_en=prompt_en,
+            scene_image_mode=scene_image_mode,
+        )
+
     overlay = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(overlay)
-
     if has_custom_image:
-        # Subtle gold corner framing + top/bottom vignette so headlines & subtitles stay crisp
         r_outer = int(min_dim * 0.41)
         draw.ellipse([cx - r_outer, cy - r_outer, cx + r_outer, cy + r_outer], outline=(*C_GOLD, 55), width=2)
-    else:
-        # Subtle sacred-geometry background grid lines
-        step = max(48, min_dim // 12)
-        for gx in range(0, w, step):
-            draw.line([(gx, 0), (gx, h)], fill=(31, 40, 51, 34), width=1)
-        for gy in range(0, h, step):
-            draw.line([(0, gy), (w, gy)], fill=(31, 40, 51, 34), width=1)
-
-    if has_custom_image:
-        pass
-    elif motif == "eye_of_horus":
-        avatar_path = Path(BRAND_IDENTITY["assets"]["avatar_jpg"])
-        diam = int(min_dim * 0.56)
-        _blend_brand_emblem(plate, avatar_path, (cx, cy), diam, opacity=0.88)
-        for rad_f, alpha_v, wid in ((0.30, 150, 2), (0.37, 95, 1), (0.44, 55, 1)):
-            rad = int(min_dim * rad_f)
-            draw.ellipse([cx - rad, cy - rad, cx + rad, cy + rad], outline=(*C_GOLD, alpha_v), width=wid)
-        # Degree ticks around outer ring
-        r_tick = int(min_dim * 0.37)
-        for deg in range(0, 360, 15):
-            ang = math.radians(deg + seed * 7)
-            r_in = r_tick - (12 if deg % 45 == 0 else 6)
-            x1, y1 = cx + int(r_in * math.cos(ang)), cy + int(r_in * math.sin(ang))
-            x2, y2 = cx + int(r_tick * math.cos(ang)), cy + int(r_tick * math.sin(ang))
-            draw.line([(x1, y1), (x2, y2)], fill=(*C_GOLD, 165 if deg % 45 == 0 else 85), width=2 if deg % 45 == 0 else 1)
-
-    elif motif == "ouroboros_seal":
-        logo_path = Path(BRAND_IDENTITY["assets"]["logo_jpg"])
-        diam = int(min_dim * 0.58)
-        _blend_brand_emblem(plate, logo_path, (cx, cy), diam, opacity=0.90)
-        # Sacred hexagram / dual equilateral triangles in translucent gold
-        rad = int(min_dim * 0.34)
-        for rot in (0, 60):
-            pts = [
-                (
-                    cx + int(rad * math.cos(math.radians(rot + k * 120 - 90))),
-                    cy + int(rad * math.sin(math.radians(rot + k * 120 - 90))),
-                )
-                for k in range(3)
-            ]
-            draw.polygon(pts, outline=(*C_GOLD, 105), width=2)
-        draw.ellipse([cx - int(rad * 1.12), cy - int(rad * 1.12), cx + int(rad * 1.12), cy + int(rad * 1.12)], outline=(*C_GOLD, 130), width=2)
-
-    elif motif == "pyramid_radar":
-        # Wireframe Giza Pyramid with Muon/SAR Tomography scan beams
-        pyr_h = int(min_dim * 0.42)
-        pyr_w = int(min_dim * 0.56)
-        apex = (cx, cy - int(pyr_h * 0.62))
-        bl = (cx - pyr_w // 2, cy + int(pyr_h * 0.45))
-        br = (cx + pyr_w // 2, cy + int(pyr_h * 0.45))
-        bm = (cx + int(pyr_w * 0.08), cy + int(pyr_h * 0.56))
-
-        # Horizontal SAR radar strata lines inside pyramid
-        for i in range(1, 16):
-            frac = i / 16.0
-            lx = int(apex[0] + (bl[0] - apex[0]) * frac)
-            rx = int(apex[0] + (br[0] - apex[0]) * frac)
-            ly = int(apex[1] + (bl[1] - apex[1]) * frac)
-            draw.line([(lx, ly), (rx, ly)], fill=(*C_GOLD, 55 if i % 3 else 115), width=1)
-
-        # Outer pyramid wireframe
-        draw.line([apex, bl], fill=(*C_GOLD_BRIGHT, 220), width=3)
-        draw.line([apex, br], fill=(*C_GOLD_BRIGHT, 220), width=3)
-        draw.line([apex, bm], fill=(*C_GOLD, 180), width=2)
-        draw.line([bl, bm], fill=(*C_GOLD, 195), width=2)
-        draw.line([bm, br], fill=(*C_GOLD, 195), width=2)
-
-        # Glowing hidden chamber & Grand Gallery scan anomaly
-        ch_x, ch_y = cx - int(pyr_w * 0.02), cy + int(pyr_h * 0.05)
-        draw.rectangle([ch_x - 28, ch_y - 16, ch_x + 28, ch_y + 16], fill=(*C_VIOLET, 145), outline=(*C_GOLD_BRIGHT, 235), width=2)
-        draw.line([(cx - int(pyr_w * 0.18), cy + int(pyr_h * 0.22)), (ch_x + 24, ch_y - 12)], fill=(*C_GOLD_BRIGHT, 210), width=3)
-        for r_scan in (int(min_dim * 0.34), int(min_dim * 0.42)):
-            draw.arc([cx - r_scan, cy - r_scan, cx + r_scan, cy + r_scan], start=200, end=340, fill=(*C_GOLD, 95), width=2)
-
-    elif motif == "quantum_lattice":
-        # 3D Optical Clock / Time-Crystal Perspective Grid + Central Polyhedron
-        horizon_y = cy + int(min_dim * 0.08)
-        for k in range(-10, 11):
-            x_top = cx + k * int(min_dim * 0.022)
-            x_bot = cx + k * int(min_dim * 0.095)
-            draw.line([(x_top, horizon_y), (x_bot, h)], fill=(*C_GOLD, 72 if k % 2 == 0 else 38), width=1)
-        for row in range(1, 11):
-            y_pos = horizon_y + int(((row / 10.0) ** 1.7) * (h - horizon_y))
-            draw.line([(0, y_pos), (w, y_pos)], fill=(*C_GOLD, 65), width=1)
-
-        # Time-Crystal Octahedron in upper cosmic field
-        oct_cy = cy - int(min_dim * 0.06)
-        oct_r = int(min_dim * 0.22)
-        nodes = [
-            (cx, oct_cy - oct_r),
-            (cx + int(oct_r * 0.85), oct_cy),
-            (cx, oct_cy + oct_r),
-            (cx - int(oct_r * 0.85), oct_cy),
-            (cx + int(oct_r * 0.35), oct_cy - int(oct_r * 0.22)),
-            (cx - int(oct_r * 0.35), oct_cy + int(oct_r * 0.22)),
-        ]
-        for i_n in range(len(nodes)):
-            for j_n in range(i_n + 1, len(nodes)):
-                draw.line([nodes[i_n], nodes[j_n]], fill=(*C_GOLD_BRIGHT, 155), width=2)
-        for nx, ny in nodes:
-            draw.ellipse([nx - 6, ny - 6, nx + 6, ny + 6], fill=(*C_GOLD_BRIGHT, 240))
-        draw.ellipse([cx - int(oct_r * 1.25), oct_cy - int(oct_r * 1.25), cx + int(oct_r * 1.25), oct_cy + int(oct_r * 1.25)], outline=(*C_VIOLET, 165), width=3)
-
-    elif motif == "neural_cosmos":
-        # Synaptic / Thalamus Consciousness Network with Golden Resonance Waves
-        rng = np.random.default_rng(seed + 99)
-        n_pts = 34
-        angles = np.linspace(0, 2 * math.pi, n_pts, endpoint=False)
-        radii = rng.uniform(min_dim * 0.06, min_dim * 0.34, size=n_pts)
-        pts = [(cx + int(r * math.cos(a) * 1.12), cy + int(r * math.sin(a) * 0.88)) for a, r in zip(angles, radii)]
-        pts.append((cx, cy))
-
-        for i_p, (x1, y1) in enumerate(pts):
-            for x2, y2 in pts[i_p + 1 :]:
-                dist = math.hypot(x2 - x1, y2 - y1)
-                if dist < min_dim * 0.20:
-                    alpha = int(max(30, 175 * (1.0 - dist / (min_dim * 0.20))))
-                    col = C_GOLD if (i_p % 3 != 0) else (138, 86, 162)
-                    draw.line([(x1, y1), (x2, y2)], fill=(*col, alpha), width=2)
-
-        for idx_p, (nx, ny) in enumerate(pts):
-            rr = 7 if idx_p % 5 == 0 else 4
-            draw.ellipse([nx - rr, ny - rr, nx + rr, ny + rr], fill=(*C_GOLD_BRIGHT, 230))
-        # Central thalamus / third-eye harmonic rings
-        for rad_c in (int(min_dim * 0.09), int(min_dim * 0.19), int(min_dim * 0.31)):
-            draw.ellipse([cx - rad_c, cy - rad_c, cx + rad_c, cy + rad_c], outline=(*C_GOLD, 95), width=2)
-
-    else:
-        # 'sacred_archive': Temple Glyph Columns morphing into Vector Streams
-        col_count = 7
-        span_w = int(min_dim * 0.68)
-        start_x = cx - span_w // 2
-        col_step = span_w // max(1, col_count - 1)
-        rng = np.random.default_rng(seed + 2026)
-        for c_idx in range(col_count):
-            x_col = start_x + c_idx * col_step
-            draw.line([(x_col, cy - int(min_dim * 0.34)), (x_col, cy + int(min_dim * 0.34))], fill=(*C_GOLD, 70), width=1)
-            for row_i in range(-5, 6):
-                gy = cy + row_i * int(min_dim * 0.058)
-                shape_kind = int(rng.integers(0, 4))
-                sz = 10
-                alpha = 185 if abs(row_i) <= 2 else 95
-                if shape_kind == 0:
-                    draw.ellipse([x_col - sz, gy - sz, x_col + sz, gy + sz], outline=(*C_GOLD, alpha), width=2)
-                elif shape_kind == 1:
-                    draw.polygon([(x_col, gy - sz), (x_col + sz, gy + sz), (x_col - sz, gy + sz)], outline=(*C_GOLD_BRIGHT, alpha), width=2)
-                elif shape_kind == 2:
-                    draw.rectangle([x_col - sz, gy - sz, x_col + sz, gy + sz], outline=(*C_GOLD, alpha), width=2)
-                else:
-                    draw.line([(x_col - sz, gy), (x_col + sz, gy)], fill=(*C_GOLD_BRIGHT, alpha), width=2)
-                    draw.ellipse([x_col - 3, gy - 3, x_col + 3, gy + 3], fill=(*C_GOLD_BRIGHT, alpha))
-
-        # Central glowing Ouroboros ring overlay
-        r_mid = int(min_dim * 0.25)
-        draw.ellipse([cx - r_mid, cy - r_mid, cx + r_mid, cy + r_mid], outline=(*C_GOLD_BRIGHT, 190), width=3)
 
     # Dark cinematic top & bottom gradient vignette so typography & subtitles always have AAA contrast
     vig = np.zeros((h, w, 4), dtype=np.uint8)
     y_norm = np.linspace(0.0, 1.0, h, dtype=np.float32)
-    top_dark = np.clip((0.28 - y_norm) / 0.28, 0.0, 1.0) * 185.0
-    bot_dark = np.clip((y_norm - 0.56) / 0.44, 0.0, 1.0) * 225.0
+    top_dark = np.clip((0.28 - y_norm) / 0.28, 0.0, 1.0) * 180.0
+    bot_dark = np.clip((y_norm - 0.56) / 0.44, 0.0, 1.0) * 220.0
     alpha_col = np.maximum(top_dark, bot_dark).astype(np.uint8)
     vig[:, :, 0] = C_BG_DEEP[0]
     vig[:, :, 1] = C_BG_DEEP[1]
@@ -640,21 +497,26 @@ def generate_youtube_thumbnail(
     *,
     blueprint: dict[str, Any],
     out_png: Path,
+    scene_image_mode: str = "auto_ai_brand",
 ) -> Path:
-    """Render a high-CTR 1280x720 AuronOrigin YouTube Thumbnail PNG."""
+    """Render a high-CTR 1280x720 AuronOrigin YouTube Thumbnail PNG with unique per-video artwork."""
     w, h = 1280, 720
     scenes = blueprint.get("scenes") or []
-    first_motif = scenes[0].get("visual_motif", "eye_of_horus") if scenes else "eye_of_horus"
-    custom_id = str(scenes[0].get("custom_image_id") or "").strip() if scenes else ""
+    first_sc = scenes[0] if scenes else {}
+    first_motif = first_sc.get("visual_motif", "solar_eclipse_crown")
+    first_seed = int(first_sc.get("visual_seed") or (abs(hash(str(blueprint.get("title") or ""))) % 90_000_000 + 777))
+    first_prompt = str(first_sc.get("image_prompt_en") or "")
+    custom_id = str(first_sc.get("custom_image_id") or "").strip()
     custom_path = (UPLOADS_DIR / Path(custom_id).name) if custom_id else None
 
-    # Render dramatic artwork shifted slightly right so bold left/center text pops
     bg = render_sacred_motif_plate(
         motif=first_motif,
         width=w,
         height=h,
-        seed=777,
+        seed=first_seed,
         custom_image_path=custom_path if (custom_path and custom_path.exists()) else None,
+        prompt_en=first_prompt,
+        scene_image_mode=scene_image_mode,
     ).resize((w, h), Image.Resampling.LANCZOS)
 
     rgba = bg.convert("RGBA")
@@ -679,14 +541,22 @@ def generate_youtube_thumbnail(
     pillar = str(blueprint.get("pillar") or "AURONORIGIN").upper()
     f_tag = _load_font("inter", 24)
     tb = draw.textbbox((0, 0), pillar, font=f_tag)
-    tw, th = tb[2] - tb[0] + 34, tb[3] - tb[1] + 18
+    tw, th = tb[2] - tb[0] + 38, tb[3] - tb[1] + 22
     draw.rounded_rectangle([68, 66, 68 + tw, 66 + th], radius=8, fill=(*C_VIOLET, 235), outline=(*C_GOLD_BRIGHT, 240), width=2)
-    draw.text((85, 74), pillar, font=f_tag, fill=(*C_GOLD_BRIGHT, 255))
+    draw.text((68 + tw // 2, 66 + th // 2), pillar, font=f_tag, fill=(*C_GOLD_BRIGHT, 255), anchor="mm")
 
-    # 2–3 Word Cinzel ALL-CAPS Trigger
+    # 2–3 Word Cinzel ALL-CAPS Trigger (auto-scales down smoothly for long German compound words)
     trigger = str(blueprint.get("thumbnail_text") or "DER ZEIT-CODE").upper()
+    max_tw = int(w * 0.84)
     f_hero = _load_font("cinzel", 86)
-    lines = _wrap_text(draw, trigger, f_hero, int(w * 0.72))[:3]
+    lines = _wrap_text(draw, trigger, f_hero, max_tw)[:3]
+    for sz in range(86, 38, -2):
+        cand_f = _load_font("cinzel", sz)
+        cand_lines = _wrap_text(draw, trigger, cand_f, max_tw)
+        if len(cand_lines) <= 3 and all((draw.textbbox((0, 0), ln, font=cand_f)[2] - draw.textbbox((0, 0), ln, font=cand_f)[0]) <= max_tw for ln in cand_lines):
+            f_hero = cand_f
+            lines = cand_lines
+            break
     ty = 185
     for ln in lines:
         draw.text((72, ty + 5), ln, font=f_hero, fill=(0, 0, 0, 245))
@@ -749,21 +619,26 @@ def render_complete_auron_video(
     prepared_scenes: list[dict[str, Any]] = []
     all_srt_captions: list[dict[str, Any]] = []
 
+    scene_image_mode = str(settings.get("scene_image_mode") or "auto_ai_brand")
+
     for idx, (sc, tm) in enumerate(zip(scenes, timings)):
         if progress_cb:
             progress_cb(
                 int(50 + (idx / max(1, len(scenes))) * 15),
-                f"Generiere Sacred-Tech Szene {idx + 1}/{len(scenes)} ({sc.get('visual_motif')})…",
+                f"Generiere neues AuronOrigin-Szenenbild {idx + 1}/{len(scenes)} ({sc.get('visual_motif')})…",
             )
         custom_id = str(sc.get("custom_image_id") or "").strip()
         custom_img_path = (UPLOADS_DIR / Path(custom_id).name) if custom_id else None
+        scene_seed = int(sc.get("visual_seed") or (abs(hash(f"{blueprint.get('title')}-{idx}")) % 90_000_000 + 1000))
 
         plate_img = render_sacred_motif_plate(
             motif=str(sc.get("visual_motif") or "eye_of_horus"),
             width=width,
             height=height,
-            seed=100 + idx * 37,
+            seed=scene_seed,
             custom_image_path=custom_img_path if (custom_img_path and custom_img_path.exists()) else None,
+            prompt_en=str(sc.get("image_prompt_en") or ""),
+            scene_image_mode=scene_image_mode,
         )
         plate_arr = np.asarray(plate_img, dtype=np.uint8)
 
@@ -990,15 +865,19 @@ def render_complete_auron_video(
     # 4. Generate Thumbnail PNG & SRT Subtitles
     thumb_path = final_mp4_path.with_name(final_mp4_path.stem + "_thumbnail.png")
     srt_path = final_mp4_path.with_name(final_mp4_path.stem + "_untertitel.srt")
-    generate_youtube_thumbnail(blueprint=blueprint, out_png=thumb_path)
+    generate_youtube_thumbnail(blueprint=blueprint, out_png=thumb_path, scene_image_mode=scene_image_mode)
     write_srt_subtitles(all_srt_captions, srt_path, offset_sec=intro_offset_sec)
 
-    total_final_dur = total_dur + intro_offset_sec + (7.0 if include_outro and len(segments_to_concat) > 1 else 0.0)
+    outro_dur_sec = 7.0 if include_outro and len(segments_to_concat) > 1 else 0.0
+    total_final_dur = total_dur + intro_offset_sec + outro_dur_sec
 
     return {
         "video_path": final_mp4_path,
         "thumbnail_path": thumb_path,
         "srt_path": srt_path,
+        "captions": all_srt_captions,
+        "intro_offset_sec": intro_offset_sec,
+        "outro_dur_sec": outro_dur_sec,
         "resolution": f"{width}x{height}",
         "fps": FPS,
         "duration_sec": round(total_final_dur, 2),

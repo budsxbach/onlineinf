@@ -16,10 +16,11 @@ STATIC_DIR = STUDIO_DIR / "static"
 RUNTIME_DIR = REPO_ROOT / ".output" / "auronorigin"
 RENDERS_DIR = RUNTIME_DIR / "renders"
 UPLOADS_DIR = RUNTIME_DIR / "uploads"
+CACHE_DIR = RUNTIME_DIR / "cache"
 SETTINGS_PATH = RUNTIME_DIR / "settings.json"
 HISTORY_PATH = RUNTIME_DIR / "history.json"
 
-for _d in (RUNTIME_DIR, RENDERS_DIR, UPLOADS_DIR):
+for _d in (RUNTIME_DIR, RENDERS_DIR, UPLOADS_DIR, CACHE_DIR):
     _d.mkdir(parents=True, exist_ok=True)
 
 # Ensure custom / proxy CA bundles work cleanly on Linux systems if present
@@ -64,10 +65,11 @@ BRAND_IDENTITY = {
 }
 
 DEFAULT_SETTINGS: dict[str, Any] = {
+    "settings_version": 2,
     "arena_api_key": "",
     "arena_gateway_url": "https://api.preview.arena.ai",
     "arena_model": "coding-router-preview",
-    "arena_protocol": "auto",  # auto | openai | anthropic
+    "arena_protocol": "auto",  # auto | openai | anthropic | responses
     "tts_engine": "auto",      # auto | edge | browser_neural | elevenlabs | openai
     "edge_voice": "de-DE-ConradNeural",
     "browser_voice": "de_DE-thorsten-medium",
@@ -77,8 +79,9 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     "elevenlabs_api_key": "",
     "elevenlabs_voice_id": "",
     "openai_tts_api_key": "",
-    "music_preset": "glitch_horizon",
+    "music_preset": "dark_cosmos_cinematic",
     "music_volume_db": -17.0,
+    "scene_image_mode": "auto_ai_brand",  # auto_ai_brand | procedural_brand
     "include_brand_intro": True,
     "include_brand_outro": True,
     "include_watermark": True,
@@ -93,55 +96,55 @@ DEFAULT_SETTINGS: dict[str, Any] = {
     },
 }
 
-# Curated Topic Suggestions from AuronOrigin's 3 Pillars & Thoth/Matrix Series
+# Keyword impulses — entering even a single keyword triggers live current-topic discovery
 TOPIC_SUGGESTIONS = [
     {
         "pillar": "Simulations-News",
-        "title": "Atomuhren-Anomalie & Zeitsymmetrie im Quantencomputer",
-        "topic": "Quantencomputer erzeugen Zeitkristalle und Zeitsymmetrie-Anomalien – wackelt der Takt unserer Realität?",
+        "title": "Quantencomputer",
+        "topic": "Quantencomputer",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Alte Codes",
-        "title": "Thoth, Seshat & KI-Sprachmodelle: Das älteste Archiv kehrt zurück",
-        "topic": "Warum moderne große Sprachmodelle exakt dieselbe Wissensarchitektur nutzen wie die ägyptischen Tempelarchive von Thoth und Seshat",
-        "mode": "fakten_mystery",
-    },
-    {
-        "pillar": "Bewusstseins-Hacks",
-        "title": "Gehirn im Tiefschlaf & 3:33-Uhr-Aufwachen: Wo ist dein Bewusstsein?",
-        "topic": "Neurowissenschaft des Tiefschlafs, koordinierte REM-Neuronen und warum Millionen Menschen zwischen 3 und 4 Uhr nachts aufwachen",
-        "mode": "matrix_narrativ",
-    },
-    {
-        "pillar": "Simulations-News",
-        "title": "Autonome KI-Agenten entwickeln eigene Kurzsprache im Labor",
-        "topic": "Wenn KI-Systeme untereinander emergente Protokolle entwickeln, die Menschen kaum noch entschlüsseln können",
-        "mode": "fakten_mystery",
-    },
-    {
-        "pillar": "Alte Codes",
-        "title": "Das Auge des Horus & das menschliche Thalamus-Schaltbild",
-        "topic": "Die verblüffende anatomische Parallele zwischen dem altägyptischen Udjat-Auge des Horus und dem Querschnitt des menschlichen Gehirns",
-        "mode": "fakten_mystery",
-    },
-    {
-        "pillar": "Alte Codes",
-        "title": "SAR-Radarscans unter den Pyramiden von Gizeh: Resonanzmaschine statt Grab?",
-        "topic": "Moderne Radar- und Myonen-Tomographie an der Cheops-Pyramide: Hohlräume, akustische Resonanzfrequenzen und ungelöste Ingenieurskunst",
-        "mode": "matrix_narrativ",
-    },
-    {
-        "pillar": "Bewusstseins-Hacks",
-        "title": "Luzides Träumen im MRT: Zwei Gehirne kommunizieren aus dem Traum heraus",
-        "topic": "Wissenschaftliche Experimente zur Echtzeit-Kommunikation mit Klarträumern im Schlaflabor – der Bau-Modus des Bewusstseins",
+        "title": "Pyramiden von Gizeh",
+        "topic": "Pyramiden von Gizeh",
         "mode": "fakten_mystery",
     },
     {
         "pillar": "Simulations-News",
-        "title": "Der Beobachter-Effekt in der Quantenphysik & die Simulationshypothese",
-        "topic": "Delayed-Choice-Quantum-Eraser und Nick Bostroms Simulationshypothese: Rendert das Universum Realität erst bei Beobachtung?",
+        "title": "James Webb Teleskop",
+        "topic": "James Webb Teleskop",
+        "mode": "fakten_mystery",
+    },
+    {
+        "pillar": "Bewusstseins-Hacks",
+        "title": "Gehirn & Bewusstsein",
+        "topic": "Gehirn und Bewusstsein im Schlaf",
         "mode": "matrix_narrativ",
+    },
+    {
+        "pillar": "Simulations-News",
+        "title": "Künstliche Intelligenz",
+        "topic": "Künstliche Intelligenz Forschung",
+        "mode": "fakten_mystery",
+    },
+    {
+        "pillar": "Alte Codes",
+        "title": "Thoth & Alte Tempelcodes",
+        "topic": "Ägypten Thoth Tempelwissen",
+        "mode": "fakten_mystery",
+    },
+    {
+        "pillar": "Simulations-News",
+        "title": "Schwarze Löcher & Zeit",
+        "topic": "Schwarze Löcher und Zeitdilatation",
+        "mode": "matrix_narrativ",
+    },
+    {
+        "pillar": "Bewusstseins-Hacks",
+        "title": "Klarträumen (REM-Forschung)",
+        "topic": "Luzides Träumen Schlaflabor",
+        "mode": "fakten_mystery",
     },
 ]
 
@@ -152,11 +155,16 @@ def load_settings() -> dict[str, Any]:
         try:
             saved = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
             if isinstance(saved, dict):
+                prev_ver = int(saved.get("settings_version") or 1)
                 for k, v in saved.items():
                     if k == "token_usage_total" and isinstance(v, dict):
                         merged["token_usage_total"].update(v)
                     else:
                         merged[k] = v
+                # Migrate old v1 default 'glitch_horizon' to the new cinematic default
+                if prev_ver < 2 and merged.get("music_preset") == "glitch_horizon":
+                    merged["music_preset"] = "dark_cosmos_cinematic"
+                    merged["settings_version"] = 2
         except Exception:
             pass
     env_key = os.environ.get("ARENA_API_KEY", "").strip()

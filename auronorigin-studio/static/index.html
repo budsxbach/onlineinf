@@ -387,66 +387,320 @@
       </div>
     </section>
 
-    <!-- PANEL 5: FERTIGES VIDEO, THUMBNAIL & YOUTUBE UPLOAD-PAKET -->
+    <!-- PANEL 5: FERTIGES VIDEO, ALLE 7 COVER/THUMBNAILS & UNTERTITEL -->
     <section class="card card-gold-accent hidden" id="outputCard">
       <div class="card-header-row">
         <div>
-          <span class="step-badge">FERTIGES YOUTUBE-PAKET</span>
+          <span class="step-badge">FERTIGES MULTI-PLATTFORM MASTER-PAKET</span>
           <h2 id="outputVideoTitle">Dein fertiges AuronOrigin Video</h2>
           <p class="muted-note" id="outputTechMeta"></p>
         </div>
-        <a id="downloadZipBtn" href="#" class="btn btn-gold" download>📦 Komplettes YouTube-Paket (.ZIP) laden</a>
+        <a id="downloadZipBtn" href="#" class="btn btn-gold" download>📦 Komplettes Multi-Plattform-Paket (.ZIP) laden</a>
       </div>
 
       <div class="output-media-grid">
         <div class="player-column">
-          <h3>Fertiges MP4-Video (inkl. Tonstimme &amp; Musik)</h3>
+          <h3>🎬 Fertiges MP4-Video &amp; Synchronisierte Untertitel-Dateien</h3>
           <div class="video-stage" id="videoStageBox">
             <video id="finalVideoPlayer" controls playsinline></video>
           </div>
           <div class="download-strip">
             <a id="downloadMp4Btn" href="#" class="btn btn-gold btn-sm" download>⬇️ Video (.MP4)</a>
-            <a id="downloadThumbBtn" href="#" class="btn btn-secondary btn-sm" download>🖼️ Thumbnail (.PNG)</a>
             <a id="downloadVoiceBtn" href="#" class="btn btn-secondary btn-sm" download>🎙️ Tonstimme (.WAV)</a>
-            <a id="downloadSrtBtn" href="#" class="btn btn-secondary btn-sm" download>💬 Untertitel (.SRT)</a>
+            <a id="downloadSrtBtn" href="#" class="btn btn-secondary btn-sm" download title="Standard SRT mit Millisekunden-Komma für YouTube Studio & TikTok">💬 Untertitel (.SRT)</a>
+            <a id="downloadFbSrtBtn" href="#" class="btn btn-secondary btn-sm" download title="Speziell benannte .de_DE.srt Datei für fehlerfreien deutschen Upload in Facebook / Meta Business Suite">💬 Facebook (.de_DE.SRT)</a>
+            <a id="downloadVttBtn" href="#" class="btn btn-secondary btn-sm" download title="WebVTT Untertitel für Web-Player & TikTok Web">💬 Web (.VTT)</a>
+            <a id="downloadTxtBtn" href="#" class="btn btn-ghost btn-sm" download title="Reines deutsches Sprecher-Transkript ohne Zeitcodes">📄 Transkript (.TXT)</a>
           </div>
         </div>
 
         <div class="seo-column">
-          <h3>1280×720 High-CTR Thumbnail</h3>
-          <img id="finalThumbnailImg" alt="Generiertes YouTube Thumbnail" class="thumb-preview" />
+          <div class="cover-gallery-head">
+            <h3>🖼️ Maßgeschneiderte Covers &amp; Thumbnails (Safe-Zone 2026)</h3>
+            <a id="downloadActiveCoverBtn" href="#" class="btn btn-gold btn-xs" download>⬇️ Aktuelles Cover laden</a>
+          </div>
+          <div class="cover-selector-pills" id="coverSelectorPills">
+            <button type="button" class="cover-pill active" data-cover-key="youtube_16x9">YouTube 16:9</button>
+            <button type="button" class="cover-pill" data-cover-key="youtube_shorts_9x16">YT Shorts 9:16</button>
+            <button type="button" class="cover-pill" data-cover-key="tiktok_9x16">TikTok 9:16</button>
+            <button type="button" class="cover-pill" data-cover-key="instagram_reel_9x16">IG Reel 9:16</button>
+            <button type="button" class="cover-pill" data-cover-key="instagram_feed_4x5">IG Feed 4:5</button>
+            <button type="button" class="cover-pill" data-cover-key="facebook_16x9">Facebook 16:9</button>
+            <button type="button" class="cover-pill" data-cover-key="facebook_reel_9x16">FB Reel 9:16</button>
+          </div>
+          <div class="cover-stage-wrap">
+            <img id="finalThumbnailImg" alt="Generiertes Plattform-Cover" class="thumb-preview" />
+          </div>
+          <p class="muted-note" id="activeCoverHint">YouTube High-CTR Thumbnail (1280×720) – alle 7 Cover sind auch im .ZIP-Paket unter <code>02_Covers_und_Thumbnails/</code> enthalten.</p>
+        </div>
+      </div>
+    </section>
 
+    <!-- PANEL 5B: COPY-PASTE ZENTRUM FÜR YOUTUBE, TIKTOK, INSTAGRAM & FACEBOOK -->
+    <section class="card" id="socialPublishingCard">
+      <div class="card-header-row">
+        <div>
+          <span class="step-badge">MULTI-PLATTFORM COPY &amp; PASTE ZENTRUM</span>
+          <h2>Titel, Beschreibungen, YouTube-Quiz, Abspann &amp; Upload-Einstellungen</h2>
+          <p class="muted-note" id="socialSyncBadge">
+            Sofort kopierfertig für <strong>YouTube, TikTok, Instagram &amp; Facebook</strong> – wird bei jeder Skript-Änderung und nach dem Video-Rendering sekundengenau synchronisiert.
+          </p>
+        </div>
+        <div class="platform-tabs" id="platformTabsBar">
+          <button type="button" class="platform-tab active" data-platform-tab="youtube">🔴 YouTube (inkl. Quiz &amp; Abspann)</button>
+          <button type="button" class="platform-tab" data-platform-tab="tiktok">🎵 TikTok</button>
+          <button type="button" class="platform-tab" data-platform-tab="instagram">📸 Instagram</button>
+          <button type="button" class="platform-tab" data-platform-tab="facebook">🔵 Facebook</button>
+        </div>
+      </div>
+
+      <!-- TAB 1: YOUTUBE -->
+      <div class="platform-pane" id="pane-youtube">
+        <div class="social-two-col">
           <div class="seo-copy-stack">
             <div class="copy-block">
               <div class="copy-head">
-                <strong>Alternative Klickraten-Titel (A/B-Test)</strong>
-                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoAltTitles">Kopieren</button>
+                <strong>1. YouTube-Haupttitel</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ytMainTitle">📋 Kopieren</button>
+              </div>
+              <textarea id="ytMainTitle" rows="2" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>2. Alternative Klickraten-Titel (YouTube „Testen &amp; Vergleichen“ A/B-Test)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoAltTitles">📋 Kopieren</button>
               </div>
               <textarea id="seoAltTitles" rows="3" readonly></textarea>
             </div>
 
             <div class="copy-block">
               <div class="copy-head">
-                <strong>YouTube-Beschreibung &amp; Hashtags</strong>
-                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoDescription">Kopieren</button>
+                <strong>3. YouTube-Beschreibung inkl. exakter Kapitelmarken (<code>00:00</code>) &amp; Hashtags</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoDescription">📋 Kopieren</button>
               </div>
-              <textarea id="seoDescription" rows="4" readonly></textarea>
+              <textarea id="seoDescription" rows="8" readonly></textarea>
             </div>
 
             <div class="copy-block">
               <div class="copy-head">
-                <strong>Angepinnter Kommentar <code>[FAKT / DEUTUNG]</code> (Boostet Kommentare &amp; Abos)</strong>
-                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoPinnedComment">Kopieren</button>
+                <strong>4. Angepinnter Kommentar <code>[FAKT / DEUTUNG]</code> (Boostet Kommentare &amp; Abos)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoPinnedComment">📋 Kopieren</button>
               </div>
               <textarea id="seoPinnedComment" rows="3" readonly></textarea>
             </div>
 
             <div class="copy-block">
               <div class="copy-head">
-                <strong>YouTube-Tags &amp; Community-Umfrage</strong>
-                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoTagsAndPoll">Kopieren</button>
+                <strong>5. YouTube-Tags (kommagetrennt, direkt ins Tag-Feld einfügen)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ytTagsCsv">📋 Kopieren</button>
               </div>
-              <textarea id="seoTagsAndPoll" rows="3" readonly></textarea>
+              <textarea id="ytTagsCsv" rows="2" readonly></textarea>
+            </div>
+          </div>
+
+          <div class="seo-copy-stack">
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>🧠 6. YouTube Quiz (In-Video Quiz mit Zeitstempel &amp; Community-Quiz)</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="ytQuizBlock">📋 Quiz kopieren</button>
+              </div>
+              <textarea id="ytQuizBlock" rows="9" readonly></textarea>
+            </div>
+
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>🎬 7. YouTube Abspann (End Screen), Info-Karte &amp; Shorts „Verknüpftes Video“</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="ytEndScreenBlock">📋 Abspann kopieren</button>
+              </div>
+              <textarea id="ytEndScreenBlock" rows="8" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>🗳️ 8. Community-Umfrage (Beitrag erstellen → Umfrage)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="seoTagsAndPoll">📋 Kopieren</button>
+              </div>
+              <textarea id="seoTagsAndPoll" rows="4" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>✅ 9. YouTube Upload-Einstellungen &amp; Pflichtangaben 2026</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ytChecklistBlock">📋 Kopieren</button>
+              </div>
+              <textarea id="ytChecklistBlock" rows="5" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: TIKTOK -->
+      <div class="platform-pane hidden" id="pane-tiktok">
+        <div class="social-two-col">
+          <div class="seo-copy-stack">
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>1. TikTok Cover-Schlagzeile (3–5 Wörter in Safe-Zone)</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="ttCoverHeadline">📋 Kopieren</button>
+              </div>
+              <textarea id="ttCoverHeadline" rows="2" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>2. TikTok SEO-Caption / Beschreibung (inkl. 5 Nischen-Hashtags, ohne #fyp)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ttCaption">📋 Kopieren</button>
+              </div>
+              <textarea id="ttCaption" rows="7" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>3. TikTok Search-SEO Keywords (für den blauen Suchlink über den Kommentaren)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ttSearchKeywords">📋 Kopieren</button>
+              </div>
+              <textarea id="ttSearchKeywords" rows="2" readonly></textarea>
+            </div>
+          </div>
+
+          <div class="seo-copy-stack">
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>4. Erster eigener Kommentar direkt nach dem Upload (Interaktions-Trigger)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ttFirstComment">📋 Kopieren</button>
+              </div>
+              <textarea id="ttFirstComment" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>5. Originalton-Name &amp; TikTok-Serie / Playlist</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ttSoundAndSeries">📋 Kopieren</button>
+              </div>
+              <textarea id="ttSoundAndSeries" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>✅ 6. TikTok Upload-Einstellungen &amp; KI-Kennzeichnung</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="ttChecklist">📋 Kopieren</button>
+              </div>
+              <textarea id="ttChecklist" rows="6" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: INSTAGRAM -->
+      <div class="platform-pane hidden" id="pane-instagram">
+        <div class="social-two-col">
+          <div class="seo-copy-stack">
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>1. Instagram Reel Caption (&lt;125 Zeichen Einstieg + exakt 5 Hashtags nach IG-Limit)</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="igCaption">📋 Kopieren</button>
+              </div>
+              <textarea id="igCaption" rows="8" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>2. SEO-Alternativtext (Erweiterte Einstellungen → Alternativtext schreiben)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="igAltText">📋 Kopieren</button>
+              </div>
+              <textarea id="igAltText" rows="4" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>3. Angepinnter Instagram-Kommentar</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="igPinnedComment">📋 Kopieren</button>
+              </div>
+              <textarea id="igPinnedComment" rows="3" readonly></textarea>
+            </div>
+          </div>
+
+          <div class="seo-copy-stack">
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>📊 4. Interaktive Reel-Umfrage (Frage + 4 Antworten ≤ 24 Zeichen)</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="igPollBlock">📋 Kopieren</button>
+              </div>
+              <textarea id="igPollBlock" rows="6" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>5. Original-Audio umbenennen &amp; 3 Empfohlene Themen (Add Topics)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="igAudioAndTopics">📋 Kopieren</button>
+              </div>
+              <textarea id="igAudioAndTopics" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>✅ 6. Instagram Reels &amp; Profilraster Checkliste (Meta 2026 Safe-Zone)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="igChecklist">📋 Kopieren</button>
+              </div>
+              <textarea id="igChecklist" rows="6" readonly></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: FACEBOOK -->
+      <div class="platform-pane hidden" id="pane-facebook">
+        <div class="social-two-col">
+          <div class="seo-copy-stack">
+            <div class="copy-block copy-block-gold">
+              <div class="copy-head">
+                <strong>1. Separater Facebook Video-Titel (Meta Business Suite, max. 65 Zeichen)</strong>
+                <button type="button" class="btn btn-gold btn-xs" data-copy-target="fbVideoTitle">📋 Kopieren</button>
+              </div>
+              <textarea id="fbVideoTitle" rows="2" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>2. Zweiter Titel für den Meta Business Suite A/B-Titeltest</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="fbAbTitle">📋 Kopieren</button>
+              </div>
+              <textarea id="fbAbTitle" rows="2" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>3. Erzählerischer Facebook-Beitragstext / Beschreibung + Diskussionsfrage</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="fbDescription">📋 Kopieren</button>
+              </div>
+              <textarea id="fbDescription" rows="8" readonly></textarea>
+            </div>
+          </div>
+
+          <div class="seo-copy-stack">
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>4. Erster Kommentar deiner Seite unter dem Video</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="fbFirstComment">📋 Kopieren</button>
+              </div>
+              <textarea id="fbFirstComment" rows="3" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>5. Facebook / Meta Alternativtext (Barrierefreiheit &amp; Suche)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="fbAltText">📋 Kopieren</button>
+              </div>
+              <textarea id="fbAltText" rows="4" readonly></textarea>
+            </div>
+
+            <div class="copy-block">
+              <div class="copy-head">
+                <strong>✅ 6. Facebook / Meta Business Suite Upload-Checkliste (inkl. <code>.de_DE.srt</code>)</strong>
+                <button type="button" class="btn btn-ghost btn-xs" data-copy-target="fbChecklist">📋 Kopieren</button>
+              </div>
+              <textarea id="fbChecklist" rows="6" readonly></textarea>
             </div>
           </div>
         </div>

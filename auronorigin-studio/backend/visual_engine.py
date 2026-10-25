@@ -541,14 +541,22 @@ def generate_youtube_thumbnail(
     pillar = str(blueprint.get("pillar") or "AURONORIGIN").upper()
     f_tag = _load_font("inter", 24)
     tb = draw.textbbox((0, 0), pillar, font=f_tag)
-    tw, th = tb[2] - tb[0] + 34, tb[3] - tb[1] + 18
+    tw, th = tb[2] - tb[0] + 38, tb[3] - tb[1] + 22
     draw.rounded_rectangle([68, 66, 68 + tw, 66 + th], radius=8, fill=(*C_VIOLET, 235), outline=(*C_GOLD_BRIGHT, 240), width=2)
-    draw.text((85, 74), pillar, font=f_tag, fill=(*C_GOLD_BRIGHT, 255))
+    draw.text((68 + tw // 2, 66 + th // 2), pillar, font=f_tag, fill=(*C_GOLD_BRIGHT, 255), anchor="mm")
 
-    # 2–3 Word Cinzel ALL-CAPS Trigger
+    # 2–3 Word Cinzel ALL-CAPS Trigger (auto-scales down smoothly for long German compound words)
     trigger = str(blueprint.get("thumbnail_text") or "DER ZEIT-CODE").upper()
+    max_tw = int(w * 0.84)
     f_hero = _load_font("cinzel", 86)
-    lines = _wrap_text(draw, trigger, f_hero, int(w * 0.72))[:3]
+    lines = _wrap_text(draw, trigger, f_hero, max_tw)[:3]
+    for sz in range(86, 38, -2):
+        cand_f = _load_font("cinzel", sz)
+        cand_lines = _wrap_text(draw, trigger, cand_f, max_tw)
+        if len(cand_lines) <= 3 and all((draw.textbbox((0, 0), ln, font=cand_f)[2] - draw.textbbox((0, 0), ln, font=cand_f)[0]) <= max_tw for ln in cand_lines):
+            f_hero = cand_f
+            lines = cand_lines
+            break
     ty = 185
     for ln in lines:
         draw.text((72, ty + 5), ln, font=f_hero, fill=(0, 0, 0, 245))
@@ -860,12 +868,16 @@ def render_complete_auron_video(
     generate_youtube_thumbnail(blueprint=blueprint, out_png=thumb_path, scene_image_mode=scene_image_mode)
     write_srt_subtitles(all_srt_captions, srt_path, offset_sec=intro_offset_sec)
 
-    total_final_dur = total_dur + intro_offset_sec + (7.0 if include_outro and len(segments_to_concat) > 1 else 0.0)
+    outro_dur_sec = 7.0 if include_outro and len(segments_to_concat) > 1 else 0.0
+    total_final_dur = total_dur + intro_offset_sec + outro_dur_sec
 
     return {
         "video_path": final_mp4_path,
         "thumbnail_path": thumb_path,
         "srt_path": srt_path,
+        "captions": all_srt_captions,
+        "intro_offset_sec": intro_offset_sec,
+        "outro_dur_sec": outro_dur_sec,
         "resolution": f"{width}x{height}",
         "fps": FPS,
         "duration_sec": round(total_final_dur, 2),

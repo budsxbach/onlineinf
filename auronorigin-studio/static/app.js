@@ -10,6 +10,9 @@ const state = {
   modalTargetSceneIndex: null,
   modalCurrentDir: "",
   modalParentDir: "",
+  activeRenderResult: null,
+  activeCoverKey: "youtube_16x9",
+  socialPreviewTimer: null,
 };
 
 const el = (id) => document.getElementById(id);
@@ -668,6 +671,118 @@ async function renderBlueprintEditor(bp) {
   });
 
   updateEstimatedStats();
+  scheduleSocialPreviewRefresh();
+}
+
+function scheduleSocialPreviewRefresh() {
+  if (state.socialPreviewTimer) clearTimeout(state.socialPreviewTimer);
+  state.socialPreviewTimer = setTimeout(async () => {
+    if (!state.blueprint?.scenes?.length) return;
+    try {
+      const bpSnap = {
+        ...state.blueprint,
+        title: el("videoTitleInput")?.value?.trim() || state.blueprint.title,
+        thumbnail_text: el("thumbTextInput")?.value?.trim() || state.blueprint.thumbnail_text,
+        thumbnail_subtext: el("thumbSubInput")?.value?.trim() || state.blueprint.thumbnail_subtext,
+      };
+      const resp = await fetch("/api/social-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blueprint: bpSnap }),
+      });
+      const data = await resp.json();
+      if (data?.ok && data.social_suite) {
+        populateSocialPublishingSuite(data.social_suite, false);
+      }
+    } catch (_) {}
+  }, 220);
+}
+
+function populateSocialPublishingSuite(suite, isExactRender = false) {
+  if (!suite) return;
+  const yt = suite.youtube || {};
+  const tt = suite.tiktok || {};
+  const ig = suite.instagram || {};
+  const fb = suite.facebook || {};
+
+  const setVal = (id, v) => {
+    const node = el(id);
+    if (node) node.value = v || "";
+  };
+
+  // YouTube
+  setVal("ytMainTitle", yt.title);
+  setVal("seoAltTitles", (yt.alt_titles || []).join("\n"));
+  setVal("seoDescription", yt.description);
+  setVal("seoPinnedComment", yt.pinned_comment);
+  setVal("ytTagsCsv", yt.tags_csv);
+  setVal("ytQuizBlock", yt.quiz_copy_paste);
+  setVal("ytEndScreenBlock", yt.end_screen_copy_paste);
+  setVal("seoTagsAndPoll", yt.community_poll_copy_paste);
+  setVal("ytChecklistBlock", yt.upload_checklist);
+
+  // TikTok
+  setVal("ttCoverHeadline", tt.cover_headline);
+  setVal("ttCaption", tt.caption);
+  setVal("ttSearchKeywords", tt.search_seo_keywords);
+  setVal("ttFirstComment", tt.first_comment);
+  setVal(
+    "ttSoundAndSeries",
+    `Originalton: ${tt.original_sound_name || ""}\nSerie / Playlist: ${tt.series_name || ""}`
+  );
+  setVal("ttChecklist", tt.upload_checklist);
+
+  // Instagram
+  setVal("igCaption", ig.caption);
+  setVal("igAltText", ig.alt_text);
+  setVal("igPinnedComment", ig.pinned_comment);
+  setVal("igPollBlock", ig.reel_poll_copy_paste);
+  setVal(
+    "igAudioAndTopics",
+    `Original-Audio Name: ${ig.original_audio_name || ""}\n3 Themen hinzufügen (Add Topics): ${ig.recommended_topics || ""}`
+  );
+  setVal("igChecklist", ig.upload_checklist);
+
+  // Facebook
+  setVal("fbVideoTitle", fb.video_title);
+  setVal("fbAbTitle", fb.ab_test_title);
+  setVal("fbDescription", fb.description);
+  setVal("fbFirstComment", fb.first_comment);
+  setVal("fbAltText", fb.alt_text);
+  setVal("fbChecklist", fb.upload_checklist);
+
+  const badge = el("socialSyncBadge");
+  if (badge) {
+    badge.innerHTML = isExactRender
+      ? "✅ <strong>Sekundengenau mit dem fertig gerenderten MP4-Video synchronisiert</strong> (exakte Kapitel, Quiz-Zeitstempel & Abspann-Zeitfenster)."
+      : "⚡ <strong>Live-Vorschau aus deinem aktuellen Skript</strong> – alle Texte, YouTube-Quiz & Abspann sind sofort kopierfertig (nach dem Rendern werden Zeitstempel exakt ans MP4 angepasst).";
+  }
+}
+
+function selectPlatformCover(coverKey) {
+  const res = state.activeRenderResult;
+  if (!res) return;
+  state.activeCoverKey = coverKey;
+
+  document.querySelectorAll("[data-cover-key]").forEach((btn) => {
+    btn.classList.toggle("active", btn.getAttribute("data-cover-key") === coverKey);
+  });
+
+  const coverUrls = res.cover_urls || {};
+  const coversMeta = res.covers || {};
+  const url = coverUrls[coverKey] || res.thumbnail_url;
+  const info = coversMeta[coverKey] || { label: "YouTube Thumbnail (1280×720)" };
+
+  if (url) {
+    el("finalThumbnailImg").src = `${url}?t=${Date.now()}`;
+    if (el("downloadActiveCoverBtn")) {
+      el("downloadActiveCoverBtn").href = url;
+    }
+  }
+  if (el("activeCoverHint")) {
+    el("activeCoverHint").innerHTML =
+      `<strong>${escapeHtml(info.label || coverKey)}</strong> – Safe-Zone geprüft. Alle 7 Plattform-Cover liegen zusätzlich im <code>.ZIP</code>-Paket unter <code>02_Covers_und_Thumbnails/</code>.`;
+  }
 }
 
 // Universal PC-Folder & URL Picker Modal Logic
@@ -1025,6 +1140,7 @@ async function runFullVideoRender() {
 }
 
 function displayCompletedResult(res) {
+  state.activeRenderResult = res;
   const outCard = el("outputCard");
   outCard.classList.remove("hidden");
 
@@ -1037,23 +1153,22 @@ function displayCompletedResult(res) {
   videoEl.src = res.video_url + cacheBust;
   videoEl.load();
 
-  el("finalThumbnailImg").src = res.thumbnail_url + cacheBust;
   el("downloadMp4Btn").href = res.video_url;
-  el("downloadThumbBtn").href = res.thumbnail_url;
   el("downloadVoiceBtn").href = res.voiceover_url;
   el("downloadSrtBtn").href = res.srt_url;
+  if (el("downloadFbSrtBtn")) el("downloadFbSrtBtn").href = res.fb_srt_url || res.srt_url;
+  if (el("downloadVttBtn")) el("downloadVttBtn").href = res.vtt_url || res.srt_url;
+  if (el("downloadTxtBtn")) el("downloadTxtBtn").href = res.transcript_url || res.srt_url;
   el("downloadZipBtn").href = res.zip_url;
 
-  const bp = res.blueprint || state.blueprint || {};
-  const seo = bp.youtube_seo || {};
-  const poll = seo.community_poll || {};
+  const defaultCover = res.video_format === "9:16" ? "youtube_shorts_9x16" : "youtube_16x9";
+  selectPlatformCover(res.cover_urls?.[defaultCover] ? defaultCover : "youtube_16x9");
 
-  el("seoAltTitles").value = (bp.alt_titles || []).join("\n");
-  el("seoDescription").value = seo.description || "";
-  el("seoPinnedComment").value = seo.pinned_comment || "";
-  el("seoTagsAndPoll").value =
-    `TAGS:\n${(seo.tags || []).join(", ")}\n\nCOMMUNITY-UMFRAGE:\n${poll.question || ""}\n` +
-    (poll.options || []).map((o) => `• ${o}`).join("\n");
+  if (res.social_suite) {
+    populateSocialPublishingSuite(res.social_suite, true);
+  } else {
+    scheduleSocialPreviewRefresh();
+  }
 }
 
 function renderHistory(items) {
@@ -1430,6 +1545,39 @@ el("oneClickFullVideoBtn").addEventListener("click", async () => {
 
 el("renderVideoBtn").addEventListener("click", async () => {
   await runFullVideoRender();
+});
+
+document.querySelectorAll("[data-platform-tab]").forEach((tabBtn) => {
+  tabBtn.addEventListener("click", () => {
+    const target = tabBtn.getAttribute("data-platform-tab");
+    document.querySelectorAll("[data-platform-tab]").forEach((b) => {
+      b.classList.toggle("active", b === tabBtn);
+    });
+    ["youtube", "tiktok", "instagram", "facebook"].forEach((p) => {
+      const pane = el(`pane-${p}`);
+      if (pane) pane.classList.toggle("hidden", p !== target);
+    });
+  });
+});
+
+document.querySelectorAll("[data-cover-key]").forEach((pillBtn) => {
+  pillBtn.addEventListener("click", () => {
+    const ck = pillBtn.getAttribute("data-cover-key");
+    if (ck) selectPlatformCover(ck);
+  });
+});
+
+["videoTitleInput", "thumbTextInput", "thumbSubInput"].forEach((id) => {
+  const inp = el(id);
+  if (inp) {
+    inp.addEventListener("input", () => {
+      if (!state.blueprint) return;
+      state.blueprint.title = el("videoTitleInput").value;
+      state.blueprint.thumbnail_text = el("thumbTextInput").value;
+      state.blueprint.thumbnail_subtext = el("thumbSubInput").value;
+      scheduleSocialPreviewRefresh();
+    });
+  }
 });
 
 document.querySelectorAll("[data-copy-target]").forEach((btn) => {

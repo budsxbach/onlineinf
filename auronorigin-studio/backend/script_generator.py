@@ -254,6 +254,35 @@ Antworte AUSSCHLIESSLICH mit diesem JSON-Schema (exakt {target_n} Szenen, alle T
       "question": "Deutsche Abstimmungsfrage zum Thema",
       "options": ["Antwort A", "Antwort B", "Antwort C"]
     }}
+  }},
+  "social_pack": {{
+    "youtube_quiz": {{
+      "question": "Spannende deutsche Wissensfrage direkt zu einem belegten Fakt aus dem Video (max. 120 Zeichen)",
+      "options": [
+        "Richtige Fakten-Antwort aus dem Video (max. 75 Zeichen)",
+        "Plausibel klingende, aber falsche Antwort B (max. 75 Zeichen)",
+        "Plausibel klingende, aber falsche Antwort C (max. 75 Zeichen)",
+        "Plausibel klingende, aber falsche Antwort D (max. 75 Zeichen)"
+      ],
+      "correct_index": 0,
+      "explanation": "Kurze deutsche Erklärung der richtigen Antwort für YouTube Studio (max. 280 Zeichen)"
+    }},
+    "tiktok": {{
+      "cover_text": "KURZER COVER-TRIGGER",
+      "search_keywords": "Deutscher TikTok-Suchbegriff zum Thema",
+      "caption": "Packende deutsche TikTok-Caption mit Such-Keywords, Mehrwert und exakt 5 themenrelevanten Hashtags am Ende",
+      "first_comment": "Erster eigener Kommentar unter dem TikTok zur Interaktions-Steigerung"
+    }},
+    "instagram": {{
+      "caption": "Deutsche Instagram-Reel-Caption (erste Zeile unter 120 Zeichen!) mit Speicher-Impuls und exakt 5 relevanten Hashtags",
+      "alt_text": "Präziser deutscher SEO-Alternativtext (Alt-Text) für Instagram Barrierefreiheit & Suche"
+    }},
+    "facebook": {{
+      "title": "Starker deutscher Facebook-Videotitel (max. 62 Zeichen)",
+      "ab_test_title": "Alternativer deutscher Titel für den Meta Business Suite A/B-Test",
+      "description": "Erzählerischer deutscher Facebook-Beitragstext mit offener Diskussionsfrage und 4 Hashtags",
+      "first_comment": "Erster Diskussionskommentar unter dem Facebook-Video"
+    }}
   }}
 }}"""
     return system_prompt, user_prompt
@@ -339,6 +368,37 @@ def normalize_blueprint(
 
     seo_in = raw.get("youtube_seo") if isinstance(raw.get("youtube_seo"), dict) else {}
     poll_in = seo_in.get("community_poll") if isinstance(seo_in.get("community_poll"), dict) else {}
+    social_in = raw.get("social_pack") if isinstance(raw.get("social_pack"), dict) else {}
+
+    fact_ref = (
+        normalized_scenes[1]["narration"]
+        if len(normalized_scenes) > 1
+        else (normalized_scenes[0]["narration"] if normalized_scenes else topic)
+    )
+    short_fact_opt = (fact_ref[:71] + "…") if len(fact_ref) > 72 else fact_ref
+    quiz_in = social_in.get("youtube_quiz") if isinstance(social_in.get("youtube_quiz"), dict) else {}
+    clean_quiz_subj = re.sub(r'[„“"\']+', "", thumb_text.title()).strip() or chosen_pillar
+    default_quiz = {
+        "question": str(
+            quiz_in.get("question")
+            or f"Welcher Befund zum Thema „{clean_quiz_subj}“ wird in dieser Analyse durch reale Daten gestützt?"
+        )[:135],
+        "options": (
+            [str(o)[:76] for o in quiz_in["options"][:4]]
+            if isinstance(quiz_in.get("options"), list) and len(quiz_in["options"]) >= 3
+            else [
+                short_fact_opt,
+                "Das Phänomen wurde bisher ausschließlich theoretisch ohne Messung vermutet.",
+                "Alle bisherigen Messreihen erwiesen sich als bloße Instrumentenfehler.",
+                "Der Effekt widerspricht jeder mathematischen Gesetzmäßigkeit vollständig.",
+            ]
+        ),
+        "correct_index": int(quiz_in.get("correct_index", 0) or 0),
+        "explanation": str(
+            quiz_in.get("explanation")
+            or f"Genau dieser Befund bildet das überprüfbare Fundament der Episode ({chosen_pillar})."
+        )[:320],
+    }
 
     return {
         "title": title,
@@ -385,6 +445,12 @@ def normalize_blueprint(
                     "Beides greift ineinander – genau das macht es spannend!",
                 ],
             },
+        },
+        "social_pack": {
+            "youtube_quiz": default_quiz,
+            "tiktok": social_in.get("tiktok") if isinstance(social_in.get("tiktok"), dict) else {},
+            "instagram": social_in.get("instagram") if isinstance(social_in.get("instagram"), dict) else {},
+            "facebook": social_in.get("facebook") if isinstance(social_in.get("facebook"), dict) else {},
         },
     }
 

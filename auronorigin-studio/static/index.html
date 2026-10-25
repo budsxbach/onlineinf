@@ -215,10 +215,10 @@
     <section class="card" id="productionCard">
       <div class="card-header-row">
         <div>
-          <span class="step-badge">DEUTSCHE STIMME, MUSIK &amp; NEUE SZENENBILDER</span>
-          <h2>3. Deutsche Tonstimme, Hintergrundmusik &amp; Szenen-Bilder</h2>
+          <span class="step-badge">TIEFE WEISE MÄNNERSTIMME, MUSIK &amp; SZENENBILDER</span>
+          <h2>3. AuronOrigin Erzähler-Stimme (Tief, Weise &amp; Mysteriös), Musik &amp; Szenen</h2>
           <p class="muted-note">
-            100 % deutsche Tonstimme (Conrad/Thorsten), mehrstimmige filmische Hintergrundmusik mit Vorhör-Player sowie automatisch neu generierte AuronOrigin-Szenenbilder in Dunkelblau &amp; Gold für jede Szene.
+            Fest einstellbare, tiefe männliche Erzähler-Charaktere mit Stimmtrakt-Reife, warmer Brustresonanz &amp; dunklem Mysterien-Raumklang – inklusive direktem 1-Klick-Vorhören.
           </p>
         </div>
       </div>
@@ -226,47 +226,72 @@
       <div class="audio-brand-grid">
         <!-- Voice Settings -->
         <div class="subpanel">
-          <h3>🎙️ Tonstimme (Voiceover)</h3>
+          <h3>🎙️ Erzähler-Stimme &amp; Charakter (fest gespeichert)</h3>
           <div class="field-group">
-            <label for="ttsEngine">Sprach-Engine</label>
-            <select id="ttsEngine">
-              <option value="auto">Automatik (ConradNeural Cloud + Lokale Thorsten-KI-Stimme)</option>
-              <option value="browser_neural">Lokale KI-Stimme im Browser (Thorsten Neural VITS • Offlinefähig)</option>
-              <option value="edge">Microsoft ConradNeural (-15% Tempo • -3Hz Tiefe)</option>
-              <option value="elevenlabs">ElevenLabs Multilingual v2 (Eigener API-Key)</option>
-            </select>
-          </div>
-
-          <div id="browserVoiceRow" class="field-group">
-            <label for="browserVoiceSelect">Deutsche KI-Stimmfarbe (Browser Neural WASM)</label>
+            <label for="voiceCharacterSelect">Stimm-Charakter auswählen</label>
             <div class="input-with-actions">
-              <select id="browserVoiceSelect">
-                <option value="de_DE-thorsten-medium">Thorsten Medium (Klar, ruhig &amp; schnell geladen)</option>
-                <option value="de_DE-thorsten_emotional-medium">Thorsten Emotional (Ausdrucksstark)</option>
-                <option value="de_DE-thorsten-high">Thorsten High-Studio (Maximale Detailtiefe)</option>
+              <select id="voiceCharacterSelect">
+                <option value="wise_elder">Auron – Der Alte Weise (Tief, Beruhigend &amp; Mysteriös • Empfohlen)</option>
+                <option value="mystic_chronicler">Wächter der Alten Codes (Sehr tiefer Bass-Bariton • Dunkel &amp; Hypnotisch)</option>
+                <option value="calm_philosopher">Der Ruhige Philosoph (Sanft, Gütig &amp; Bedächtig)</option>
+                <option value="cosmos_documentary">Kosmos-Dokumentar (Markanter Tiefer Studio-Sprecher)</option>
+                <option value="elevenlabs_custom">ElevenLabs Eigene Stimme (Optional mit API-Key)</option>
               </select>
-              <button type="button" class="btn btn-secondary btn-sm" id="previewVoiceBtn">🔊 Vorhören</button>
+              <button type="button" class="btn btn-gold btn-sm" id="previewVoiceBtn">🔊 Stimme vorhören</button>
             </div>
+            <small class="field-hint" id="voiceCharacterHint">
+              Tiefe, warme, gereifte Männerstimme mit sonorer Brustresonanz, sanften Höhen, ruhigem Erzählfluss und dunklem Mysterien-Raumklang.
+            </small>
           </div>
 
-          <div id="elevenlabsExtra" class="field-group hidden">
-            <label>ElevenLabs API-Key &amp; Voice-ID</label>
-            <div class="dual-inputs">
-              <input type="password" id="elevenlabsKey" placeholder="xi-api-key…" />
-              <input type="text" id="elevenlabsVoiceId" placeholder="Voice ID…" />
+          <div class="slider-row">
+            <div class="field-group">
+              <label for="voiceDepth">Stimm-Tiefe &amp; Reife: <strong id="voiceDepthLabel">-2.6 Halbtöne</strong></label>
+              <input type="range" id="voiceDepth" min="-5.0" max="0.0" step="0.2" value="-2.6" />
+            </div>
+            <div class="field-group">
+              <label for="voiceWarmth">Warme Brustresonanz (112 Hz): <strong id="voiceWarmthLabel">+4.8 dB</strong></label>
+              <input type="range" id="voiceWarmth" min="0.0" max="8.0" step="0.4" value="4.8" />
             </div>
           </div>
 
           <div class="slider-row">
             <div class="field-group">
-              <label for="voiceRate">Sprechtempo: <strong id="voiceRateLabel">-15%</strong> (Auron-Standard)</label>
-              <input type="range" id="voiceRate" min="-30" max="10" step="1" value="-15" />
+              <label for="voiceRate">Erzähl-Ruhe / Tempo: <strong id="voiceRateLabel">-16%</strong> (bedächtig)</label>
+              <input type="range" id="voiceRate" min="-30" max="5" step="1" value="-16" />
             </div>
             <label class="checkbox-line">
               <input type="checkbox" id="voiceReverb" checked />
-              <span>Kosmischer Auron-Raumhall (<code>aecho</code> Mastering)</span>
+              <span>Dunkler Mysterien-Raumklang (warmer Tempel-Hall ohne Schärfe)</span>
             </label>
           </div>
+
+          <div class="field-group">
+            <label for="ttsEngine">Sprach-Engine Modus</label>
+            <select id="ttsEngine">
+              <option value="sage_neural">Auron Neural-Engine (Gewählter Weiser-Charakter + Tiefbass-Mastering • Standard)</option>
+              <option value="browser_neural">100% Lokal / Offline im Browser + Auron Weiser-Mastering</option>
+              <option value="elevenlabs">ElevenLabs Multilingual v2 (Optional mit eigenem API-Key)</option>
+            </select>
+          </div>
+
+          <div id="browserVoiceRow" class="field-group hidden">
+            <label for="browserVoiceSelect">Lokales Offline-Basismodell (falls ohne Internet)</label>
+            <select id="browserVoiceSelect">
+              <option value="de_DE-thorsten-high">Thorsten High-Studio + Weiser-Tiefbass (Empfohlen)</option>
+              <option value="de_DE-thorsten-medium">Thorsten Medium + Weiser-Tiefbass (Schnell)</option>
+              <option value="de_DE-pavoque-low">Pavoque Erzähler + Weiser-Tiefbass</option>
+            </select>
+          </div>
+
+          <div id="elevenlabsExtra" class="field-group hidden">
+            <label>ElevenLabs API-Key &amp; optionale Voice-ID (leer lassen = tiefe Erzählstimme „Bill“)</label>
+            <div class="dual-inputs">
+              <input type="password" id="elevenlabsKey" placeholder="xi-api-key…" />
+              <input type="text" id="elevenlabsVoiceId" placeholder="Optional: eigene Voice ID…" />
+            </div>
+          </div>
+
           <audio id="voicePreviewPlayer" controls class="mini-audio hidden"></audio>
         </div>
 

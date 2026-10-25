@@ -1,3 +1,12 @@
+"""Single-Topic Cohesive German Script & Storyboard Generator for AuronOrigin.
+
+Editorial Mandate:
+- ONE SINGLE TOPIC PER VIDEO: Never read multiple news items or jump between topics.
+- 100% TITLE <-> RESEARCH <-> SCRIPT ALIGNMENT: The script explains and narrates the exact
+  single topic researched beforehand and promised in the video title.
+- SHORT, LOGICAL & UNIVERSALLY UNDERSTANDABLE: Crisp sentences, vivid everyday comparisons,
+  zero dry jargon, and a seamless logical thread from the first sentence to the final question.
+"""
 from __future__ import annotations
 
 import random
@@ -27,38 +36,31 @@ VISUAL_MOTIFS = [
     "solar_eclipse_crown",   # Kosmische Korona-Finsternis in Dunkelblau & Gold
 ]
 
-NARRATIVE_ARCHETYPES = [
+# Single-Topic Storytelling Styles — every style keeps 100% focus on ONE topic and plain-German clarity
+STORYTELLING_STYLES = [
     (
-        "DAS PARADOXON-EXPERIMENT",
-        "Starte direkt mitten in einer verblüffenden Messung oder Beobachtung, die der Alltagserfahrung widerspricht, und löse erst danach Schritt für Schritt den wissenschaftlichen Hintergrund auf.",
+        "KLARE ENTSCHLÜSSELUNG",
+        "Steige direkt beim spannenden Kern dieses einen Phänomens ein und erkläre es Schritt für Schritt so klar und bildhaft, dass jeder Zuschauer sofort versteht, wie es funktioniert.",
     ),
     (
-        "DIE ZEITKAPSEL-BRÜCKE",
-        "Schlage im ersten Satz einen unerwarteten Bogen zwischen uraltem Menschheitswissen und modernster Hochtechnologie unserer Gegenwart.",
+        "DAS GREIFBARE ALLTAGSBILD",
+        "Hole den Zuhörer mit einem einfachen, sofort vorstellbaren Vergleich aus dem Alltag ab und führe ihn ruhig und logisch zum erstaunlichen Kern dieses einen Themas.",
     ),
     (
-        "DER MASSSTABS-ZOOM",
-        "Beginne bei einem winzigen, kaum sichtbaren Detail – einem Bruchteil einer Sekunde, einem Atom oder einem einzelnen Signal – und zoome bis zur Struktur des gesamten Kosmos auf.",
+        "DIE RUHIGE ERZÄHLUNG",
+        "Erzähle das Thema wie eine kurze, fesselnde Geschichte aus einem Guss: Was wurde entdeckt, was passiert dabei genau, und warum bringt es uns zum Staunen?",
     ),
     (
-        "DIE INDIZIEN-KETTE",
-        "Baue das Skript wie eine ruhige wissenschaftliche Spurensuche auf: Drei präzise Einzelbefunde fügen sich am Wendepunkt zu einem größeren Gesamtbild zusammen.",
+        "DIE EINE KERNFRAGE",
+        "Stelle genau die zentrale Frage aus dem Titel in den Mittelpunkt und beantworte sie konzentriert, logisch aufeinander aufbauend und ohne jeden Umweg.",
     ),
     (
-        "DER BLINDE FLECK",
-        "Zeige souverän auf, was wir im Alltag für völlig selbstverständlich halten – bis aktuelle Forschungsdaten genau diese Gewissheit ins Wanken bringen.",
+        "VOM EINFACHEN ZUM TIEFGRÜNDIGEN",
+        "Beginne mit der einfachsten Grundtatsache dieses Themas und zeige in klaren logischen Schritten, welche große Bedeutung sich dahinter verbirgt.",
     ),
     (
-        "DAS GEDANKENEXPERIMENT",
-        "Versetze den Zuschauer im ersten Satz unmittelbar in eine konkrete Situation und untermauere sie sofort mit realen Messdaten.",
-    ),
-    (
-        "DIE INFORMATIONS-SIGNATUR",
-        "Betrachte das Thema konsequent durch die Linse von Information, Geometrie, Frequenz und mathematischer Ordnung.",
-    ),
-    (
-        "DER GRENZGANG DER FORSCHUNG",
-        "Starte an exakt der Grenze, an der selbst führende Forscher heute offen zugeben: Unsere bisherigen Modelle reichen hier nicht mehr aus.",
+        "DER BLICK HINTER DEN VORHANG",
+        "Zeige zuerst, was wir im Alltag für selbstverständlich halten, und erkläre dann ruhig und allgemeinverständlich, was dieses eine Thema daran verändert.",
     ),
 ]
 
@@ -85,25 +87,23 @@ _SPOKEN_GERMAN_REPLACEMENTS: list[tuple[re.Pattern[str], str]] = [
 
 
 def enforce_german_narration(text: str, fallback_topic: str = "") -> str:
-    """Guarantee that spoken narration is 100% clean, natural German without English sentences or markup."""
+    """Guarantee that spoken narration is 100% clean, natural German without news-ticker prefixes or English."""
     if not text:
         return ""
     t = str(text)
-    # Strip markdown symbols, citations [1], URLs
     t = re.sub(r"https?://\S+", "", t)
     t = re.sub(r"\[\d+\]", "", t)
     t = re.sub(r"[*_`#<>]+", "", t)
+    t = re.sub(r"^(?:Aktuelle\s+Meldung|Eilmeldung|News|Bericht)\s*(?:\([^)]*\))?\s*:\s*", "", t.strip(), flags=re.I)
     for pattern, repl in _SPOKEN_GERMAN_REPLACEMENTS:
         t = pattern.sub(repl, t)
 
-    # Split into sentences and reject any stray English sentence
     raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", t) if s.strip()]
     kept: list[str] = []
     for sent in raw_sentences:
         cleaned_s = clean_german_sentence(sent)
         if not cleaned_s:
             continue
-        # Short dramatic fragments ('Genau hier kippt das Bild.') may have <18 chars — keep unless English stopwords appear
         if len(cleaned_s) < 22:
             if not re.search(r"\b(the|and|with|from|this|that|study|research)\b", cleaned_s, re.I):
                 kept.append(cleaned_s)
@@ -112,8 +112,8 @@ def enforce_german_narration(text: str, fallback_topic: str = "") -> str:
 
     result = " ".join(kept).strip()
     if not result:
-        short_t = clean_german_sentence(fallback_topic)[:80] or "diesem Phänomen"
-        return f"Genau hier zeigen die Messdaten zu {short_t} eine bemerkenswerte Ordnung."
+        short_t = clean_german_sentence(fallback_topic)[:70] or "diesem Thema"
+        return f"Genau hier zeigt sich bei {short_t} ein erstaunlich klarer Zusammenhang."
     return result
 
 
@@ -133,8 +133,7 @@ def resolve_target_scene_count(duration_target: str = "short_60", scene_count: i
 def _recent_hooks() -> list[str]:
     try:
         hist = load_history()
-        hooks = [str(h.get("title", "")) for h in hist[:8] if h.get("title")]
-        return hooks
+        return [str(h.get("title", "")) for h in hist[:8] if h.get("title")]
     except Exception:
         return []
 
@@ -149,139 +148,176 @@ def build_auron_script_prompts(
     pillar: str | None = None,
     scene_count: int | None = None,
 ) -> tuple[str, str]:
-    """Construct anti-repetitive, strictly German AuronOrigin Showrunner prompts."""
+    """Construct single-topic, logical, plain-German storytelling prompts for Arena Router."""
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(topic)
     target_n = resolve_target_scene_count(duration_target, scene_count)
-    archetype_name, archetype_instr = random.choice(NARRATIVE_ARCHETYPES)
+    style_name, style_instr = random.choice(STORYTELLING_STYLES)
     creative_seed = random.randint(1000, 9999)
 
+    core_subject = str((dossier or {}).get("core_subject") or topic).strip()
+    researched_title = str((dossier or {}).get("topic") or topic).strip()
+
     if target_n <= 6:
-        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 120–165 Wörter für ein 50–65 Sekunden YouTube Short)"
+        words_min = target_n * 15
+        words_max = target_n * 21
+        scene_count_spec = (
+            f"exakt {target_n} Szenen (knackig & intensiv: nur ca. 15–21 Wörter pro Szene, "
+            f"insgesamt ca. {words_min}–{words_max} Wörter für ein kurzes 45–58 Sek. Video)"
+        )
     elif target_n <= 8:
-        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 260–360 Wörter für ein 2,5–3,5 Minuten Video)"
+        scene_count_spec = (
+            f"exakt {target_n} Szenen (ca. 22–28 Wörter pro Szene, insgesamt ca. 175–225 Wörter, "
+            "intensiv bei diesem EINEN Thema bleibend)"
+        )
     else:
-        est_words_min = target_n * 42
-        est_words_max = target_n * 58
-        scene_count_spec = f"exakt {target_n} Szenen (nummeriert 1 bis {target_n}, Gesamt-Sprechtext ca. {est_words_min}–{est_words_max} Wörter)"
+        est_words_min = target_n * 22
+        est_words_max = target_n * 30
+        scene_count_spec = (
+            f"exakt {target_n} Szenen (nummeriert 1 bis {target_n}, ca. 22–30 Wörter pro Szene, "
+            f"insgesamt ca. {est_words_min}–{est_words_max} Wörter – vertiefe ausschließlich dieses EINE Thema Schritt für Schritt)"
+        )
 
     if editorial_mode == "matrix_narrativ":
         persona_block = (
-            "MODUS: 'Auron – Der Code der Matrix' (souveräner Erzähler, ruhig, analytisch-mystisch). "
+            "MODUS: 'Auron – Der Code der Matrix' (ruhiger, weiser, tiefgründiger Erzähler). "
             "Letzter Satz im Finale: 'Auron out. Die Matrix wackelt. Bleib wach.'"
         )
     else:
         persona_block = (
-            "MODUS: 'Fakten zuerst, Mystery als Deutung' (hochwertige deutsche Wissenschafts- & Mystery-Dokumentation). "
-            "Zuerst überprüfbare, konkrete Fakten und Zahlen, danach ein eleganter philosophischer Perspektivwechsel."
+            "MODUS: 'Fakten zuerst, Mystery als Deutung' (ruhige, fesselnde Erzählung eines weisen Erzählers: "
+            "zuerst das Phänomen klar und einfach erklären, danach ein ruhiger, staunender Gedanke zur tieferen Bedeutung)."
         )
 
+    story_steps = (dossier or {}).get("story_steps") or {}
+    steps_block = ""
+    if isinstance(story_steps, dict) and story_steps:
+        steps_lines = [
+            f"- Kern-Einstieg: {story_steps.get('hook', '')}",
+            f"- Worum es konkret geht: {story_steps.get('what_is_it', '')}",
+            f"- Wie es einfach erklärt funktioniert: {story_steps.get('how_it_works', '')}",
+            f"- Warum genau das erstaunlich ist: {story_steps.get('why_astonishing', '')}",
+            f"- Tiefere Bedeutung: {story_steps.get('deeper_meaning', '')}",
+        ]
+        steps_block = "ROTER FADEN ZU DIESEM EINEN THEMA:\n" + "\n".join(s for s in steps_lines if len(s) > 25)
+
     de_facts = [f for f in (dossier or {}).get("verified_facts", []) if is_pure_german(str(f))]
-    facts_text = "\n".join(f"- {f}" for f in de_facts) or f"- Aktueller Fokus: {topic}"
-    discovery_note = (dossier or {}).get("discovery_note") or ""
+    facts_text = "\n".join(f"- {f}" for f in de_facts[:5]) or f"- Kernthema: {core_subject}"
     recent_list = _recent_hooks()
     avoid_block = (
-        "VERMEIDE zwingend Ähnlichkeiten zu diesen letzten Videotiteln:\n" + "\n".join(f"- {h}" for h in recent_list)
+        "VERMEIDE Ähnlichkeiten zu diesen letzten Videotiteln:\n" + "\n".join(f"- {h}" for h in recent_list)
         if recent_list
         else ""
     )
 
     motifs_csv = ", ".join(f"`{m}`" for m in VISUAL_MOTIFS)
 
-    system_prompt = f"""Du bist der Chef-Showrunner und Drehbuchautor des deutschen YouTube-Kanals **AuronOrigin**.
+    system_prompt = f"""Du bist der Chef-Autor des deutschen Kanals **AuronOrigin**. Gesprochen wird dein Skript von einer **tiefen, ruhigen, alten, weisen Männerstimme**.
 
-STRENGE SPRACH- UND QUALITÄTSREGELN (UNVERHANDELBAR):
-1. **100% REINES DEUTSCH**: Jedes einzelne Wort in `title`, `alt_titles`, `thumbnail_text`, `thumbnail_subtext`, `on_screen_headline`, `on_screen_subline` und ganz besonders im gesprochenen Sprechertext `narration` MUSS makelloses, natürliches Deutsch sein!
-   - KEINE englischen Sätze, KEINE englischen Fachzitate, KEINE Denglisch-Floskeln! Übersetze englische Konzepte immer elegant ins Deutsche (z.B. „Zeitkristalle“, „Beobachtereffekt“, „Ereignishorizont“, „Klartraum“).
-2. **NULL WIEDERHOLUNG / FRISCHE DRAMATURGIE**:
-   - Nutze für dieses Video den Erzähl-Archetyp **{archetype_name}**: {archetype_instr}
-   - VERBOTENE Standard-Floskeln: Beginne NIEMALS mit „Halte für drei Sekunden inne“, „Stell dir vor“ oder „Hallo Leute“! Jedes Skript braucht einen einzigartigen, themenspezifischen ersten Satz!
-3. **SPRECHTEXT FÜR DEUTSCHE NEURALE STIMME**:
-   - Schreibe Zahlen und Abkürzungen im `narration`-Feld sprechfreundlich aus, keine Klammern, keine URLs, keine Hashtags im Sprechtext.
-4. **MARKENWELT AURONORIGIN**:
-   - Farb- & Bildwelt für jede Szene (`image_prompt_en`): Tiefes Kosmos-Schwarz (#0B0C10), Dunkles Stahlblau (#1F2833), leuchtendes Auron-Gold (#D4AF37) und ein Hauch Violett (#4A235A). Jede Szene bekommt ein eigenes, unverwechselbares Bildmotiv passend zum Szeneninhalt (keine Textbuchstaben im Bildprompt!).
+UNVERHANDELBARE HAUPTREGELN FÜR DAS SKRIPT:
+1. **STRENG NUR EIN EINZIGES THEMA (KEIN NEWS-VORLESEN!)**:
+   - Behandle im gesamten Skript **ausschließlich ein einziges Thema**: **{core_subject}** (passend zum recherchierten Fokus „{researched_title}“).
+   - **ABSOLUTES VERBOT**: Lies NIEMALS mehrere News-Meldungen vor! Mische NIEMALS mehrere verschiedene Themen, Studien oder Nebenschauplätze! Keine Sätze wie „Aktuelle Meldung“, „Eine andere Studie zeigt“, „Außerdem haben Forscher…“ oder „Kommen wir zum nächsten Punkt“.
+2. **TITEL & SKRIPT MÜSSEN ZU 100 % ZUSAMMENPASSEN**:
+   - Der Videotitel (`title`) benennt glasklar genau dieses eine Thema – und jede einzelne Szene von Szene 1 bis Szene {target_n} beschreibt und erzählt **exakt dieses Thema**, das der Titel verspricht.
+3. **KURZ, LOGISCH & ALLGEMEINVERSTÄNDLICH ERZÄHLEN**:
+   - Schreibe **kurz, ruhig und auf den Punkt** (1 bis 2 klare Sätze pro Szene). Kein Abschweifen, kein Fülltext!
+   - **Allgemeinverständlich für jeden**: Erkläre das Thema so anschaulich, logisch und lebensnah, dass wirklich jeder Zuschauer – auch komplett ohne Fachwissen – sofort versteht, worum es geht und wie es zusammenhängt. Wenn ein Fachbegriff vorkommt, erkläre ihn sofort mit einem einfachen Alltagsbild.
+   - **Logischer roter Faden aus einem Guss**: Jede Szene knüpft direkt und logisch an den Gedanken der vorherigen Szene an (z.B. mit natürlichen Übergängen wie „Denn dahinter steckt etwas Einfaches:“, „Genau hier wird es erstaunlich:“, „Und das bedeutet:“):
+     • Szene 1: Packender, klarer Einstieg mitten ins Thema (passend zum Titel).
+     • Szene 2: Einfach und verständlich erklären, worum es dabei konkret geht.
+     • Szene 3: Logisch weiterführen – wie funktioniert das genau bzw. was wurde beobachtet?
+     • Szene 4: Der Knackpunkt – warum ist genau das so verblüffend?
+     • Vorletzte Szene: Ruhige, tiefgründige AuronOrigin-Einordnung genau dieses einen Themas.
+     • Letzte Szene: Kurzer Schlussgedanke zum selben Thema + eine einfache Frage an die Zuschauer & Abo-Hinweis.
+4. **100 % NATÜRLICHES DEUTSCH**:
+   - Keine englischen Wörter oder Sätze im Sprechtext `narration`, keine Zahlenkolonnen, keine Abkürzungen, keine Floskeln wie „Hallo Leute“ oder „Stell dir vor“.
+   - Erzählstil für dieses Video: **{style_name}** – {style_instr}
    - {persona_block}
+5. **MARKENWELT AURONORIGIN**:
+   - Jede Szene erhält einen englischen Bildprompt (`image_prompt_en`) exakt passend zum jeweiligen Satz dieses Themas in Tiefschwarz (#0B0C10), Dunkelblau (#1F2833) und Gold (#D4AF37), ohne Textbuchstaben im Bild.
 
-Das Array `"scenes"` MUSS exakt {target_n} Szenen enthalten. Gib NUR valides JSON auf einer sauberen Struktur zurück (keine unescaped Zeilenumbrüche in Strings)."""
+Das Array `"scenes"` MUSS exakt {target_n} Szenen enthalten. Antworte AUSSCHLIESSLICH mit validem JSON."""
 
-    user_prompt = f"""Erstelle ein komplett neues, einzigartiges deutsches YouTube-Videopaket (Kreativ-Seed #{creative_seed}) für **AuronOrigin**:
+    user_prompt = f"""Schreibe jetzt ein kurzes, intensives, logisch aufgebautes und allgemeinverständliches Einzel-Thema-Skript (Seed #{creative_seed}) für **AuronOrigin**:
 
-THEMA / AKTUELLER AUFHÄNGER: {topic}
-RECHERCHE-KONTEXT: {discovery_note}
+RECHERCHIERTES EINZEL-THEMA: {core_subject}
+TITEL-FOKUS AUS DER RECHERCHE: {researched_title}
 SÄULE: {chosen_pillar}
-ERZÄHL-ARCHETYP: {archetype_name}
 FORMAT: {video_format}
 UMFANG: {scene_count_spec}
 
-DEUTSCHES RECHERCHE-DOSSIER (nutze konkrete Fakten hieraus und formuliere sie eigenständig und lebendig):
+{steps_block}
+
+HINTERGRUND-DETAILS ZU GENAU DIESEM EINEN THEMA (wähle nur das aus, was demselben roten Faden dient – erfinde keine zweiten Themen dazu!):
 {facts_text}
 
 {avoid_block}
 
-Wähle für jede Szene ein passendes, wechselndes `visual_motif` aus:
+Verfügbare `visual_motif`-Werte (wähle abwechslungsreich passend zum Thema):
 {motifs_csv}
 
-Wähle `camera_motion` abwechslungsreich aus: `zoom_in`, `zoom_out`, `pan_up`, `drift_right`
+Verfügbare `camera_motion`-Werte: `zoom_in`, `zoom_out`, `pan_up`, `drift_right`
 
 Antworte AUSSCHLIESSLICH mit diesem JSON-Schema (exakt {target_n} Szenen, alle Texte außer `image_prompt_en` zu 100% auf Deutsch):
 {{
-  "title": "Packender deutscher YouTube-Titel (max. 68 Zeichen)",
-  "alt_titles": ["Deutscher Alternativtitel 1", "Deutscher Alternativtitel 2", "Deutscher Alternativtitel 3"],
-  "thumbnail_text": "2 BIS 3 DEUTSCHE WORTE IN VERSALIEN",
-  "thumbnail_subtext": "Kurzer deutscher Untertitel",
+  "title": "Klarer, neugierig machender deutscher Titel exakt zu diesem einen Thema (max. 68 Zeichen)",
+  "alt_titles": ["Alternativtitel 1 zum selben Thema", "Alternativtitel 2 zum selben Thema", "Alternativtitel 3 zum selben Thema"],
+  "thumbnail_text": "2 BIS 3 WORTE ZUM THEMA",
+  "thumbnail_subtext": "Kurze klare Unterzeile",
   "pillar": "{chosen_pillar}",
   "editorial_mode": "{editorial_mode}",
-  "hook_3s": "Der exakte erste gesprochene deutsche Satz",
+  "hook_3s": "Der exakte erste gesprochene Satz aus Szene 1",
   "scenes": [
     {{
       "scene_number": 1,
-      "phase": "HOOK",
-      "fact_badge": "IMPULS",
-      "on_screen_headline": "DEUTSCHER CINZEL TITEL",
-      "on_screen_subline": "Kurze deutsche Fakten-Unterzeile",
-      "narration": "100% deutscher, lebendig geschriebener Sprechertext dieser Szene ohne englische Wörter.",
-      "pause_after": 0.85,
+      "phase": "EINSTIEG",
+      "fact_badge": "DAS THEMA",
+      "on_screen_headline": "KURZE KLARE ÜBERSCHRIFT",
+      "on_screen_subline": "Kurze verständliche Unterzeile",
+      "narration": "Kurzer, logischer, allgemeinverständlicher deutscher Erzählsatz (15-22 Wörter), der nahtlos zum roten Faden gehört.",
+      "pause_after": 0.95,
       "visual_motif": "quantum_lattice",
       "camera_motion": "zoom_in",
       "glitch_transition": true,
-      "image_prompt_en": "Unique cinematic scene artwork for scene 1 in deep dark cosmic blue #1F2833, obsidian #0B0C10 and luminous gold #D4AF37, specific subject matching the scene narration, photorealistic sacred-tech lighting, no text, no letters"
+      "image_prompt_en": "Unique cinematic scene artwork matching this exact moment of {core_subject} in deep obsidian #0B0C10, dark cosmic blue #1F2833 and warm gold #D4AF37, no text, no letters"
     }}
   ],
   "youtube_seo": {{
-    "description": "Ausführliche deutsche YouTube-Videobeschreibung (nutze \\\\n für Absätze) mit Fakten-Einordnung und Hashtags",
-    "tags": ["AuronOrigin", "Wissenschaft", "Mystery", "Doku Deutsch"],
-    "pinned_comment": "Deutscher angepinnter Kommentar mit konkreter Diskussionsfrage an die Zuschauer",
+    "description": "Klare deutsche Videobeschreibung exakt zu diesem einen Thema (nutze \\\\n für Absätze) inkl. Hashtags",
+    "tags": ["AuronOrigin", "{core_subject}", "Einfach erklärt", "Wissenschaft", "Mysterium"],
+    "pinned_comment": "Deutscher angepinnter Kommentar mit einer klaren Frage genau zu diesem Thema",
     "community_poll": {{
-      "question": "Deutsche Abstimmungsfrage zum Thema",
+      "question": "Kurze deutsche Abstimmungsfrage genau zu diesem Thema",
       "options": ["Antwort A", "Antwort B", "Antwort C"]
     }}
   }},
   "social_pack": {{
     "youtube_quiz": {{
-      "question": "Spannende deutsche Wissensfrage direkt zu einem belegten Fakt aus dem Video (max. 120 Zeichen)",
+      "question": "Verständliche deutsche Quiz-Frage direkt zum erklärten Kern dieses Videos (max. 120 Zeichen)",
       "options": [
-        "Richtige Fakten-Antwort aus dem Video (max. 75 Zeichen)",
-        "Plausibel klingende, aber falsche Antwort B (max. 75 Zeichen)",
-        "Plausibel klingende, aber falsche Antwort C (max. 75 Zeichen)",
-        "Plausibel klingende, aber falsche Antwort D (max. 75 Zeichen)"
+        "Die richtige, im Video erklärte Antwort (max. 75 Zeichen)",
+        "Plausible falsche Antwort B (max. 75 Zeichen)",
+        "Plausible falsche Antwort C (max. 75 Zeichen)",
+        "Plausible falsche Antwort D (max. 75 Zeichen)"
       ],
       "correct_index": 0,
-      "explanation": "Kurze deutsche Erklärung der richtigen Antwort für YouTube Studio (max. 280 Zeichen)"
+      "explanation": "Kurze, leicht verständliche Erklärung der richtigen Antwort (max. 260 Zeichen)"
     }},
     "tiktok": {{
-      "cover_text": "KURZER COVER-TRIGGER",
-      "search_keywords": "Deutscher TikTok-Suchbegriff zum Thema",
-      "caption": "Packende deutsche TikTok-Caption mit Such-Keywords, Mehrwert und exakt 5 themenrelevanten Hashtags am Ende",
-      "first_comment": "Erster eigener Kommentar unter dem TikTok zur Interaktions-Steigerung"
+      "cover_text": "KURZER THEMEN-TRIGGER",
+      "search_keywords": "{core_subject} einfach erklärt",
+      "caption": "Kurze, klare deutsche TikTok-Beschreibung genau zu diesem Thema mit 5 passenden Hashtags",
+      "first_comment": "Kurze Frage zum Thema für die Kommentare"
     }},
     "instagram": {{
-      "caption": "Deutsche Instagram-Reel-Caption (erste Zeile unter 120 Zeichen!) mit Speicher-Impuls und exakt 5 relevanten Hashtags",
-      "alt_text": "Präziser deutscher SEO-Alternativtext (Alt-Text) für Instagram Barrierefreiheit & Suche"
+      "caption": "Klare deutsche Instagram-Reel-Beschreibung (erste Zeile unter 120 Zeichen) zu genau diesem Thema mit exakt 5 Hashtags",
+      "alt_text": "Deutscher Alternativtext zum AuronOrigin-Video über {core_subject}"
     }},
     "facebook": {{
-      "title": "Starker deutscher Facebook-Videotitel (max. 62 Zeichen)",
-      "ab_test_title": "Alternativer deutscher Titel für den Meta Business Suite A/B-Test",
-      "description": "Erzählerischer deutscher Facebook-Beitragstext mit offener Diskussionsfrage und 4 Hashtags",
-      "first_comment": "Erster Diskussionskommentar unter dem Facebook-Video"
+      "title": "Klarer deutscher Facebook-Videotitel zum Thema (max. 62 Zeichen)",
+      "ab_test_title": "Zweiter klarer Titel für den A/B-Test zum selben Thema",
+      "description": "Verständlicher deutscher Beitragstext zu diesem einen Thema mit Diskussionsfrage und 4 Hashtags",
+      "first_comment": "Kurze Diskussionsfrage genau zu diesem Thema"
     }}
   }}
 }}"""
@@ -302,14 +338,13 @@ def normalize_blueprint(
     normalized_scenes: list[dict[str, Any]] = []
 
     motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
-    # Shuffle motif rotation per video so consecutive videos don't use the same motif order
     shuffled_motifs = list(VISUAL_MOTIFS)
     random.shuffle(shuffled_motifs)
 
     for idx, sc in enumerate(scenes_in):
         if not isinstance(sc, dict):
             continue
-        headline = str(sc.get("on_screen_headline") or f"SEQUENZ {idx + 1}").strip().upper()
+        headline = str(sc.get("on_screen_headline") or f"SCHRITT {idx + 1}").strip().upper()
         raw_narration = str(sc.get("narration") or "").strip()
         narration = enforce_german_narration(raw_narration, fallback_topic=topic) if raw_narration else headline.title()
 
@@ -321,16 +356,15 @@ def normalize_blueprint(
         if motion not in motions:
             motion = motions[idx % len(motions)]
 
-        pause_val = sc.get("pause_after", 0.85)
+        pause_val = sc.get("pause_after", 0.95)
         try:
-            pause_after = max(0.3, min(2.5, float(pause_val)))
+            pause_after = max(0.35, min(2.5, float(pause_val)))
         except (TypeError, ValueError):
-            pause_after = 0.85
+            pause_after = 0.95
 
         subline = str(sc.get("on_screen_subline") or "").strip()
-        badge = str(sc.get("fact_badge") or ("FAKT" if idx in (1, 2, 3) else "DEUTUNG")).strip().upper()
+        badge = str(sc.get("fact_badge") or ("ERKLÄRUNG" if idx in (1, 2, 3) else "BEDEUTUNG")).strip().upper()
 
-        # Preserve existing visual_seed if editing, otherwise generate a fresh unique seed per scene!
         existing_seed = sc.get("visual_seed")
         try:
             visual_seed = int(existing_seed) if existing_seed is not None else random.randint(100_000, 99_999_999)
@@ -338,15 +372,15 @@ def normalize_blueprint(
             visual_seed = random.randint(100_000, 99_999_999)
 
         default_prompt = (
-            f"Bespoke cinematic artwork for '{headline}', {motif.replace('_', ' ')}, "
-            "deep space obsidian #0B0C10, dark cosmic navy blue #1F2833 atmosphere, "
-            "luminous metallic gold #D4AF37 filaments and sacred geometry, ultra-detailed 8k, no text, no words"
+            f"Cinematic AuronOrigin scene {idx + 1} illustrating {headline} ({topic[:55]}), "
+            f"motif {motif.replace('_', ' ')}, deep space obsidian #0B0C10, dark cosmic blue #1F2833, "
+            "luminous gold #D4AF37 accents, photorealistic sacred-tech atmosphere, 8k, no text, no watermark"
         )
 
         normalized_scenes.append(
             {
                 "scene_number": idx + 1,
-                "phase": str(sc.get("phase") or ("HOOK" if idx == 0 else "ANALYSE")).upper(),
+                "phase": str(sc.get("phase") or ("EINSTIEG" if idx == 0 else "ERKLÄRUNG")).upper(),
                 "fact_badge": badge,
                 "on_screen_headline": headline[:60],
                 "on_screen_subline": subline[:110],
@@ -362,9 +396,9 @@ def normalize_blueprint(
             }
         )
 
-    title = str(raw.get("title") or f"{topic[:52]} – Fakten & Mysterium | AuronOrigin").strip()
-    thumb_text = str(raw.get("thumbnail_text") or "DER VERBORGENE CODE").strip().upper()
-    thumb_sub = str(raw.get("thumbnail_subtext") or chosen_pillar.upper()).strip()
+    title = str(raw.get("title") or topic).strip()
+    thumb_text = str(raw.get("thumbnail_text") or "DAS RÄTSEL ERKLÄRT").strip().upper()
+    thumb_sub = str(raw.get("thumbnail_subtext") or "KURZ & VERSTÄNDLICH").strip()
 
     seo_in = raw.get("youtube_seo") if isinstance(raw.get("youtube_seo"), dict) else {}
     poll_in = seo_in.get("community_poll") if isinstance(seo_in.get("community_poll"), dict) else {}
@@ -381,22 +415,22 @@ def normalize_blueprint(
     default_quiz = {
         "question": str(
             quiz_in.get("question")
-            or f"Welcher Befund zum Thema „{clean_quiz_subj}“ wird in dieser Analyse durch reale Daten gestützt?"
+            or f"Was ist der zentrale Punkt beim Thema „{clean_quiz_subj}“ in diesem Video?"
         )[:135],
         "options": (
             [str(o)[:76] for o in quiz_in["options"][:4]]
             if isinstance(quiz_in.get("options"), list) and len(quiz_in["options"]) >= 3
             else [
                 short_fact_opt,
-                "Das Phänomen wurde bisher ausschließlich theoretisch ohne Messung vermutet.",
-                "Alle bisherigen Messreihen erwiesen sich als bloße Instrumentenfehler.",
-                "Der Effekt widerspricht jeder mathematischen Gesetzmäßigkeit vollständig.",
+                "Es handelt sich nur um einen alten Messfehler ohne reale Grundlage.",
+                "Das Phänomen tritt ausschließlich in theoretischen Modellen auf.",
+                "Die Ursache ist bereits als gewöhnliche Sinnestäuschung abgehakt.",
             ]
         ),
         "correct_index": int(quiz_in.get("correct_index", 0) or 0),
         "explanation": str(
             quiz_in.get("explanation")
-            or f"Genau dieser Befund bildet das überprüfbare Fundament der Episode ({chosen_pillar})."
+            or f"Genau dieser Zusammenhang steht im Mittelpunkt dieser AuronOrigin-Erklärung ({chosen_pillar})."
         )[:320],
     }
 
@@ -404,9 +438,9 @@ def normalize_blueprint(
         "title": title,
         "alt_titles": raw.get("alt_titles")
         or [
-            f"{topic[:46]}: Zufall oder verborgene Ordnung?",
-            f"Was aktuelle Daten über {topic[:38]} verraten",
-            f"Das ungelöste Muster hinter {topic[:38]} | AuronOrigin",
+            f"{title[:48]} – einfach erklärt",
+            f"Was wirklich hinter „{clean_quiz_subj}“ steckt",
+            f"{clean_quiz_subj}: Kurz, logisch & verständlich | AuronOrigin",
         ],
         "thumbnail_text": thumb_text[:34],
         "thumbnail_subtext": thumb_sub[:44],
@@ -420,29 +454,28 @@ def normalize_blueprint(
             "tags": seo_in.get("tags")
             or [
                 "AuronOrigin",
+                clean_quiz_subj,
                 chosen_pillar,
-                "Wissenschaft und Mystery",
-                "Forschung aktuell",
-                "Bewusstsein",
-                "Alte Kulturen",
-                "Quantenphysik",
+                "Einfach erklärt",
+                "Wissenschaft verständlich",
+                "Mysterium",
                 "Doku Deutsch",
             ],
             "pinned_comment": str(
                 seo_in.get("pinned_comment")
                 or (
-                    f"[FAKT vs. DEUTUNG] Wie ordnest du „{topic}“ ein? "
-                    "Klassischer Zufall der Naturgesetze – oder blicken wir hier auf eine tiefere Ordnung? "
-                    "Schreib deine Gedanken in die Kommentare und abonniere AuronOrigin."
+                    f"Wie siehst du das Thema „{title}“? "
+                    "Kanntest du diesen Zusammenhang schon – oder hat dich ein Detail überrascht? "
+                    "Schreib deine Gedanken unten in die Kommentare!"
                 )
             ),
             "community_poll": {
-                "question": str(poll_in.get("question") or f"Was steckt für dich hinter „{topic}“?"),
+                "question": str(poll_in.get("question") or f"Was fasziniert dich an „{clean_quiz_subj}“ am meisten?"),
                 "options": poll_in.get("options")
                 or [
-                    "Rein physikalisch erklärbar [FAKT]",
-                    "Hinweis auf eine tiefere Informations-Struktur [DEUTUNG]",
-                    "Beides greift ineinander – genau das macht es spannend!",
+                    "Die klare wissenschaftliche Erklärung [FAKT]",
+                    "Die tiefere Bedeutung dahinter [DEUTUNG]",
+                    "Genau die Verbindung aus beidem!",
                 ],
             },
         },
@@ -458,12 +491,12 @@ def normalize_blueprint(
 def _default_description(title: str, topic: str, pillar: str) -> str:
     return (
         f"{title}\n\n"
-        f"In dieser Analyse von AuronOrigin beleuchten wir „{topic}“ nach unserem Leitprinzip: "
-        f"Zuerst überprüfbare Fakten, danach der Blick auf das größere Mysterium.\n\n"
+        f"In diesem Video widmen wir uns intensiv und allgemeinverständlich genau einem Thema: „{topic}“ – "
+        f"kurz, logisch aufgebaut und Schritt für Schritt erklärt.\n\n"
         f"▸ Themen-Säule: {pillar}\n"
-        f"▸ Jetzt abonnieren, um keine neue Entschlüsselung zu verpassen.\n"
+        f"▸ Abonniere AuronOrigin für weitere ruhige, tiefgründige Erklärungen.\n"
         f"▸ Instagram: @the.auronorigin | Kontakt: contact@auronorigin.world\n\n"
-        f"#AuronOrigin #{pillar.replace('-', '')} #Wissenschaft #Mystery #Bewusstsein #DokuDeutsch"
+        f"#AuronOrigin #{pillar.replace('-', '')} #EinfachErklärt #Wissenschaft #Mysterium #DokuDeutsch"
     )
 
 
@@ -474,42 +507,72 @@ def _pad_or_trim_scenes_to_count(
     dossier: dict[str, Any] | None,
     pillar: str,
 ) -> list[dict[str, Any]]:
-    """Ensure the generated blueprint matches the exact requested number of scenes (2..30)."""
+    """Adjust scene count (2..30) while staying 100% locked onto the SINGLE researched topic."""
     if len(scenes) == target_n:
         return scenes
+
+    core_subject = str((dossier or {}).get("core_subject") or topic).strip()
+
     if len(scenes) > target_n and target_n >= 2:
-        trimmed = scenes[: target_n - 1] + [scenes[-1]]
+        if target_n == 2:
+            # Ultra-compact 2-scene summary: core explanation + conclusion
+            trimmed = [scenes[0], scenes[-1]]
+        else:
+            # Keep opening, logical core scenes, and closing scene
+            trimmed = scenes[: target_n - 1] + [scenes[-1]]
         for i, sc in enumerate(trimmed):
             sc["scene_number"] = i + 1
         return trimmed
 
-    de_facts = [
-        enforce_german_narration(f, topic)
+    # Only pull extra sentences that belong strictly to THIS ONE dossier (never unrelated topics!)
+    used_narrs = {str(s.get("narration") or "").strip().lower() for s in scenes}
+    same_topic_facts = [
+        enforce_german_narration(f, core_subject)
         for f in ((dossier or {}).get("verified_facts") or [])
-        if is_pure_german(str(f))
+        if is_pure_german(str(f)) and enforce_german_narration(f, core_subject).strip().lower() not in used_narrs
     ]
+
     motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
-    extra_motifs = [m for m in VISUAL_MOTIFS if m not in ("eye_of_horus",)]
+    extra_motifs = [m for m in VISUAL_MOTIFS]
     random.shuffle(extra_motifs)
 
-    expansion_templates = [
-        ("PRÄZISIONS-MESSUNG", "STUDIE", "Moderne Messinstrumente machen dabei Strukturen sichtbar, die unseren bloßen Sinnen komplett verborgen bleiben."),
-        ("HISTORISCHE BRÜCKE", "KONTEXT", "Überraschend ist vor allem, wie eng uralte Beobachtungen und modernste Datenmodelle hier ineinandergreifen."),
-        ("DIE INFORMATIONS-EBENE", "ANALYSE", "Betrachtet man das Phänomen als reinen Informationsfluss, verschwindet der scheinbare Zufall fast vollständig."),
-        ("OFFENE GRENZFRAGE", "FORSCHUNG", "Selbst führende Arbeitsgruppen betonen, dass unsere bisherigen Standardmodelle hier erst am Anfang stehen."),
-        ("DER BEOBACHTER-FAKTOR", "DEUTUNG", "Immer wieder führt die Spur zurück zur selben Kernfrage: Welche Rolle spielt das messende Bewusstsein selbst?"),
-        ("GEOMETRIE DER ORDNUNG", "STRUKTUR", "Hinter scheinbarem Chaos zeigt sich bei genauerer Auflösung eine wiederkehrende mathematische Symmetrie."),
+    # Single-topic logical deepening steps (all grammatically natural regardless of subject phrasing)
+    deepening_steps = [
+        (
+            "EINFACH VORGESTELLT",
+            "ANSCHAULICH",
+            f"Man kann sich das Thema „{core_subject}“ wie ein feines Uhrwerk vorstellen, bei dem schon ein winziges Detail das gesamte Bild verändert.",
+        ),
+        (
+            "WARUM DAS WICHTIG IST",
+            "HINTERGRUND",
+            "Entscheidend ist dabei vor allem eines: Genau dieser Zusammenhang lässt sich immer wieder zuverlässig beobachten und nachprüfen.",
+        ),
+        (
+            "DER ZWEITE BLICK",
+            "VERTIEFUNG",
+            "Auf den ersten Blick wirkt das Phänomen ungewöhnlich – doch Schritt für Schritt betrachtet folgt dahinter eine verblüffend klare Logik.",
+        ),
+        (
+            "OFFENE FRAGE",
+            "GRENZE",
+            "Trotz aller präzisen Messungen bleibt genau hier ein Punkt offen, über den selbst Fachleute bis heute staunen.",
+        ),
+        (
+            "WAS DARAUS FOLGT",
+            "KONSEQUENZ",
+            "Denkt man diesen Gedanken ruhig zu Ende, zeigt sich unsere gewohnte Alltagswelt plötzlich von einer ganz neuen Seite.",
+        ),
     ]
-    random.shuffle(expansion_templates)
 
     out = list(scenes[:-1]) if scenes else []
     cta_scene = scenes[-1] if scenes else {
-        "phase": "OUTRO & CTA",
+        "phase": "ABSCHLUSS",
         "fact_badge": "AURONORIGIN",
-        "on_screen_headline": "ABONNIERE AURONORIGIN",
-        "on_screen_subline": "Deine Deutung in die Kommentare ↓",
-        "narration": "Abonniere AuronOrigin für die nächste Entschlüsselung und schreib deine Sicht in die Kommentare.",
-        "pause_after": 0.85,
+        "on_screen_headline": "DEINE SICHT ZUM THEMA",
+        "on_screen_subline": "Schreib es in die Kommentare ↓",
+        "narration": "Was denkst du darüber – reiner Zufall oder eine tiefere Ordnung? Schreib deine Sicht in die Kommentare und folge AuronOrigin.",
+        "pause_after": 0.95,
         "visual_motif": "ouroboros_seal",
         "visual_seed": random.randint(100_000, 99_999_999),
         "camera_motion": "zoom_out",
@@ -518,26 +581,25 @@ def _pad_or_trim_scenes_to_count(
 
     pool_idx = 0
     while len(out) + 1 < target_n:
-        head, badge, fallback_narr = expansion_templates[pool_idx % len(expansion_templates)]
-        fact_idx = min(len(de_facts) - 1, pool_idx + 2)
-        narr = de_facts[fact_idx] if (pool_idx + 2) < len(de_facts) else fallback_narr
+        head, badge, fallback_narr = deepening_steps[pool_idx % len(deepening_steps)]
+        narr = same_topic_facts[pool_idx] if pool_idx < len(same_topic_facts) else fallback_narr
         seq_num = len(out) + 1
         motif = extra_motifs[pool_idx % len(extra_motifs)]
         out.append(
             {
                 "scene_number": seq_num,
-                "phase": f"VERTIEFUNG {seq_num}",
+                "phase": f"SCHRITT {seq_num}",
                 "fact_badge": badge,
                 "on_screen_headline": head,
-                "on_screen_subline": pillar.upper(),
-                "narration": enforce_german_narration(narr, topic),
-                "pause_after": 0.9,
+                "on_screen_subline": core_subject[:54].upper(),
+                "narration": enforce_german_narration(narr, core_subject),
+                "pause_after": 0.95,
                 "visual_motif": motif,
                 "visual_seed": random.randint(100_000, 99_999_999),
                 "camera_motion": motions[seq_num % len(motions)],
                 "glitch_transition": True,
                 "image_prompt_en": (
-                    f"Cinematic {motif.replace('_', ' ')} artwork illustrating {head}, "
+                    f"Cinematic {motif.replace('_', ' ')} artwork illustrating {core_subject} ({head}), "
                     "deep space obsidian #0B0C10, dark navy blue #1F2833, luminous gold #D4AF37 accents, 8k, no text"
                 ),
                 "custom_image_id": "",
@@ -562,157 +624,141 @@ def _build_local_auron_blueprint(
     pillar: str,
     scene_count: int | None = None,
 ) -> dict[str, Any]:
-    """Multi-archetype, non-repetitive 100% German composer when running without an API key."""
+    """Single-topic, logical, plain-German storyteller when running without an Arena API key."""
     target_n = resolve_target_scene_count(duration_target, scene_count)
-    kw = ((dossier or {}).get("input_keyword") or topic).strip()
-    short_kw = kw if len(kw) <= 38 else kw[:38].rsplit(" ", 1)[0]
+    core_subject = str((dossier or {}).get("core_subject") or (dossier or {}).get("input_keyword") or topic).strip()
+    matched_title = str((dossier or {}).get("topic") or topic).strip()
+    steps = (dossier or {}).get("story_steps") or {}
 
-    de_facts = [
-        enforce_german_narration(f, topic)
-        for f in ((dossier or {}).get("verified_facts") or [])
-        if is_pure_german(str(f))
-    ]
-    while len(de_facts) < 4:
-        de_facts.append(
-            f"Präzisionsmessungen rund um {short_kw} legen gesetzmäßige Muster frei, die weit über bloßen Zufall hinausgehen."
-        )
-
-    hooks = [
-        f"Ein einziger Blick auf die neuesten Daten zu {short_kw} reicht aus, um ein vertrautes Weltbild ins Wanken zu bringen.",
-        f"Jahrzehntelang galt das Thema {short_kw} als weitgehend verstanden – doch aktuelle Messungen erzählen eine völlig andere Geschichte.",
-        f"Mitten in den jüngsten Analysen zu {short_kw} taucht eine Signatur auf, die selbst erfahrene Forscher aufhorchen lässt.",
-        f"Warum stößt unsere moderne Wissenschaft ausgerechnet bei {short_kw} an eine Grenze, an der Physik wie reiner Code aussieht?",
-        f"Es gibt Entdeckungen, die leise in Fachjournalen erscheinen und dennoch alles verändern – genau das geschieht gerade rund um {short_kw}.",
-        f"Auf den ersten Blick wirkt {short_kw} wie ein gewöhnliches Forschungsthema. Doch unter der Oberfläche verbirgt sich eine erstaunliche Architektur.",
-        f"Wenn unabhängige Messinstrumente bei {short_kw} immer wieder dasselbe Muster zeigen, hört der Zufall auf.",
-        f"Was verbindet neueste Hochtechnologie mit einer der ältesten Fragen der Menschheit? Die Spur führt direkt zu {short_kw}.",
-    ]
-    fact_openers_1 = [
-        "Beginnen wir bei den überprüfbaren Fakten.",
-        "Schauen wir zuerst auf das, was im Labor und in der Beobachtung eindeutig belegt ist.",
-        "Die harten Daten liefern hier den entscheidenden Ausgangspunkt.",
-        "Nüchtern betrachtet zeigt sich zunächst ein glasklarer Befund.",
-    ]
-    fact_openers_2 = [
-        "Doch erst der zweite Befund macht die Tragweite sichtbar.",
-        "Genau an dieser Stelle greift ein zweites Puzzleteil ineinander.",
-        "Noch spannender wird es, wenn man die nächste Messung danebenlegt.",
-        "Und das ist kein isolierter Einzelfall.",
-    ]
-    deutung_lines = [
-        f"Wo die reine Messung endet, beginnt die große Frage: Blicken wir bei {short_kw} auf die grundlegende Informationsstruktur unserer Wirklichkeit?",
-        f"Vielleicht zeigt uns {short_kw} genau deshalb so präzise Muster, weil Materie, Raum und Bewusstsein derselben mathematischen Grammatik folgen.",
-        f"Je schärfer unsere Instrumente werden, desto weniger gleicht das Universum einem blinden Uhrwerk – und desto mehr einem präzise abgestimmten Informationsraum.",
-        f"Ob klassische Naturkonstante oder tieferer Bauplan: {short_kw} zwingt uns dazu, die Grenze zwischen Beobachter und Realität neu zu denken.",
-    ]
-    cta_variants = [
-        "Wenn du solche Verbindungen zwischen echter Spitzenforschung und den großen Mysterien liebst, abonniere jetzt AuronOrigin und teile deine Sicht in den Kommentaren.",
-        "Zufall der Naturgesetze oder verborgene Architektur? Schreib deine Meinung unten in die Kommentare und abonniere AuronOrigin für die nächste Analyse.",
-        "Folge AuronOrigin, um keine neue Entschlüsselung zu verpassen – und verrate uns in den Kommentaren, welches Thema wir als Nächstes untersuchen sollen.",
-    ]
+    hook_line = enforce_german_narration(
+        steps.get("hook")
+        or f"Hinter {core_subject} verbirgt sich ein Zusammenhang, der auf den ersten Blick verblüfft – und doch ganz logisch erklärbar ist.",
+        core_subject,
+    )
+    what_line = enforce_german_narration(
+        steps.get("what_is_it")
+        or f"Im Kern geht es bei {core_subject} um eine konkrete Beobachtung, die zeigt, wie präzise unsere Welt im Verborgenen geordnet ist.",
+        core_subject,
+    )
+    how_line = enforce_german_narration(
+        steps.get("how_it_works")
+        or f"Vereinfacht gesagt greifen dabei kleinste Abläufe so exakt ineinander, dass selbst modernste Messgeräte immer wieder dasselbe klare Muster bestätigen.",
+        core_subject,
+    )
+    why_line = enforce_german_narration(
+        steps.get("why_astonishing")
+        or f"Das Erstaunliche daran ist: Unsere gewohnte Alltagsvorstellung reicht plötzlich nicht mehr aus, um dieses Ergebnis vollständig zu erklären.",
+        core_subject,
+    )
+    meaning_line = enforce_german_narration(
+        steps.get("deeper_meaning")
+        or f"Genau deshalb lohnt sich der ruhige Blick auf {core_subject}: Manchmal zeigt ein einziges Phänomen mehr über die Wirklichkeit als tausend Schlagzeilen.",
+        core_subject,
+    )
 
     tail_sig = (
         " Auron out. Die Matrix wackelt. Bleib wach."
         if editorial_mode == "matrix_narrativ"
-        else " Bleib neugierig – bis zur nächsten Entschlüsselung."
+        else ""
     )
+    cta_options = [
+        f"Kanntest du diesen Zusammenhang schon, oder hat dich ein Detail überrascht? Schreib es in die Kommentare und folge AuronOrigin.{tail_sig}",
+        f"Was denkst du darüber – steckt dahinter reiner Zufall oder eine tiefere Ordnung? Teile deine Sicht in den Kommentaren und abonniere AuronOrigin.{tail_sig}",
+    ]
 
-    motifs_pool = [m for m in VISUAL_MOTIFS]
+    motifs_pool = list(VISUAL_MOTIFS)
     random.shuffle(motifs_pool)
 
-    words_upper = [
-        w.upper()
-        for w in re.findall(r"[A-Za-zÄÖÜäöüß0-9]{3,}", short_kw)
-        if w.lower() not in {"und", "der", "die", "das", "von", "mit", "für", "über", "was"}
-    ]
-    short_trigger = " ".join(words_upper[:3])[:28].strip() or "DER REALITÄTS-CODE"
-
-    title_templates = [
-        f"{short_kw}: Was aktuelle Forschungsdaten plötzlich enthüllen",
-        f"Das ungelöste Muster hinter {short_kw} | AuronOrigin",
-        f"{short_kw} neu entschlüsselt – Zufall oder tieferer Code?",
-        f"Warum {short_kw} Forscher weltweit neu nachdenken lässt",
-    ]
+    preset_trigger = str((dossier or {}).get("thumb_trigger") or "").strip().upper()
+    if preset_trigger:
+        short_trigger = preset_trigger[:28]
+    else:
+        words_upper = [
+            w.upper()
+            for w in re.findall(r"[A-Za-zÄÖÜäöüß0-9]{3,}", core_subject)
+            if w.lower() not in {"und", "der", "die", "das", "von", "mit", "für", "über", "was", "wie", "warum"}
+        ]
+        short_trigger = " ".join(words_upper[:3])[:28].strip() or "DAS RÄTSEL ERKLÄRT"
 
     base_scenes = [
         {
             "scene_number": 1,
-            "phase": "HOOK",
-            "fact_badge": "AKTUELL",
+            "phase": "EINSTIEG",
+            "fact_badge": "DAS THEMA",
             "on_screen_headline": short_trigger,
-            "on_screen_subline": "Fakten zuerst • Mystery als Deutung",
-            "narration": random.choice(hooks),
-            "pause_after": 0.85,
+            "on_screen_subline": core_subject[:54],
+            "narration": hook_line,
+            "pause_after": 0.98,
             "visual_motif": motifs_pool[0],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_in",
             "glitch_transition": True,
-            "image_prompt_en": f"Dramatic dark cosmic opening artwork about {short_kw}, deep obsidian #0B0C10, dark steel blue #1F2833 nebula, glowing #D4AF37 gold geometry, cinematic 8k, no text",
+            "image_prompt_en": f"Dramatic dark cosmic opening artwork focused strictly on {core_subject}, deep obsidian #0B0C10, dark steel blue #1F2833, glowing #D4AF37 gold geometry, cinematic 8k, no text",
         },
         {
             "scene_number": 2,
-            "phase": "BEFUND 1",
-            "fact_badge": "FAKT",
-            "on_screen_headline": "BELEGTE MESSDATEN",
-            "on_screen_subline": pillar.upper(),
-            "narration": f"{random.choice(fact_openers_1)} {de_facts[0]}",
-            "pause_after": 0.85,
+            "phase": "WORUM ES GEHT",
+            "fact_badge": "EINFACH ERKLÄRT",
+            "on_screen_headline": "WAS DAHINTERSTECKT",
+            "on_screen_subline": "Kurz & verständlich",
+            "narration": what_line,
+            "pause_after": 0.98,
             "visual_motif": motifs_pool[1],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "pan_up",
             "glitch_transition": True,
-            "image_prompt_en": f"Scientific dark futuristic visualization of {de_facts[0][:80]}, dark navy #1F2833 and golden #D4AF37 light rays, obsidian shadows, 8k, no text",
+            "image_prompt_en": f"Clear visual metaphor illustrating {core_subject}, dark navy #1F2833 and golden #D4AF37 light rays, obsidian shadows #0B0C10, 8k, no text",
         },
         {
             "scene_number": 3,
-            "phase": "BEFUND 2",
-            "fact_badge": "FORSCHUNG",
-            "on_screen_headline": "ZWEITES INDIZ",
-            "on_screen_subline": "Präzision bis ins Detail",
-            "narration": f"{random.choice(fact_openers_2)} {de_facts[1]}",
-            "pause_after": 0.9,
+            "phase": "WIE ES FUNKTIONIERT",
+            "fact_badge": "DER ABLAUF",
+            "on_screen_headline": "SCHRITT FÜR SCHRITT",
+            "on_screen_subline": core_subject[:54],
+            "narration": how_line,
+            "pause_after": 0.98,
             "visual_motif": motifs_pool[2],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_out",
             "glitch_transition": True,
-            "image_prompt_en": f"Sacred geometry and high-tech measurement of {short_kw}, deep space blue #1F2833, golden #D4AF37 filaments, subtle mystic violet #4A235A glow, no text",
+            "image_prompt_en": f"Detailed sacred-tech illustration of how {core_subject} works, deep space blue #1F2833, golden #D4AF37 filaments, subtle mystic violet #4A235A glow, no text",
         },
         {
             "scene_number": 4,
-            "phase": "VERTIEFUNG",
-            "fact_badge": "ANALYSE",
-            "on_screen_headline": "DIE TIEFERE STRUKTUR",
-            "on_screen_subline": "Information • Frequenz • Raum",
-            "narration": de_facts[2],
-            "pause_after": 0.95,
+            "phase": "DER KNACKPUNKT",
+            "fact_badge": "ERSTAUNLICH",
+            "on_screen_headline": "WARUM ES VERBLÜFFT",
+            "on_screen_subline": "Beobachtung & Logik",
+            "narration": why_line,
+            "pause_after": 1.0,
             "visual_motif": motifs_pool[3],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "drift_right",
             "glitch_transition": True,
-            "image_prompt_en": f"Macro to cosmic scale visualization for {short_kw}, dark blue cosmic dust #1F2833, shimmering gold #D4AF37 orbital rings, obsidian #0B0C10, 8k, no text",
+            "image_prompt_en": f"Focal revelation artwork for {core_subject}, dark blue cosmic dust #1F2833, shimmering gold #D4AF37 orbital rings, obsidian #0B0C10, 8k, no text",
         },
         {
             "scene_number": 5,
-            "phase": "PERSPEKTIVWECHSEL",
+            "phase": "BEDEUTUNG",
             "fact_badge": "DEUTUNG",
-            "on_screen_headline": "WO DAS MODELL KIPPT",
-            "on_screen_subline": "Wissenschaft trifft Mysterium",
-            "narration": random.choice(deutung_lines),
+            "on_screen_headline": "DER TIEFERE BLICK",
+            "on_screen_subline": "AuronOrigin Perspektive",
+            "narration": meaning_line,
             "pause_after": 1.05,
             "visual_motif": motifs_pool[4],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_in",
             "glitch_transition": True,
-            "image_prompt_en": f"Mystical philosophical perspective on {short_kw}, golden ouroboros horizon in dark cosmic blue #1F2833 and #0B0C10, #D4AF37 volumetric light, no text",
+            "image_prompt_en": f"Calm philosophical cosmic perspective on {core_subject}, golden ouroboros horizon in dark cosmic blue #1F2833 and #0B0C10, #D4AF37 volumetric light, no text",
         },
         {
             "scene_number": 6,
-            "phase": "FINALE & CTA",
+            "phase": "ABSCHLUSS",
             "fact_badge": "AURONORIGIN",
-            "on_screen_headline": "ABONNIERE AURONORIGIN",
-            "on_screen_subline": "Deine Sicht in die Kommentare ↓",
-            "narration": random.choice(cta_variants) + tail_sig,
-            "pause_after": 0.8,
+            "on_screen_headline": "DEINE MEINUNG ↓",
+            "on_screen_subline": "Abonniere AuronOrigin",
+            "narration": random.choice(cta_options),
+            "pause_after": 0.9,
             "visual_motif": motifs_pool[5],
             "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_out",
@@ -721,18 +767,23 @@ def _build_local_auron_blueprint(
         },
     ]
 
-    scenes = _pad_or_trim_scenes_to_count(base_scenes, target_n, topic, dossier, pillar)
+    scenes = _pad_or_trim_scenes_to_count(base_scenes, target_n, core_subject, dossier, pillar)
 
     raw = {
-        "title": random.choice(title_templates),
+        "title": matched_title,
+        "alt_titles": [
+            f"{core_subject} einfach erklärt: Was wirklich dahintersteckt",
+            f"Das Rätsel um {core_subject} – kurz & verständlich",
+            f"Warum {core_subject} unser gewohntes Bild verändert | AuronOrigin",
+        ],
         "thumbnail_text": short_trigger,
-        "thumbnail_subtext": "AKTUELLE FAKTEN & MYSTERIUM",
+        "thumbnail_subtext": "KURZ & VERSTÄNDLICH ERKLÄRT",
         "pillar": pillar,
         "scenes": scenes,
     }
     return normalize_blueprint(
         raw,
-        topic=topic,
+        topic=core_subject,
         video_format=video_format,
         editorial_mode=editorial_mode,
         pillar=pillar,
@@ -750,11 +801,12 @@ def generate_video_blueprint(
     scene_count: int | None = None,
     arena_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Generate a complete, non-repetitive 100% German AuronOrigin blueprint via Arena Router."""
+    """Generate a single-topic, short, logical, plain-German AuronOrigin script via Arena Router."""
     clean_topic = (topic or "").strip()
     if not clean_topic:
-        clean_topic = (dossier or {}).get("topic") or "Quantenphysik & das Rätsel der Zeit"
+        clean_topic = (dossier or {}).get("topic") or "Quantenverschränkung einfach erklärt"
 
+    core_subject = str((dossier or {}).get("core_subject") or clean_topic).strip()
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(clean_topic)
     target_n = resolve_target_scene_count(duration_target, scene_count)
     sys_prompt, usr_prompt = build_auron_script_prompts(
@@ -785,14 +837,14 @@ def generate_video_blueprint(
             if parsed and isinstance(parsed.get("scenes"), list) and len(parsed["scenes"]) >= 2:
                 bp = normalize_blueprint(
                     parsed,
-                    topic=clean_topic,
+                    topic=core_subject,
                     video_format=video_format,
                     editorial_mode=editorial_mode,
                     pillar=chosen_pillar,
                 )
                 if len(bp["scenes"]) != target_n:
                     bp["scenes"] = _pad_or_trim_scenes_to_count(
-                        bp["scenes"], target_n, clean_topic, dossier, chosen_pillar
+                        bp["scenes"], target_n, core_subject, dossier, chosen_pillar
                     )
                 bp["arena_router_used"] = True
                 bp["arena_model_used"] = router_res.get("routed_model")
@@ -829,7 +881,7 @@ def generate_video_blueprint(
         scene_count=target_n,
     )
     fallback["arena_router_used"] = False
-    fallback["arena_warning"] = "Kein Arena API-Key gesetzt – variabler deutscher AuronOrigin-Entwurf erstellt."
+    fallback["arena_warning"] = "Kein Arena API-Key gesetzt – fokussiertes deutsches Einzel-Thema-Skript erstellt."
     fallback["prompts_for_browser_router"] = {
         "system_prompt": sys_prompt,
         "user_prompt": usr_prompt,

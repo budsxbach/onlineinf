@@ -45,21 +45,21 @@ function currentRawApiKey() {
   return val.startsWith("••••") ? "" : val;
 }
 
-// Live Browser-Side Pure-German Wikipedia Deep Research (zero English leakage)
+// Live Browser-Side Single-Topic Pure-German Wikipedia Research (strictly 1 main article, zero topic mixing)
 async function fetchLiveBrowserSources(topic) {
   const results = [];
   const clean = topic.trim();
   if (!clean) return results;
 
   try {
-    const searchUrl = `https://de.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(clean)}&srlimit=3&format=json&origin=*`;
+    const searchUrl = `https://de.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(clean)}&srlimit=1&format=json&origin=*`;
     const sResp = await fetch(searchUrl, { signal: AbortSignal.timeout(4500) });
     if (!sResp.ok) return results;
     const sData = await sResp.json();
-    const titles = (sData?.query?.search || []).map((h) => h.title).filter(Boolean).slice(0, 3);
-    if (!titles.length) return results;
+    const bestTitle = sData?.query?.search?.[0]?.title;
+    if (!bestTitle) return results;
 
-    const extUrl = `https://de.wikipedia.org/w/api.php?action=query&prop=extracts&exchars=850&explaintext=1&titles=${encodeURIComponent(titles.join("|"))}&format=json&origin=*`;
+    const extUrl = `https://de.wikipedia.org/w/api.php?action=query&prop=extracts&exchars=2400&explaintext=1&titles=${encodeURIComponent(bestTitle)}&format=json&origin=*`;
     const eResp = await fetch(extUrl, { signal: AbortSignal.timeout(4500) });
     if (!eResp.ok) return results;
     const eData = await eResp.json();
@@ -67,15 +67,19 @@ async function fetchLiveBrowserSources(topic) {
     for (const p of pages) {
       const extract = String(p.extract || "").replace(/\s+/g, " ").trim();
       if (p.title && extract.length > 40) {
-        const sents = extract.split(/(?<=[.!?])\s+/).filter((s) => s.length >= 40 && s.length <= 260);
-        const summary = sents[0] || extract.slice(0, 230);
-        results.push({
-          title: p.title,
-          summary,
-          url: `https://de.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/ /g, "_"))}`,
-          source: "Wikipedia DE",
-          kind: "FAKT",
-        });
+        const sents = extract
+          .split(/(?<=[.!?])\s+/)
+          .filter((s) => s.length >= 38 && s.length <= 260 && !s.includes("=="))
+          .slice(0, 4);
+        for (const summary of sents) {
+          results.push({
+            title: p.title,
+            summary,
+            url: `https://de.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/ /g, "_"))}`,
+            source: "Wikipedia DE (Hauptartikel)",
+            kind: "FAKT",
+          });
+        }
       }
     }
   } catch (_) {}
@@ -953,9 +957,9 @@ async function runResearchAndScript({ silentInit = false, autoDiscover = false }
     if (!silentInit) {
       showWorkflowStatus(
         rawInput
-          ? `Schritt 1/2: Recherchiere aktuelle deutsche Quellen zu „${rawInput}“…`
-          : "Schritt 1/2: Suche automatisch ein aktuelles Trend-Thema in der AuronOrigin-Nische…",
-        "Werte aktuelle Wissenschafts-News, Wikipedia DE & AuronOrigin-Wissensmatrix aus…"
+          ? `Schritt 1/2: Recherchiere fokussiert das Einzel-Thema „${rawInput}“…`
+          : "Schritt 1/2: Wähle automatisch genau EIN spannendes Einzel-Thema aus…",
+        "Prüfe Hauptquelle & Hintergrund – strikt ein Thema ohne News-Mix…"
       );
     }
 
@@ -989,8 +993,8 @@ async function runResearchAndScript({ silentInit = false, autoDiscover = false }
 
     if (!silentInit) {
       showWorkflowStatus(
-        `Schritt 2/2: Schreibe komplett neues deutsches Skript (${desiredScenes} Szenen) & generiere Szenenbilder…`,
-        `Thema: ${resolvedTopic.slice(0, 72)} • Modell: ${el("arenaModel").value}`
+        `Schritt 2/2: Schreibe kurzes, verständliches Einzel-Thema-Skript (${desiredScenes} Szenen)…`,
+        `100% Fokus: ${resolvedTopic.slice(0, 72)} • Modell: ${el("arenaModel").value}`
       );
     }
 

@@ -1,18 +1,120 @@
 from __future__ import annotations
 
+import random
+import re
 from typing import Any
 
 from .arena_client import call_arena_router, extract_json_object
-from .research_engine import detect_pillar
+from .config import load_history
+from .research_engine import clean_german_sentence, detect_pillar, is_pure_german
 
 VISUAL_MOTIFS = [
-    "eye_of_horus",      # Holographic Eye of Horus / Consciousness Lens
-    "ouroboros_seal",    # Sacred Ouroboros Gold Ring & Runes
-    "quantum_lattice",   # Optical Clock / Quantum Time-Crystal Matrix Grid
-    "pyramid_radar",     # Giza Pyramid SAR / Muon Tomography Wireframe
-    "neural_cosmos",     # Brain Thalamus / Synaptic Constellation
-    "sacred_archive",    # Ancient Temple Glyphs morphing into Code Streams
+    "eye_of_horus",          # Holografisches Horus-Auge & Bewusstseins-Linse
+    "ouroboros_seal",        # Goldener Ouroboros-Ring & Kosmische Geometrie
+    "quantum_lattice",       # Quantengitter & Zeitkristall-Matrix
+    "pyramid_radar",         # Pyramiden-Myonenscan & Goldene Vektoren
+    "neural_cosmos",         # Neuronales Kosmos-Netz & Synapsen-Gold
+    "sacred_archive",        # Tempel-Archiv & Goldene Licht-Glyphen
+    "event_horizon",         # Schwarzes Loch & Raumzeit-Krümmung
+    "atomic_clock",          # Optischer Atomuhr-Resonator & Laser-Ringe
+    "temple_monolith",       # Obsidian-Monolith mit goldenen Geometrie-Adern
+    "dna_biophoton",         # Goldene Doppelhelix & Dunkelblaue Biophotonen
+    "astral_labyrinth",      # Metatrons Würfel & Astrolabium-Kompass
+    "deep_telescope",        # Hexagonaler Weltraumspiegel & Tiefraum-Galaxien
+    "synapse_pulse",         # Gehirnwellen-Krone & Goldene Impuls-Ströme
+    "cymatic_resonance",     # Kymatische Klanggeometrie & Stehende Wellen
+    "simulation_horizon",    # Holografischer Horizont & Matrix-Lichtfäden
+    "solar_eclipse_crown",   # Kosmische Korona-Finsternis in Dunkelblau & Gold
 ]
+
+NARRATIVE_ARCHETYPES = [
+    (
+        "DAS PARADOXON-EXPERIMENT",
+        "Starte direkt mitten in einer verblüffenden Messung oder Beobachtung, die der Alltagserfahrung widerspricht, und löse erst danach Schritt für Schritt den wissenschaftlichen Hintergrund auf.",
+    ),
+    (
+        "DIE ZEITKAPSEL-BRÜCKE",
+        "Schlage im ersten Satz einen unerwarteten Bogen zwischen uraltem Menschheitswissen und modernster Hochtechnologie unserer Gegenwart.",
+    ),
+    (
+        "DER MASSSTABS-ZOOM",
+        "Beginne bei einem winzigen, kaum sichtbaren Detail – einem Bruchteil einer Sekunde, einem Atom oder einem einzelnen Signal – und zoome bis zur Struktur des gesamten Kosmos auf.",
+    ),
+    (
+        "DIE INDIZIEN-KETTE",
+        "Baue das Skript wie eine ruhige wissenschaftliche Spurensuche auf: Drei präzise Einzelbefunde fügen sich am Wendepunkt zu einem größeren Gesamtbild zusammen.",
+    ),
+    (
+        "DER BLINDE FLECK",
+        "Zeige souverän auf, was wir im Alltag für völlig selbstverständlich halten – bis aktuelle Forschungsdaten genau diese Gewissheit ins Wanken bringen.",
+    ),
+    (
+        "DAS GEDANKENEXPERIMENT",
+        "Versetze den Zuschauer im ersten Satz unmittelbar in eine konkrete Situation und untermauere sie sofort mit realen Messdaten.",
+    ),
+    (
+        "DIE INFORMATIONS-SIGNATUR",
+        "Betrachte das Thema konsequent durch die Linse von Information, Geometrie, Frequenz und mathematischer Ordnung.",
+    ),
+    (
+        "DER GRENZGANG DER FORSCHUNG",
+        "Starte an exakt der Grenze, an der selbst führende Forscher heute offen zugeben: Unsere bisherigen Modelle reichen hier nicht mehr aus.",
+    ),
+]
+
+# Common English terms mapped to clean spoken German so TTS stays 100% German
+_SPOKEN_GERMAN_REPLACEMENTS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\bquantum\s+comput(?:ing|er)\b", re.I), "Quantencomputer"),
+    (re.compile(r"\btime\s+crystals?\b", re.I), "Zeitkristalle"),
+    (re.compile(r"\bblack\s+holes?\b", re.I), "Schwarze Löcher"),
+    (re.compile(r"\bartificial\s+intelligence\b", re.I), "Künstliche Intelligenz"),
+    (re.compile(r"\bdelayed[- ]choice\b", re.I), "Verzögerte-Wahl"),
+    (re.compile(r"\bquantum\s+eraser\b", re.I), "Quantenradierer"),
+    (re.compile(r"\bdouble[- ]slit\b", re.I), "Doppelspalt"),
+    (re.compile(r"\bdefault\s+mode\s+network\b", re.I), "Ruhezustandsnetzwerk"),
+    (re.compile(r"\bdeep\s+space\b", re.I), "Tiefraum"),
+    (re.compile(r"\bancient\b", re.I), "antik"),
+    (re.compile(r"\bconsciousness\b", re.I), "Bewusstsein"),
+    (re.compile(r"\bresearchers\b", re.I), "Forscher"),
+    (re.compile(r"\bscientists\b", re.I), "Wissenschaftler"),
+    (re.compile(r"\bevidence\b", re.I), "Beleg"),
+    (re.compile(r"\bsimulation\s+hypothesis\b", re.I), "Simulationshypothese"),
+    (re.compile(r"\bobserver\s+effect\b", re.I), "Beobachtereffekt"),
+    (re.compile(r"\blucid\s+dream(?:ing|s)?\b", re.I), "Klarträumen"),
+]
+
+
+def enforce_german_narration(text: str, fallback_topic: str = "") -> str:
+    """Guarantee that spoken narration is 100% clean, natural German without English sentences or markup."""
+    if not text:
+        return ""
+    t = str(text)
+    # Strip markdown symbols, citations [1], URLs
+    t = re.sub(r"https?://\S+", "", t)
+    t = re.sub(r"\[\d+\]", "", t)
+    t = re.sub(r"[*_`#<>]+", "", t)
+    for pattern, repl in _SPOKEN_GERMAN_REPLACEMENTS:
+        t = pattern.sub(repl, t)
+
+    # Split into sentences and reject any stray English sentence
+    raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", t) if s.strip()]
+    kept: list[str] = []
+    for sent in raw_sentences:
+        cleaned_s = clean_german_sentence(sent)
+        if not cleaned_s:
+            continue
+        # Short dramatic fragments ('Genau hier kippt das Bild.') may have <18 chars — keep unless English stopwords appear
+        if len(cleaned_s) < 22:
+            if not re.search(r"\b(the|and|with|from|this|that|study|research)\b", cleaned_s, re.I):
+                kept.append(cleaned_s)
+        elif is_pure_german(cleaned_s):
+            kept.append(cleaned_s)
+
+    result = " ".join(kept).strip()
+    if not result:
+        short_t = clean_german_sentence(fallback_topic)[:80] or "diesem Phänomen"
+        return f"Genau hier zeigen die Messdaten zu {short_t} eine bemerkenswerte Ordnung."
+    return result
 
 
 def resolve_target_scene_count(duration_target: str = "short_60", scene_count: int | None = None) -> int:
@@ -28,6 +130,15 @@ def resolve_target_scene_count(duration_target: str = "short_60", scene_count: i
     return 10
 
 
+def _recent_hooks() -> list[str]:
+    try:
+        hist = load_history()
+        hooks = [str(h.get("title", "")) for h in hist[:8] if h.get("title")]
+        return hooks
+    except Exception:
+        return []
+
+
 def build_auron_script_prompts(
     *,
     topic: str,
@@ -38,103 +149,110 @@ def build_auron_script_prompts(
     pillar: str | None = None,
     scene_count: int | None = None,
 ) -> tuple[str, str]:
-    """Construct the official AuronOrigin Showrunner System & User prompts."""
+    """Construct anti-repetitive, strictly German AuronOrigin Showrunner prompts."""
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(topic)
     target_n = resolve_target_scene_count(duration_target, scene_count)
+    archetype_name, archetype_instr = random.choice(NARRATIVE_ARCHETYPES)
+    creative_seed = random.randint(1000, 9999)
 
     if target_n <= 6:
-        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 110–150 Wörter für ein 48–65 Sekunden YouTube Short / Reel)"
+        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 120–165 Wörter für ein 50–65 Sekunden YouTube Short)"
     elif target_n <= 8:
-        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 260–350 Wörter für ein 2,5–3,5 Minuten YouTube Video)"
+        scene_count_spec = f"exakt {target_n} Szenen (Gesamt-Sprechtext ca. 260–360 Wörter für ein 2,5–3,5 Minuten Video)"
     else:
-        est_words_min = target_n * 45
-        est_words_max = target_n * 60
-        scene_count_spec = f"exakt {target_n} Szenen (nummeriert von 1 bis {target_n}, Gesamt-Sprechtext ca. {est_words_min}–{est_words_max} Wörter)"
+        est_words_min = target_n * 42
+        est_words_max = target_n * 58
+        scene_count_spec = f"exakt {target_n} Szenen (nummeriert 1 bis {target_n}, Gesamt-Sprechtext ca. {est_words_min}–{est_words_max} Wörter)"
 
     if editorial_mode == "matrix_narrativ":
         persona_block = (
-            "MODUS: 'Auron – Der Code der Matrix' (Ich-Erzähler Auron, ruhig, souverän, mystisch-analytisch). "
-            "Signatur-Abschluss im letzten Satz: 'Auron out. Die Matrix wackelt. Bleib wach.'"
+            "MODUS: 'Auron – Der Code der Matrix' (souveräner Erzähler, ruhig, analytisch-mystisch). "
+            "Letzter Satz im Finale: 'Auron out. Die Matrix wackelt. Bleib wach.'"
         )
     else:
         persona_block = (
-            "MODUS: 'Fakten zuerst, Mystery als Deutung' (Seriöser High-End-Wissenschafts- & Mystery-Erzähler). "
-            "Zuerst harte, staunenswerte Fakten, danach der ruhige Gänsehaut-Perspektivwechsel. "
-            "Keine billige Panikmache, keine Verschwörungs-Floskeln ('sie verheimlichen uns'), sondern präzise Eleganz."
+            "MODUS: 'Fakten zuerst, Mystery als Deutung' (hochwertige deutsche Wissenschafts- & Mystery-Dokumentation). "
+            "Zuerst überprüfbare, konkrete Fakten und Zahlen, danach ein eleganter philosophischer Perspektivwechsel."
         )
 
-    facts_text = "\n".join(f"- {f}" for f in (dossier or {}).get("verified_facts", [])) or f"- Kernthema: {topic}"
-    mystery_text = "\n".join(f"- {m}" for m in (dossier or {}).get("mystery_interpretation", [])) or "- Philosophische Deutung an der Grenze von Physik und Bewusstsein."
+    de_facts = [f for f in (dossier or {}).get("verified_facts", []) if is_pure_german(str(f))]
+    facts_text = "\n".join(f"- {f}" for f in de_facts) or f"- Aktueller Fokus: {topic}"
+    discovery_note = (dossier or {}).get("discovery_note") or ""
+    recent_list = _recent_hooks()
+    avoid_block = (
+        "VERMEIDE zwingend Ähnlichkeiten zu diesen letzten Videotiteln:\n" + "\n".join(f"- {h}" for h in recent_list)
+        if recent_list
+        else ""
+    )
 
-    system_prompt = f"""Du bist der Chef-Showrunner, Skript-Architekt und YouTube-Retention-Stratege der Marke **AuronOrigin**.
-Marken-DNA von AuronOrigin:
-- Visuelle & tonale Welt: Dunkler Tiefraum (#0B0C10), Kosmisches Stahlblau (#1F2833), Auron-Gold (#D4AF37), Mystisches Violett (#4A235A).
-- Typografie: CINZEL (Versalien für monumentale On-Screen-Titel) & INTER (klare Fakten-Typografie).
-- Stimme: Tief, ruhig, getragen (-15% Sprechtempo, leichte Tempel-/Kosmische Raumtiefe). Sätze müssen für Sprachsynthese perfekt rhythmisiert sein – kurze bis mittellange Hauptsätze, gezielte Gedankenpausen, KEINE unaussprechlichen URLs oder Klammer-Codes im `narration`-Text!
-- {persona_block}
-- YouTube-Retention-Gesetz:
-  1. Szene 1 (0–3 Sek.): Sofortiger Pattern-Interrupt / Curiosity-Gap-Hook ohne Begrüßungs-Floskeln ("Hallo Leute" ist streng verboten!).
-  2. Mittelteil: Konkrete wissenschaftliche oder historische Fakten (`fact_badge`: `"FAKT"` oder `"STUDIE"` oder `"HISTORISCH"`), die echtes Vertrauen aufbauen.
-  3. Wendepunkt: Philosophische Simulations-/Bewusstseins-Deutung (`fact_badge`: `"DEUTUNG"` oder `"GEDANKENEXPERIMENT"`).
-  4. Finale Szene: Gänsehaut-Konklusion + eleganter Abonnenten-Trigger ("Wenn du solche Codes zwischen Wissenschaft und Mysterium entschlüsseln willst – abonniere AuronOrigin") + offene Kommentar-Frage für den Algorithmus.
+    motifs_csv = ", ".join(f"`{m}`" for m in VISUAL_MOTIFS)
 
-WICHTIG: Das Array `"scenes"` MUSS exakt {target_n} Szenen enthalten!
-Antworte AUSSCHLIESSLICH mit einem validen JSON-Objekt (kein Text außerhalb des JSON)."""
+    system_prompt = f"""Du bist der Chef-Showrunner und Drehbuchautor des deutschen YouTube-Kanals **AuronOrigin**.
 
-    user_prompt = f"""Erstelle ein komplettes, produktionsfertiges YouTube-Videopaket für **AuronOrigin**:
+STRENGE SPRACH- UND QUALITÄTSREGELN (UNVERHANDELBAR):
+1. **100% REINES DEUTSCH**: Jedes einzelne Wort in `title`, `alt_titles`, `thumbnail_text`, `thumbnail_subtext`, `on_screen_headline`, `on_screen_subline` und ganz besonders im gesprochenen Sprechertext `narration` MUSS makelloses, natürliches Deutsch sein!
+   - KEINE englischen Sätze, KEINE englischen Fachzitate, KEINE Denglisch-Floskeln! Übersetze englische Konzepte immer elegant ins Deutsche (z.B. „Zeitkristalle“, „Beobachtereffekt“, „Ereignishorizont“, „Klartraum“).
+2. **NULL WIEDERHOLUNG / FRISCHE DRAMATURGIE**:
+   - Nutze für dieses Video den Erzähl-Archetyp **{archetype_name}**: {archetype_instr}
+   - VERBOTENE Standard-Floskeln: Beginne NIEMALS mit „Halte für drei Sekunden inne“, „Stell dir vor“ oder „Hallo Leute“! Jedes Skript braucht einen einzigartigen, themenspezifischen ersten Satz!
+3. **SPRECHTEXT FÜR DEUTSCHE NEURALE STIMME**:
+   - Schreibe Zahlen und Abkürzungen im `narration`-Feld sprechfreundlich aus, keine Klammern, keine URLs, keine Hashtags im Sprechtext.
+4. **MARKENWELT AURONORIGIN**:
+   - Farb- & Bildwelt für jede Szene (`image_prompt_en`): Tiefes Kosmos-Schwarz (#0B0C10), Dunkles Stahlblau (#1F2833), leuchtendes Auron-Gold (#D4AF37) und ein Hauch Violett (#4A235A). Jede Szene bekommt ein eigenes, unverwechselbares Bildmotiv passend zum Szeneninhalt (keine Textbuchstaben im Bildprompt!).
+   - {persona_block}
 
-THEMA: {topic}
+Das Array `"scenes"` MUSS exakt {target_n} Szenen enthalten. Gib NUR valides JSON auf einer sauberen Struktur zurück (keine unescaped Zeilenumbrüche in Strings)."""
+
+    user_prompt = f"""Erstelle ein komplett neues, einzigartiges deutsches YouTube-Videopaket (Kreativ-Seed #{creative_seed}) für **AuronOrigin**:
+
+THEMA / AKTUELLER AUFHÄNGER: {topic}
+RECHERCHE-KONTEXT: {discovery_note}
 SÄULE: {chosen_pillar}
-FORMAT: {video_format} ({'YouTube Short / Vertikal 1080x1920' if video_format == '9:16' else 'YouTube Breitbild 16:9'})
+ERZÄHL-ARCHETYP: {archetype_name}
+FORMAT: {video_format}
 UMFANG: {scene_count_spec}
 
-RECHERCHE-DOSSIER (FAKTEN):
+DEUTSCHES RECHERCHE-DOSSIER (nutze konkrete Fakten hieraus und formuliere sie eigenständig und lebendig):
 {facts_text}
 
-MYSTERY-DEUTUNG:
-{mystery_text}
+{avoid_block}
 
-Erlaubte Werte für `visual_motif` pro Szene (abwechslungsreich wählen):
-`eye_of_horus`, `ouroboros_seal`, `quantum_lattice`, `pyramid_radar`, `neural_cosmos`, `sacred_archive`
+Wähle für jede Szene ein passendes, wechselndes `visual_motif` aus:
+{motifs_csv}
 
-Erlaubte Werte für `camera_motion`:
-`zoom_in`, `zoom_out`, `pan_up`, `drift_right`
+Wähle `camera_motion` abwechslungsreich aus: `zoom_in`, `zoom_out`, `pan_up`, `drift_right`
 
-Liefere EXAKT dieses JSON-Format mit exakt {target_n} Einträgen in `"scenes"`:
+Antworte AUSSCHLIESSLICH mit diesem JSON-Schema (exakt {target_n} Szenen, alle Texte außer `image_prompt_en` zu 100% auf Deutsch):
 {{
-  "title": "Haupttitel des Videos (max. 68 Zeichen, hohe Klickrate, seriös-mystisch)",
-  "alt_titles": [
-    "Alternativer CTR-Titel 1",
-    "Alternativer CTR-Titel 2",
-    "Alternativer CTR-Titel 3"
-  ],
-  "thumbnail_text": "2 BIS 3 WORTE IN VERSALIEN (z.B. 'DER ZEIT-CODE' oder 'DAS 64. FRAGMENT')",
-  "thumbnail_subtext": "Kurzer Untertitel max. 4 Worte",
+  "title": "Packender deutscher YouTube-Titel (max. 68 Zeichen)",
+  "alt_titles": ["Deutscher Alternativtitel 1", "Deutscher Alternativtitel 2", "Deutscher Alternativtitel 3"],
+  "thumbnail_text": "2 BIS 3 DEUTSCHE WORTE IN VERSALIEN",
+  "thumbnail_subtext": "Kurzer deutscher Untertitel",
   "pillar": "{chosen_pillar}",
   "editorial_mode": "{editorial_mode}",
-  "hook_3s": "Der exakte erste Satz der ersten 3 Sekunden",
+  "hook_3s": "Der exakte erste gesprochene deutsche Satz",
   "scenes": [
     {{
       "scene_number": 1,
       "phase": "HOOK",
       "fact_badge": "IMPULS",
-      "on_screen_headline": "KURZER CINZEL TITEL (MAX 5 WORTE)",
-      "on_screen_subline": "Prägnante Fakt-Zeile oder Kennzahl für das Bild",
-      "narration": "Gesprochener deutscher Sprechertext dieser Szene – flüssig, atmosphärisch, ohne Sonderzeichen-Ballast.",
-      "pause_after": 0.8,
-      "visual_motif": "eye_of_horus",
+      "on_screen_headline": "DEUTSCHER CINZEL TITEL",
+      "on_screen_subline": "Kurze deutsche Fakten-Unterzeile",
+      "narration": "100% deutscher, lebendig geschriebener Sprechertext dieser Szene ohne englische Wörter.",
+      "pause_after": 0.85,
+      "visual_motif": "quantum_lattice",
       "camera_motion": "zoom_in",
       "glitch_transition": true,
-      "image_prompt_en": "Dark cinematic sacred-tech visual prompt in #0B0C10 obsidian and #D4AF37 gold..."
+      "image_prompt_en": "Unique cinematic scene artwork for scene 1 in deep dark cosmic blue #1F2833, obsidian #0B0C10 and luminous gold #D4AF37, specific subject matching the scene narration, photorealistic sacred-tech lighting, no text, no letters"
     }}
   ],
   "youtube_seo": {{
-    "description": "Komplette YouTube-Beschreibung auf Deutsch inkl. Zusammenfassung, Fakten-Hinweis, Kapitelmarken und Hashtags #AuronOrigin #Wissenschaft #Mystery",
-    "tags": ["AuronOrigin", "Wissenschaft", "Mystery", "Simulation", "...10-15 relevante deutsche Tags"],
-    "pinned_comment": "Angepinnter Kommentar nach dem AuronOrigin [FAKT / DEUTUNG] Schema mit konkreter Frage an die Community",
+    "description": "Ausführliche deutsche YouTube-Videobeschreibung (nutze \\\\n für Absätze) mit Fakten-Einordnung und Hashtags",
+    "tags": ["AuronOrigin", "Wissenschaft", "Mystery", "Doku Deutsch"],
+    "pinned_comment": "Deutscher angepinnter Kommentar mit konkreter Diskussionsfrage an die Zuschauer",
     "community_poll": {{
-      "question": "Community-Tab Abstimmungsfrage zum Video",
-      "options": ["Option A (Wissenschaftlich)", "Option B (Tieferer Code)", "Option C (Beides greift ineinander)"]
+      "question": "Deutsche Abstimmungsfrage zum Thema",
+      "options": ["Antwort A", "Antwort B", "Antwort C"]
     }}
   }}
 }}"""
@@ -149,27 +267,31 @@ def normalize_blueprint(
     editorial_mode: str = "fakten_mystery",
     pillar: str | None = None,
 ) -> dict[str, Any]:
-    """Guarantee all required fields exist across any number of scenes without dropping user scenes."""
+    """Guarantee all required fields exist, assign unique visual seeds, and sanitize narration to 100% German."""
     chosen_pillar = raw.get("pillar") or pillar or detect_pillar(topic)
     scenes_in = raw.get("scenes") if isinstance(raw.get("scenes"), list) else []
     normalized_scenes: list[dict[str, Any]] = []
 
     motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
+    # Shuffle motif rotation per video so consecutive videos don't use the same motif order
+    shuffled_motifs = list(VISUAL_MOTIFS)
+    random.shuffle(shuffled_motifs)
 
     for idx, sc in enumerate(scenes_in):
         if not isinstance(sc, dict):
             continue
         headline = str(sc.get("on_screen_headline") or f"SEQUENZ {idx + 1}").strip().upper()
-        narration = str(sc.get("narration") or "").strip()
-        if not narration:
-            narration = headline.title()
+        raw_narration = str(sc.get("narration") or "").strip()
+        narration = enforce_german_narration(raw_narration, fallback_topic=topic) if raw_narration else headline.title()
 
-        motif = str(sc.get("visual_motif") or VISUAL_MOTIFS[idx % len(VISUAL_MOTIFS)]).strip()
+        motif = str(sc.get("visual_motif") or "").strip()
         if motif not in VISUAL_MOTIFS:
-            motif = VISUAL_MOTIFS[idx % len(VISUAL_MOTIFS)]
+            motif = shuffled_motifs[idx % len(shuffled_motifs)]
+
         motion = str(sc.get("camera_motion") or motions[idx % len(motions)]).strip()
         if motion not in motions:
             motion = motions[idx % len(motions)]
+
         pause_val = sc.get("pause_after", 0.85)
         try:
             pause_after = max(0.3, min(2.5, float(pause_val)))
@@ -178,6 +300,19 @@ def normalize_blueprint(
 
         subline = str(sc.get("on_screen_subline") or "").strip()
         badge = str(sc.get("fact_badge") or ("FAKT" if idx in (1, 2, 3) else "DEUTUNG")).strip().upper()
+
+        # Preserve existing visual_seed if editing, otherwise generate a fresh unique seed per scene!
+        existing_seed = sc.get("visual_seed")
+        try:
+            visual_seed = int(existing_seed) if existing_seed is not None else random.randint(100_000, 99_999_999)
+        except (TypeError, ValueError):
+            visual_seed = random.randint(100_000, 99_999_999)
+
+        default_prompt = (
+            f"Bespoke cinematic artwork for '{headline}', {motif.replace('_', ' ')}, "
+            "deep space obsidian #0B0C10, dark cosmic navy blue #1F2833 atmosphere, "
+            "luminous metallic gold #D4AF37 filaments and sacred geometry, ultra-detailed 8k, no text, no words"
+        )
 
         normalized_scenes.append(
             {
@@ -189,12 +324,10 @@ def normalize_blueprint(
                 "narration": narration,
                 "pause_after": pause_after,
                 "visual_motif": motif,
+                "visual_seed": visual_seed,
                 "camera_motion": motion,
                 "glitch_transition": bool(sc.get("glitch_transition", True)),
-                "image_prompt_en": str(
-                    sc.get("image_prompt_en")
-                    or f"Dark sacred geometry {motif}, obsidian #0B0C10 background, subtle #D4AF37 gold light, cinematic 8k"
-                ),
+                "image_prompt_en": str(sc.get("image_prompt_en") or default_prompt),
                 "custom_image_id": str(sc.get("custom_image_id") or "").strip(),
                 "custom_image_name": str(sc.get("custom_image_name") or "").strip(),
             }
@@ -212,8 +345,8 @@ def normalize_blueprint(
         "alt_titles": raw.get("alt_titles")
         or [
             f"{topic[:46]}: Zufall oder verborgene Ordnung?",
-            f"Was Forscher über {topic[:40]} wirklich fanden",
-            f"Das Rätsel hinter {topic[:42]} | AuronOrigin",
+            f"Was aktuelle Daten über {topic[:38]} verraten",
+            f"Das ungelöste Muster hinter {topic[:38]} | AuronOrigin",
         ],
         "thumbnail_text": thumb_text[:34],
         "thumbnail_subtext": thumb_sub[:44],
@@ -229,7 +362,7 @@ def normalize_blueprint(
                 "AuronOrigin",
                 chosen_pillar,
                 "Wissenschaft und Mystery",
-                "Simulationshypothese",
+                "Forschung aktuell",
                 "Bewusstsein",
                 "Alte Kulturen",
                 "Quantenphysik",
@@ -238,18 +371,18 @@ def normalize_blueprint(
             "pinned_comment": str(
                 seo_in.get("pinned_comment")
                 or (
-                    f"[FAKT vs. DEUTUNG] Was denkst du über '{topic}'? "
-                    "Reiner Zufall der Naturgesetze – oder blicken wir hier auf eine tiefere Struktur? "
-                    "Schreib deine Sicht in die Kommentare & abonniere AuronOrigin für die nächste Analyse."
+                    f"[FAKT vs. DEUTUNG] Wie ordnest du „{topic}“ ein? "
+                    "Klassischer Zufall der Naturgesetze – oder blicken wir hier auf eine tiefere Ordnung? "
+                    "Schreib deine Gedanken in die Kommentare und abonniere AuronOrigin."
                 )
             ),
             "community_poll": {
-                "question": str(poll_in.get("question") or f"Wie ordnest du '{topic}' ein?"),
+                "question": str(poll_in.get("question") or f"Was steckt für dich hinter „{topic}“?"),
                 "options": poll_in.get("options")
                 or [
-                    "100% klassisch erklärbar [FAKT]",
-                    "Hinweis auf tiefere Informations-Ordnung [DEUTUNG]",
-                    "Genau die Schnittstelle fasziniert mich – mehr davon!",
+                    "Rein physikalisch erklärbar [FAKT]",
+                    "Hinweis auf eine tiefere Informations-Struktur [DEUTUNG]",
+                    "Beides greift ineinander – genau das macht es spannend!",
                 ],
             },
         },
@@ -259,12 +392,12 @@ def normalize_blueprint(
 def _default_description(title: str, topic: str, pillar: str) -> str:
     return (
         f"{title}\n\n"
-        f"In dieser Episode von AuronOrigin untersuchen wir '{topic}' nach unserem Grundsatz: "
-        f"Fakten zuerst, Mystery als Deutung.\n\n"
-        f"▸ Säule: {pillar}\n"
-        f"▸ Kanal abonnieren & Glocke aktivieren, um keine Entschlüsselung zu verpassen.\n"
+        f"In dieser Analyse von AuronOrigin beleuchten wir „{topic}“ nach unserem Leitprinzip: "
+        f"Zuerst überprüfbare Fakten, danach der Blick auf das größere Mysterium.\n\n"
+        f"▸ Themen-Säule: {pillar}\n"
+        f"▸ Jetzt abonnieren, um keine neue Entschlüsselung zu verpassen.\n"
         f"▸ Instagram: @the.auronorigin | Kontakt: contact@auronorigin.world\n\n"
-        f"#AuronOrigin #{pillar.replace('-', '')} #Wissenschaft #Mystery #Bewusstsein #Doku"
+        f"#AuronOrigin #{pillar.replace('-', '')} #Wissenschaft #Mystery #Bewusstsein #DokuDeutsch"
     )
 
 
@@ -275,82 +408,72 @@ def _pad_or_trim_scenes_to_count(
     dossier: dict[str, Any] | None,
     pillar: str,
 ) -> list[dict[str, Any]]:
-    """Ensure the generated blueprint matches the requested number of scenes (e.g., 10 scenes)."""
+    """Ensure the generated blueprint matches the exact requested number of scenes (2..30)."""
     if len(scenes) == target_n:
         return scenes
     if len(scenes) > target_n and target_n >= 2:
-        # Keep Hook (first) and CTA (last), trim middle
         trimmed = scenes[: target_n - 1] + [scenes[-1]]
         for i, sc in enumerate(trimmed):
             sc["scene_number"] = i + 1
         return trimmed
 
-    facts = (dossier or {}).get("verified_facts") or []
-    mysteries = (dossier or {}).get("mystery_interpretation") or []
-    motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
-
-    expansion_pool = [
-        (
-            "HISTORISCHE PARALLELE",
-            "KONTEXT",
-            f"Betrachtet man die überlieferten Strukturen rund um {topic}, zeigt sich über Epochen hinweg dieselbe präzise Geometrie.",
-            "sacred_archive",
-        ),
-        (
-            "MESSBARE SIGNATUR",
-            "STUDIE",
-            (facts[3].split(" (")[0] if len(facts) > 3 else f"Moderne Messverfahren legen bei {topic} Muster frei, die mit bloßem Auge unsichtbar bleiben."),
-            "quantum_lattice",
-        ),
-        (
-            "DIE SCHNITTSTELLE",
-            "ANALYSE",
-            "Genau an diesem Punkt berühren sich objektive Messung, Informationstheorie und die Frage nach dem Beobachter.",
-            "neural_cosmos",
-        ),
-        (
-            "DAS TIEFERE MUSTER",
-            "DEUTUNG",
-            (mysteries[1] if len(mysteries) > 1 else f"Vielleicht ist {topic} kein isoliertes Rätsel, sondern Teil einer größeren Informations-Architektur."),
-            "ouroboros_seal",
-        ),
-        (
-            "OFFENE FRAGE",
-            "IMPULS",
-            "Je mehr Daten wir sammeln, desto deutlicher wird: Unsere bisherigen Modelle beschreiben nur die Oberfläche.",
-            "pyramid_radar",
-        ),
+    de_facts = [
+        enforce_german_narration(f, topic)
+        for f in ((dossier or {}).get("verified_facts") or [])
+        if is_pure_german(str(f))
     ]
+    motions = ["zoom_in", "zoom_out", "pan_up", "drift_right"]
+    extra_motifs = [m for m in VISUAL_MOTIFS if m not in ("eye_of_horus",)]
+    random.shuffle(extra_motifs)
+
+    expansion_templates = [
+        ("PRÄZISIONS-MESSUNG", "STUDIE", "Moderne Messinstrumente machen dabei Strukturen sichtbar, die unseren bloßen Sinnen komplett verborgen bleiben."),
+        ("HISTORISCHE BRÜCKE", "KONTEXT", "Überraschend ist vor allem, wie eng uralte Beobachtungen und modernste Datenmodelle hier ineinandergreifen."),
+        ("DIE INFORMATIONS-EBENE", "ANALYSE", "Betrachtet man das Phänomen als reinen Informationsfluss, verschwindet der scheinbare Zufall fast vollständig."),
+        ("OFFENE GRENZFRAGE", "FORSCHUNG", "Selbst führende Arbeitsgruppen betonen, dass unsere bisherigen Standardmodelle hier erst am Anfang stehen."),
+        ("DER BEOBACHTER-FAKTOR", "DEUTUNG", "Immer wieder führt die Spur zurück zur selben Kernfrage: Welche Rolle spielt das messende Bewusstsein selbst?"),
+        ("GEOMETRIE DER ORDNUNG", "STRUKTUR", "Hinter scheinbarem Chaos zeigt sich bei genauerer Auflösung eine wiederkehrende mathematische Symmetrie."),
+    ]
+    random.shuffle(expansion_templates)
 
     out = list(scenes[:-1]) if scenes else []
     cta_scene = scenes[-1] if scenes else {
         "phase": "OUTRO & CTA",
         "fact_badge": "AURONORIGIN",
         "on_screen_headline": "ABONNIERE AURONORIGIN",
-        "on_screen_subline": "Deine Sicht in die Kommentare ↓",
-        "narration": "Abonniere jetzt AuronOrigin und schreib deine Deutung in die Kommentare.",
+        "on_screen_subline": "Deine Deutung in die Kommentare ↓",
+        "narration": "Abonniere AuronOrigin für die nächste Entschlüsselung und schreib deine Sicht in die Kommentare.",
         "pause_after": 0.85,
-        "visual_motif": "eye_of_horus",
+        "visual_motif": "ouroboros_seal",
+        "visual_seed": random.randint(100_000, 99_999_999),
         "camera_motion": "zoom_out",
         "glitch_transition": False,
     }
 
     pool_idx = 0
     while len(out) + 1 < target_n:
-        head, badge, narr, motif = expansion_pool[pool_idx % len(expansion_pool)]
+        head, badge, fallback_narr = expansion_templates[pool_idx % len(expansion_templates)]
+        fact_idx = min(len(de_facts) - 1, pool_idx + 2)
+        narr = de_facts[fact_idx] if (pool_idx + 2) < len(de_facts) else fallback_narr
         seq_num = len(out) + 1
+        motif = extra_motifs[pool_idx % len(extra_motifs)]
         out.append(
             {
                 "scene_number": seq_num,
                 "phase": f"VERTIEFUNG {seq_num}",
                 "fact_badge": badge,
-                "on_screen_headline": head if pool_idx < len(expansion_pool) else f"{head} {seq_num}",
+                "on_screen_headline": head,
                 "on_screen_subline": pillar.upper(),
-                "narration": narr,
+                "narration": enforce_german_narration(narr, topic),
                 "pause_after": 0.9,
-                "visual_motif": VISUAL_MOTIFS[(seq_num + 1) % len(VISUAL_MOTIFS)] if pool_idx >= len(expansion_pool) else motif,
+                "visual_motif": motif,
+                "visual_seed": random.randint(100_000, 99_999_999),
                 "camera_motion": motions[seq_num % len(motions)],
                 "glitch_transition": True,
+                "image_prompt_en": (
+                    f"Cinematic {motif.replace('_', ' ')} artwork illustrating {head}, "
+                    "deep space obsidian #0B0C10, dark navy blue #1F2833, luminous gold #D4AF37 accents, 8k, no text"
+                ),
                 "custom_image_id": "",
                 "custom_image_name": "",
             }
@@ -373,118 +496,171 @@ def _build_local_auron_blueprint(
     pillar: str,
     scene_count: int | None = None,
 ) -> dict[str, Any]:
-    """High-craft deterministic AuronOrigin script builder matching the exact requested scene count."""
+    """Multi-archetype, non-repetitive 100% German composer when running without an API key."""
     target_n = resolve_target_scene_count(duration_target, scene_count)
+    kw = ((dossier or {}).get("input_keyword") or topic).strip()
+    short_kw = kw if len(kw) <= 38 else kw[:38].rsplit(" ", 1)[0]
 
-    facts = (dossier or {}).get("verified_facts") or [
-        f"Messbare Befunde rund um {topic} zeigen präzise Muster, die selbst Fachleute überraschen.",
-        "Unabhängige Analysen dokumentieren dabei Zusammenhänge zwischen Struktur, Energie und Information.",
+    de_facts = [
+        enforce_german_narration(f, topic)
+        for f in ((dossier or {}).get("verified_facts") or [])
+        if is_pure_german(str(f))
     ]
-    mysteries = (dossier or {}).get("mystery_interpretation") or [
-        "Wo die klassische Messung endet, beginnt die entscheidende Frage nach dem Bauplan unserer Realität.",
+    while len(de_facts) < 4:
+        de_facts.append(
+            f"Präzisionsmessungen rund um {short_kw} legen gesetzmäßige Muster frei, die weit über bloßen Zufall hinausgehen."
+        )
+
+    hooks = [
+        f"Ein einziger Blick auf die neuesten Daten zu {short_kw} reicht aus, um ein vertrautes Weltbild ins Wanken zu bringen.",
+        f"Jahrzehntelang galt das Thema {short_kw} als weitgehend verstanden – doch aktuelle Messungen erzählen eine völlig andere Geschichte.",
+        f"Mitten in den jüngsten Analysen zu {short_kw} taucht eine Signatur auf, die selbst erfahrene Forscher aufhorchen lässt.",
+        f"Warum stößt unsere moderne Wissenschaft ausgerechnet bei {short_kw} an eine Grenze, an der Physik wie reiner Code aussieht?",
+        f"Es gibt Entdeckungen, die leise in Fachjournalen erscheinen und dennoch alles verändern – genau das geschieht gerade rund um {short_kw}.",
+        f"Auf den ersten Blick wirkt {short_kw} wie ein gewöhnliches Forschungsthema. Doch unter der Oberfläche verbirgt sich eine erstaunliche Architektur.",
+        f"Wenn unabhängige Messinstrumente bei {short_kw} immer wieder dasselbe Muster zeigen, hört der Zufall auf.",
+        f"Was verbindet neueste Hochtechnologie mit einer der ältesten Fragen der Menschheit? Die Spur führt direkt zu {short_kw}.",
+    ]
+    fact_openers_1 = [
+        "Beginnen wir bei den überprüfbaren Fakten.",
+        "Schauen wir zuerst auf das, was im Labor und in der Beobachtung eindeutig belegt ist.",
+        "Die harten Daten liefern hier den entscheidenden Ausgangspunkt.",
+        "Nüchtern betrachtet zeigt sich zunächst ein glasklarer Befund.",
+    ]
+    fact_openers_2 = [
+        "Doch erst der zweite Befund macht die Tragweite sichtbar.",
+        "Genau an dieser Stelle greift ein zweites Puzzleteil ineinander.",
+        "Noch spannender wird es, wenn man die nächste Messung danebenlegt.",
+        "Und das ist kein isolierter Einzelfall.",
+    ]
+    deutung_lines = [
+        f"Wo die reine Messung endet, beginnt die große Frage: Blicken wir bei {short_kw} auf die grundlegende Informationsstruktur unserer Wirklichkeit?",
+        f"Vielleicht zeigt uns {short_kw} genau deshalb so präzise Muster, weil Materie, Raum und Bewusstsein derselben mathematischen Grammatik folgen.",
+        f"Je schärfer unsere Instrumente werden, desto weniger gleicht das Universum einem blinden Uhrwerk – und desto mehr einem präzise abgestimmten Informationsraum.",
+        f"Ob klassische Naturkonstante oder tieferer Bauplan: {short_kw} zwingt uns dazu, die Grenze zwischen Beobachter und Realität neu zu denken.",
+    ]
+    cta_variants = [
+        "Wenn du solche Verbindungen zwischen echter Spitzenforschung und den großen Mysterien liebst, abonniere jetzt AuronOrigin und teile deine Sicht in den Kommentaren.",
+        "Zufall der Naturgesetze oder verborgene Architektur? Schreib deine Meinung unten in die Kommentare und abonniere AuronOrigin für die nächste Analyse.",
+        "Folge AuronOrigin, um keine neue Entschlüsselung zu verpassen – und verrate uns in den Kommentaren, welches Thema wir als Nächstes untersuchen sollen.",
     ]
 
-    f1 = facts[0].split(" (")[0]
-    f2 = (facts[1] if len(facts) > 1 else facts[0]).split(" (")[0]
-    f3 = (facts[2] if len(facts) > 2 else f2).split(" (")[0]
-    m1 = mysteries[0]
-
-    closing_line = (
-        "Wenn du genau solche Codes zwischen harter Forschung und tiefem Mysterium entschlüsseln willst, "
-        "abonniere jetzt AuronOrigin und schreib deine Deutung in die Kommentare. "
-        + ("Auron out. Die Matrix wackelt. Bleib wach." if editorial_mode == "matrix_narrativ" else "Bleib wachsam – wir sehen uns in der nächsten Analyse.")
+    tail_sig = (
+        " Auron out. Die Matrix wackelt. Bleib wach."
+        if editorial_mode == "matrix_narrativ"
+        else " Bleib neugierig – bis zur nächsten Entschlüsselung."
     )
 
-    words_upper = [w.upper() for w in topic.replace(":", " ").replace("&", " ").replace("-", " ").split() if len(w) >= 3]
-    short_trigger = " ".join(words_upper[:4])[:28].strip() if len(words_upper) >= 2 else "DER REALITÄTS-CODE"
+    motifs_pool = [m for m in VISUAL_MOTIFS]
+    random.shuffle(motifs_pool)
+
+    words_upper = [
+        w.upper()
+        for w in re.findall(r"[A-Za-zÄÖÜäöüß0-9]{3,}", short_kw)
+        if w.lower() not in {"und", "der", "die", "das", "von", "mit", "für", "über", "was"}
+    ]
+    short_trigger = " ".join(words_upper[:3])[:28].strip() or "DER REALITÄTS-CODE"
+
+    title_templates = [
+        f"{short_kw}: Was aktuelle Forschungsdaten plötzlich enthüllen",
+        f"Das ungelöste Muster hinter {short_kw} | AuronOrigin",
+        f"{short_kw} neu entschlüsselt – Zufall oder tieferer Code?",
+        f"Warum {short_kw} Forscher weltweit neu nachdenken lässt",
+    ]
 
     base_scenes = [
         {
             "scene_number": 1,
             "phase": "HOOK",
-            "fact_badge": "IMPULS",
-            "on_screen_headline": short_trigger[:28],
+            "fact_badge": "AKTUELL",
+            "on_screen_headline": short_trigger,
             "on_screen_subline": "Fakten zuerst • Mystery als Deutung",
-            "narration": (
-                f"Halte für drei Sekunden inne. Was wäre, wenn {topic} kein bloßer Zufall ist, "
-                "sondern ein direkter Blick hinter die Kulissen unserer Realität?"
-            ),
-            "pause_after": 0.9,
-            "visual_motif": "eye_of_horus",
+            "narration": random.choice(hooks),
+            "pause_after": 0.85,
+            "visual_motif": motifs_pool[0],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_in",
             "glitch_transition": True,
+            "image_prompt_en": f"Dramatic dark cosmic opening artwork about {short_kw}, deep obsidian #0B0C10, dark steel blue #1F2833 nebula, glowing #D4AF37 gold geometry, cinematic 8k, no text",
         },
         {
             "scene_number": 2,
-            "phase": "FAKT 1",
+            "phase": "BEFUND 1",
             "fact_badge": "FAKT",
-            "on_screen_headline": "BELEGTER BEFUND",
+            "on_screen_headline": "BELEGTE MESSDATEN",
             "on_screen_subline": pillar.upper(),
-            "narration": f"Schauen wir zuerst nüchtern auf die belegten Daten. {f1}",
+            "narration": f"{random.choice(fact_openers_1)} {de_facts[0]}",
             "pause_after": 0.85,
-            "visual_motif": "quantum_lattice" if pillar == "Simulations-News" else ("pyramid_radar" if pillar == "Alte Codes" else "neural_cosmos"),
+            "visual_motif": motifs_pool[1],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "pan_up",
             "glitch_transition": True,
+            "image_prompt_en": f"Scientific dark futuristic visualization of {de_facts[0][:80]}, dark navy #1F2833 and golden #D4AF37 light rays, obsidian shadows, 8k, no text",
         },
         {
             "scene_number": 3,
-            "phase": "FAKT 2",
+            "phase": "BEFUND 2",
             "fact_badge": "FORSCHUNG",
-            "on_screen_headline": "DIE ZWEITE EBENE",
-            "on_screen_subline": "Präzise Struktur statt Zufall",
-            "narration": f"Doch genau hier wird es außergewöhnlich. {f2}",
+            "on_screen_headline": "ZWEITES INDIZ",
+            "on_screen_subline": "Präzision bis ins Detail",
+            "narration": f"{random.choice(fact_openers_2)} {de_facts[1]}",
             "pause_after": 0.9,
-            "visual_motif": "sacred_archive",
+            "visual_motif": motifs_pool[2],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_out",
             "glitch_transition": True,
+            "image_prompt_en": f"Sacred geometry and high-tech measurement of {short_kw}, deep space blue #1F2833, golden #D4AF37 filaments, subtle mystic violet #4A235A glow, no text",
         },
         {
             "scene_number": 4,
             "phase": "VERTIEFUNG",
             "fact_badge": "ANALYSE",
-            "on_screen_headline": "DAS MUSTER DAHINTER",
-            "on_screen_subline": "Information • Geometrie • Resonanz",
-            "narration": (
-                f"{f3} Je genauer unsere Instrumente messen, desto klarer tritt eine mathematische Ordnung hervor."
-            ),
-            "pause_after": 1.0,
-            "visual_motif": "pyramid_radar" if pillar != "Bewusstseins-Hacks" else "neural_cosmos",
+            "on_screen_headline": "DIE TIEFERE STRUKTUR",
+            "on_screen_subline": "Information • Frequenz • Raum",
+            "narration": de_facts[2],
+            "pause_after": 0.95,
+            "visual_motif": motifs_pool[3],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "drift_right",
             "glitch_transition": True,
+            "image_prompt_en": f"Macro to cosmic scale visualization for {short_kw}, dark blue cosmic dust #1F2833, shimmering gold #D4AF37 orbital rings, obsidian #0B0C10, 8k, no text",
         },
         {
             "scene_number": 5,
-            "phase": "MYSTERY-DEUTUNG",
+            "phase": "PERSPEKTIVWECHSEL",
             "fact_badge": "DEUTUNG",
-            "on_screen_headline": "PERSPEKTIVWECHSEL",
-            "on_screen_subline": "Wo Messung auf Philosophie trifft",
-            "narration": f"Und hier beginnt die eigentliche Deutung: {m1}",
-            "pause_after": 1.1,
-            "visual_motif": "ouroboros_seal",
+            "on_screen_headline": "WO DAS MODELL KIPPT",
+            "on_screen_subline": "Wissenschaft trifft Mysterium",
+            "narration": random.choice(deutung_lines),
+            "pause_after": 1.05,
+            "visual_motif": motifs_pool[4],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_in",
             "glitch_transition": True,
+            "image_prompt_en": f"Mystical philosophical perspective on {short_kw}, golden ouroboros horizon in dark cosmic blue #1F2833 and #0B0C10, #D4AF37 volumetric light, no text",
         },
         {
             "scene_number": 6,
-            "phase": "OUTRO & CTA",
+            "phase": "FINALE & CTA",
             "fact_badge": "AURONORIGIN",
             "on_screen_headline": "ABONNIERE AURONORIGIN",
             "on_screen_subline": "Deine Sicht in die Kommentare ↓",
-            "narration": closing_line,
+            "narration": random.choice(cta_variants) + tail_sig,
             "pause_after": 0.8,
-            "visual_motif": "eye_of_horus",
+            "visual_motif": motifs_pool[5],
+            "visual_seed": random.randint(100_000, 99_999_999),
             "camera_motion": "zoom_out",
             "glitch_transition": False,
+            "image_prompt_en": "Monumental golden cosmic portal in deep dark blue space #1F2833 and obsidian #0B0C10, AuronOrigin sacred geometry aesthetic, 8k, no text",
         },
     ]
 
     scenes = _pad_or_trim_scenes_to_count(base_scenes, target_n, topic, dossier, pillar)
 
-    short_topic = topic if len(topic) <= 56 else topic[:56].rsplit(" ", 1)[0]
     raw = {
-        "title": f"{short_topic} – Zufall oder Code? | AuronOrigin",
-        "thumbnail_text": short_trigger[:28],
-        "thumbnail_subtext": "FAKTEN & MYSTERIUM",
+        "title": random.choice(title_templates),
+        "thumbnail_text": short_trigger,
+        "thumbnail_subtext": "AKTUELLE FAKTEN & MYSTERIUM",
         "pillar": pillar,
         "scenes": scenes,
     }
@@ -508,10 +684,10 @@ def generate_video_blueprint(
     scene_count: int | None = None,
     arena_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Generate a complete AuronOrigin script & visual scene blueprint via Arena Router."""
+    """Generate a complete, non-repetitive 100% German AuronOrigin blueprint via Arena Router."""
     clean_topic = (topic or "").strip()
     if not clean_topic:
-        raise ValueError("Bitte gib ein Thema ein.")
+        clean_topic = (dossier or {}).get("topic") or "Quantenphysik & das Rätsel der Zeit"
 
     chosen_pillar = pillar or (dossier or {}).get("pillar") or detect_pillar(clean_topic)
     target_n = resolve_target_scene_count(duration_target, scene_count)
@@ -536,7 +712,7 @@ def generate_video_blueprint(
             gateway_url=cfg.get("arena_gateway_url", "https://api.preview.arena.ai"),
             model=cfg.get("arena_model", "coding-router-preview"),
             protocol=cfg.get("arena_protocol", "auto"),
-            max_tokens=8192 if target_n > 8 else 4096,
+            max_tokens=8192,
         )
         if router_res.get("ok"):
             parsed = extract_json_object(router_res.get("text", ""))
@@ -548,7 +724,7 @@ def generate_video_blueprint(
                     editorial_mode=editorial_mode,
                     pillar=chosen_pillar,
                 )
-                if len(bp["scenes"]) < target_n:
+                if len(bp["scenes"]) != target_n:
                     bp["scenes"] = _pad_or_trim_scenes_to_count(
                         bp["scenes"], target_n, clean_topic, dossier, chosen_pillar
                     )
@@ -587,7 +763,7 @@ def generate_video_blueprint(
         scene_count=target_n,
     )
     fallback["arena_router_used"] = False
-    fallback["arena_warning"] = "Kein Arena API-Key gesetzt – lokaler AuronOrigin Studio-Entwurf erstellt."
+    fallback["arena_warning"] = "Kein Arena API-Key gesetzt – variabler deutscher AuronOrigin-Entwurf erstellt."
     fallback["prompts_for_browser_router"] = {
         "system_prompt": sys_prompt,
         "user_prompt": usr_prompt,

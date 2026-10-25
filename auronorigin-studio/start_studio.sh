@@ -22,6 +22,13 @@ if [ ! -d "$SCRIPT_DIR/node_modules/onnxruntime-web/dist" ] && command -v npm >/
 fi
 
 PORT="${PORT:-8000}"
+
+# Falls noch eine ältere Studio-Instanz auf dem Port läuft, sauber beenden
+if command -v fuser >/dev/null 2>&1; then
+  fuser -k "${PORT}/tcp" >/dev/null 2>&1 || true
+  sleep 0.4
+fi
+
 echo "=========================================================="
 echo "  AURONORIGIN YOUTUBE VIDEO STUDIO"
 echo "  Öffne im Browser: http://localhost:${PORT}"

@@ -42,57 +42,41 @@ function currentRawApiKey() {
   return val.startsWith("••••") ? "" : val;
 }
 
-// Live Browser-Side Wikipedia DE/EN & Crossref Research
+// Live Browser-Side Pure-German Wikipedia Deep Research (zero English leakage)
 async function fetchLiveBrowserSources(topic) {
   const results = [];
   const clean = topic.trim();
   if (!clean) return results;
 
-  const wikiFetch = async (lang) => {
-    try {
-      const url = `https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(clean)}&srlimit=3&format=json&origin=*`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(4500) });
-      if (!resp.ok) return;
-      const data = await resp.json();
-      for (const hit of data?.query?.search || []) {
-        const plain = (hit.snippet || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-        if (hit.title && plain) {
-          results.push({
-            title: hit.title,
-            summary: plain,
-            url: `https://${lang}.wikipedia.org/wiki/${encodeURIComponent(hit.title.replace(/ /g, "_"))}`,
-            source: `Wikipedia (${lang.toUpperCase()})`,
-            kind: "FAKT",
-          });
-        }
-      }
-    } catch (_) {}
-  };
+  try {
+    const searchUrl = `https://de.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(clean)}&srlimit=3&format=json&origin=*`;
+    const sResp = await fetch(searchUrl, { signal: AbortSignal.timeout(4500) });
+    if (!sResp.ok) return results;
+    const sData = await sResp.json();
+    const titles = (sData?.query?.search || []).map((h) => h.title).filter(Boolean).slice(0, 3);
+    if (!titles.length) return results;
 
-  const crossrefFetch = async () => {
-    try {
-      const url = `https://api.crossref.org/works?query=${encodeURIComponent(clean)}&rows=2`;
-      const resp = await fetch(url, { signal: AbortSignal.timeout(4500) });
-      if (!resp.ok) return;
-      const data = await resp.json();
-      for (const item of data?.message?.items || []) {
-        const title = (item.title || [])[0];
-        const journal = (item["container-title"] || ["Fachjournal"])[0];
-        const year = item?.issued?.["date-parts"]?.[0]?.[0] || "";
-        if (title) {
-          results.push({
-            title,
-            summary: `Wissenschaftliche Fachpublikation veröffentlicht in ${journal} (${year}).`,
-            url: item.URL || "",
-            source: `Crossref • ${journal}`,
-            kind: "STUDIE",
-          });
-        }
+    const extUrl = `https://de.wikipedia.org/w/api.php?action=query&prop=extracts&exchars=850&explaintext=1&titles=${encodeURIComponent(titles.join("|"))}&format=json&origin=*`;
+    const eResp = await fetch(extUrl, { signal: AbortSignal.timeout(4500) });
+    if (!eResp.ok) return results;
+    const eData = await eResp.json();
+    const pages = Object.values(eData?.query?.pages || {});
+    for (const p of pages) {
+      const extract = String(p.extract || "").replace(/\s+/g, " ").trim();
+      if (p.title && extract.length > 40) {
+        const sents = extract.split(/(?<=[.!?])\s+/).filter((s) => s.length >= 40 && s.length <= 260);
+        const summary = sents[0] || extract.slice(0, 230);
+        results.push({
+          title: p.title,
+          summary,
+          url: `https://de.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/ /g, "_"))}`,
+          source: "Wikipedia DE",
+          kind: "FAKT",
+        });
       }
-    } catch (_) {}
-  };
+    }
+  } catch (_) {}
 
-  await Promise.all([wikiFetch("de"), wikiFetch("en"), crossrefFetch()]);
   return results;
 }
 
@@ -150,9 +134,12 @@ async function initStudio() {
   el("voiceRateLabel").textContent = `${el("voiceRate").value}%`;
   el("voiceReverb").checked = cfg.voice_reverb !== false;
 
-  el("musicPreset").value = cfg.music_preset || "glitch_horizon";
+  populateMusicDropdown(data.music_presets || [], cfg.music_preset || "dark_cosmos_cinematic");
   el("musicVolume").value = cfg.music_volume_db ?? -17;
   el("musicVolumeLabel").textContent = `${el("musicVolume").value} dB`;
+  if (el("sceneImageModeSelect")) {
+    el("sceneImageModeSelect").value = cfg.scene_image_mode || "auto_ai_brand";
+  }
 
   el("includeIntro").checked = cfg.include_brand_intro !== false;
   el("includeOutro").checked = cfg.include_brand_outro !== false;
@@ -166,10 +153,35 @@ async function initStudio() {
   renderHistory(data.history || []);
 
   if (data.topic_suggestions?.length) {
-    const first = data.topic_suggestions[0];
-    el("topicInput").value = first.topic;
+    const rndIdx = Math.floor(Math.random() * data.topic_suggestions.length);
+    const pick = data.topic_suggestions[rndIdx];
+    el("topicInput").value = pick.topic;
     await runResearchAndScript({ silentInit: true });
   }
+}
+
+function populateMusicDropdown(presets, selectedId) {
+  const sel = el("musicPreset");
+  if (!sel || !presets.length) return;
+  sel.innerHTML = "";
+  for (const p of presets) {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.label || p.id;
+    opt.dataset.mood = p.mood || "";
+    sel.appendChild(opt);
+  }
+  const target = [...sel.options].some((o) => o.value === selectedId) ? selectedId : "dark_cosmos_cinematic";
+  sel.value = target;
+  updateMusicMoodLabel();
+}
+
+function updateMusicMoodLabel() {
+  const sel = el("musicPreset");
+  const hint = el("musicMoodHint");
+  if (!sel || !hint) return;
+  const activeOpt = sel.options[sel.selectedIndex];
+  hint.textContent = activeOpt?.dataset?.mood || "";
 }
 
 function populateModelDropdown(models, selectedId) {
@@ -253,13 +265,20 @@ function pumpPreviewQueue() {
   }
 }
 
-function fetchMotifPreviewUrl(motif, videoFormat, customImageId) {
-  // Instant direct image URL whenever a custom image is set on this scene
+function fetchMotifPreviewUrl(sc, videoFormat) {
+  const customImageId = sc.custom_image_id;
   if (customImageId) {
     return Promise.resolve(`/api/uploads/${encodeURIComponent(customImageId)}`);
   }
 
-  const key = `${motif}|${videoFormat}`;
+  if (!sc.visual_seed) {
+    sc.visual_seed = Math.floor(100000 + Math.random() * 98000000);
+  }
+  const imgMode = el("sceneImageModeSelect")?.value || "auto_ai_brand";
+  const motif = sc.visual_motif || "solar_eclipse_crown";
+  const promptEn = sc.image_prompt_en || "";
+  const key = `${motif}|${videoFormat}|${sc.visual_seed}|${imgMode}|${promptEn.slice(0, 64)}`;
+
   if (state.motifCache.has(key)) {
     return Promise.resolve(state.motifCache.get(key));
   }
@@ -277,6 +296,9 @@ function fetchMotifPreviewUrl(motif, videoFormat, customImageId) {
           body: JSON.stringify({
             visual_motif: motif,
             video_format: videoFormat,
+            visual_seed: sc.visual_seed,
+            image_prompt_en: promptEn,
+            scene_image_mode: imgMode,
             custom_image_id: null,
           }),
         });
@@ -379,14 +401,17 @@ async function clearCustomImageOnSceneUI(sc, card) {
   const clearBtn = card.querySelector(".scene-clear-img-btn");
 
   card.classList.remove("has-custom-img");
-  statusEl.textContent = "Drop / Datei / URL";
-  statusEl.title = "";
+  statusEl.textContent = `Auto-Unikat #${String(sc.visual_seed || "").slice(-4)}`;
+  statusEl.title = "Automatisch generiertes AuronOrigin-Szenenbild (Dunkelblau & Gold)";
   statusEl.classList.remove("custom-active");
   clearBtn.classList.add("hidden");
-  thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, state.blueprint?.video_format || "9:16", "");
+  thumbImg.src = await fetchMotifPreviewUrl(sc, state.blueprint?.video_format || "9:16");
 }
 
 function buildSceneCardElement(sc, idx, bp) {
+  if (!sc.visual_seed) {
+    sc.visual_seed = Math.floor(100000 + Math.random() * 98000000);
+  }
   const card = document.createElement("div");
   card.className = `scene-card${sc.custom_image_id ? " has-custom-img" : ""}`;
   card.dataset.sceneIndex = String(idx);
@@ -406,23 +431,26 @@ function buildSceneCardElement(sc, idx, bp) {
     .join("");
 
   const hasCustom = Boolean(sc.custom_image_id);
-  const statusLabel = hasCustom ? `✓ ${sc.custom_image_name || "Eigenes Bild"}` : "Drop / Datei / URL";
+  const statusLabel = hasCustom
+    ? `✓ ${sc.custom_image_name || "Eigenes Bild"}`
+    : `Auto-Unikat #${String(sc.visual_seed).slice(-4)}`;
 
   card.innerHTML = `
     <div class="scene-preview-col">
-      <img class="scene-motif-thumb" alt="Szene ${idx + 1}" title="Klicken zum Auswählen eines eigenen Bildes (oder Bild hierher ziehen)" />
+      <img class="scene-motif-thumb" alt="Szene ${idx + 1}" title="Klicken zum Hochladen eines eigenen Bildes (oder per Drag & Drop ziehen)" />
       <input type="file" class="visually-hidden-file scene-img-input" />
       <div class="scene-img-btn-row">
-        <button type="button" class="btn btn-secondary btn-xs sc-pick-file-btn" title="Bilddatei über den Browser auswählen">📷 Datei</button>
-        <button type="button" class="btn btn-secondary btn-xs sc-pick-any-btn" title="Bild von beliebigem PC-Ordner, USB-Laufwerk (/media, /mnt) oder per Web-URL wählen">🗂️ PC / URL</button>
+        <button type="button" class="btn btn-secondary btn-xs sc-regen-img-btn" title="Neues einzigartiges AuronOrigin-Bild (Gold & Dunkelblau) für diese Szene generieren">🎲 Neu</button>
+        <button type="button" class="btn btn-secondary btn-xs sc-pick-file-btn" title="Eigenes Bild über den Browser auswählen">📷 Datei</button>
+        <button type="button" class="btn btn-secondary btn-xs sc-pick-any-btn" title="Eigenes Bild von PC-Ordner, USB-Laufwerk (/media, /mnt) oder Web-URL wählen">🗂️ PC/URL</button>
       </div>
       <div class="scene-img-status ${hasCustom ? "custom-active" : ""}" title="${escapeAttr(statusLabel)}">${escapeHtml(statusLabel)}</div>
-      <button type="button" class="btn btn-ghost btn-xs scene-clear-img-btn ${hasCustom ? "" : "hidden"}" title="Eigenes Bild entfernen und AuronOrigin-Symbol nutzen">↺ Standard-Motiv</button>
+      <button type="button" class="btn btn-ghost btn-xs scene-clear-img-btn ${hasCustom ? "" : "hidden"}" title="Eigenes Bild entfernen und generiertes AuronOrigin-Bild nutzen">↺ Auto-Bild</button>
     </div>
     <div class="scene-fields-col">
       <div class="scene-top-row">
         <span class="scene-num-pill">SZENE ${idx + 1}</span>
-        <input type="text" class="sc-headline" value="${escapeAttr(sc.on_screen_headline || "")}" placeholder="CINZEL ON-SCREEN TITEL" />
+        <input type="text" class="sc-headline" value="${escapeAttr(sc.on_screen_headline || "")}" placeholder="DEUTSCHER CINZEL TITEL" />
         <input type="text" class="sc-badge" value="${escapeAttr(sc.fact_badge || "FAKT")}" placeholder="FAKT / DEUTUNG" title="Badge oben links" />
         <select class="sc-motif">${motifOpts}</select>
         <select class="sc-motion">${motions}</select>
@@ -433,19 +461,32 @@ function buildSceneCardElement(sc, idx, bp) {
           <button type="button" class="btn btn-ghost btn-xs sc-delete" title="Szene entfernen">✕</button>
         </div>
       </div>
-      <textarea rows="2" class="sc-narration" placeholder="Gesprochener deutscher Sprechertext dieser Szene…">${escapeHtml(sc.narration || "")}</textarea>
+      <textarea rows="2" class="sc-narration" placeholder="100 % deutscher Sprechertext dieser Szene…">${escapeHtml(sc.narration || "")}</textarea>
     </div>
   `;
 
   const thumbImg = card.querySelector(".scene-motif-thumb");
   const fileInput = card.querySelector(".scene-img-input");
+  const regenImgBtn = card.querySelector(".sc-regen-img-btn");
   const pickFileBtn = card.querySelector(".sc-pick-file-btn");
   const pickAnyBtn = card.querySelector(".sc-pick-any-btn");
   const clearImgBtn = card.querySelector(".scene-clear-img-btn");
   const statusEl = card.querySelector(".scene-img-status");
 
-  fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", sc.custom_image_id).then((u) => {
+  fetchMotifPreviewUrl(sc, bp.video_format || "9:16").then((u) => {
     thumbImg.src = u;
+  });
+
+  regenImgBtn.addEventListener("click", async () => {
+    sc.custom_image_id = "";
+    sc.custom_image_name = "";
+    sc.visual_seed = Math.floor(100000 + Math.random() * 98000000);
+    card.classList.remove("has-custom-img");
+    clearImgBtn.classList.add("hidden");
+    statusEl.classList.remove("custom-active");
+    statusEl.textContent = "⏳ Generiere…";
+    thumbImg.src = await fetchMotifPreviewUrl(sc, bp.video_format || "9:16");
+    statusEl.textContent = `Auto-Unikat #${String(sc.visual_seed).slice(-4)}`;
   });
 
   const openNativeFilePicker = () => {
@@ -550,8 +591,11 @@ function buildSceneCardElement(sc, idx, bp) {
   });
   card.querySelector(".sc-motif").addEventListener("change", async (e) => {
     sc.visual_motif = e.target.value;
+    sc.visual_seed = Math.floor(100000 + Math.random() * 98000000);
     if (!sc.custom_image_id) {
-      thumbImg.src = await fetchMotifPreviewUrl(sc.visual_motif, bp.video_format || "9:16", "");
+      statusEl.textContent = "⏳ Generiere…";
+      thumbImg.src = await fetchMotifPreviewUrl(sc, bp.video_format || "9:16");
+      statusEl.textContent = `Auto-Unikat #${String(sc.visual_seed).slice(-4)}`;
     }
   });
   card.querySelector(".sc-motion").addEventListener("change", (e) => {
@@ -739,13 +783,8 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/"/g, "&quot;");
 }
 
-async function runResearchAndScript({ silentInit = false } = {}) {
-  const topic = el("topicInput").value.trim();
-  if (!topic) {
-    alert("Bitte gib zuerst ein Thema für das Video ein.");
-    el("topicInput").focus();
-    return null;
-  }
+async function runResearchAndScript({ silentInit = false, autoDiscover = false } = {}) {
+  const rawInput = autoDiscover ? "" : el("topicInput").value.trim();
 
   const desiredScenes = Math.max(2, Math.min(30, Number(el("sceneCountInput").value || 6)));
   el("sceneCountInput").value = String(desiredScenes);
@@ -753,18 +792,20 @@ async function runResearchAndScript({ silentInit = false } = {}) {
   try {
     if (!silentInit) {
       showWorkflowStatus(
-        "Schritt 1/2: Automatische Live-Recherche läuft…",
-        "Durchsuche wissenschaftliche Quellen, Wikipedia & AuronOrigin-Wissensmatrix…"
+        rawInput
+          ? `Schritt 1/2: Recherchiere aktuelle deutsche Quellen zu „${rawInput}“…`
+          : "Schritt 1/2: Suche automatisch ein aktuelles Trend-Thema in der AuronOrigin-Nische…",
+        "Werte aktuelle Wissenschafts-News, Wikipedia DE & AuronOrigin-Wissensmatrix aus…"
       );
     }
 
-    const browserSources = silentInit ? [] : await fetchLiveBrowserSources(topic);
+    const browserSources = silentInit || !rawInput ? [] : await fetchLiveBrowserSources(rawInput);
 
     const resResp = await fetch("/api/research", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        topic,
+        topic: rawInput,
         pillar: el("pillarSelect").value || null,
         editorial_mode: el("editorialMode").value,
         browser_sources: browserSources,
@@ -778,13 +819,18 @@ async function runResearchAndScript({ silentInit = false } = {}) {
       throw new Error(resData.detail || "Recherche fehlgeschlagen.");
     }
 
+    const resolvedTopic = resData.dossier?.topic || rawInput || "Quantenphysik & das Rätsel der Raumzeit";
+    if (!rawInput || autoDiscover) {
+      el("topicInput").value = resolvedTopic;
+    }
+
     renderDossier(resData.dossier);
     updateUsageHeader(resData.settings);
 
     if (!silentInit) {
       showWorkflowStatus(
-        `Schritt 2/2: Arena Router entwirft AuronOrigin-Skript (${desiredScenes} Szenen)…`,
-        `Modell: ${el("arenaModel").value} • Format: ${el("videoFormat").value}`
+        `Schritt 2/2: Schreibe komplett neues deutsches Skript (${desiredScenes} Szenen) & generiere Szenenbilder…`,
+        `Thema: ${resolvedTopic.slice(0, 72)} • Modell: ${el("arenaModel").value}`
       );
     }
 
@@ -792,7 +838,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        topic,
+        topic: resolvedTopic,
         dossier: resData.dossier,
         video_format: el("videoFormat").value,
         duration_target: el("durationTarget").value,
@@ -813,7 +859,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
     ) {
       showWorkflowStatus(
         "Verbinde direkt über deinen Browser mit dem Arena Router…",
-        "Sende AuronOrigin Showrunner-Prompt an Arena API…"
+        "Sende deutschen AuronOrigin Showrunner-Prompt an Arena API…"
       );
       const p = scriptData.blueprint.prompts_for_browser_router;
       const direct = await tryBrowserDirectArenaRouter(p.system_prompt, p.user_prompt);
@@ -822,7 +868,7 @@ async function runResearchAndScript({ silentInit = false } = {}) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            topic,
+            topic: resolvedTopic,
             dossier: resData.dossier,
             video_format: el("videoFormat").value,
             duration_target: el("durationTarget").value,
@@ -1054,6 +1100,7 @@ function gatherSettingsPayload() {
     elevenlabs_voice_id: el("elevenlabsVoiceId").value.trim() || undefined,
     music_preset: el("musicPreset").value,
     music_volume_db: Number(el("musicVolume").value),
+    scene_image_mode: el("sceneImageModeSelect")?.value || "auto_ai_brand",
     include_brand_intro: el("includeIntro").checked,
     include_brand_outro: el("includeOutro").checked,
     include_watermark: el("includeWatermark").checked,
@@ -1138,6 +1185,15 @@ el("musicVolume").addEventListener("input", () => {
 el("musicPreset").addEventListener("change", () => {
   const val = el("musicPreset").value;
   el("customMusicRow").classList.toggle("hidden", val !== "custom");
+  updateMusicMoodLabel();
+  const player = el("musicPreviewPlayer");
+  if (!player.classList.contains("hidden") && val !== "none" && val !== "custom") {
+    player.src = `/api/music-preview/${encodeURIComponent(val)}`;
+    player.play().catch(() => {});
+  } else if (val === "none") {
+    player.pause();
+    player.classList.add("hidden");
+  }
 });
 
 el("customMusicInput").addEventListener("change", async (e) => {
@@ -1150,14 +1206,35 @@ el("customMusicInput").addEventListener("change", async (e) => {
   const d = await r.json();
   if (d.ok) {
     state.customMusicFileId = d.file_id;
+    const player = el("musicPreviewPlayer");
+    player.src = `/api/uploads/${encodeURIComponent(d.file_id)}`;
+    player.classList.remove("hidden");
   }
 });
 
-el("previewMusicBtn").addEventListener("click", () => {
+el("previewMusicBtn").addEventListener("click", async () => {
+  const preset = el("musicPreset").value;
+  if (preset === "none") {
+    alert("Aktuell ist „Keine Hintergrundmusik“ ausgewählt. Wähle oben einen Soundtrack zum Anhören aus.");
+    return;
+  }
   const player = el("musicPreviewPlayer");
+  const expectedSrc =
+    preset === "custom" && state.customMusicFileId
+      ? `/api/uploads/${encodeURIComponent(state.customMusicFileId)}`
+      : `/api/music-preview/${encodeURIComponent(preset)}`;
+
+  if (preset === "custom" && !state.customMusicFileId) {
+    alert("Bitte wähle zuerst eine eigene MP3/WAV-Datei aus.");
+    return;
+  }
+
   player.classList.remove("hidden");
-  if (player.paused) {
-    player.play();
+  if (!player.src.endsWith(expectedSrc)) {
+    player.src = expectedSrc;
+    await player.play().catch(() => {});
+  } else if (player.paused) {
+    await player.play().catch(() => {});
   } else {
     player.pause();
   }
@@ -1309,8 +1386,39 @@ el("modalCurrentDirInput").addEventListener("keydown", (e) => {
   }
 });
 
+if (el("sceneImageModeSelect")) {
+  el("sceneImageModeSelect").addEventListener("change", async () => {
+    if (state.blueprint) {
+      await renderBlueprintEditor(state.blueprint);
+    }
+    saveCurrentSettingsQuietly();
+  });
+}
+
+if (el("regenAllSceneImagesBtn")) {
+  el("regenAllSceneImagesBtn").addEventListener("click", async () => {
+    if (!state.blueprint?.scenes?.length) return;
+    const motifs = (state.bootstrap?.visual_motifs || []).map((m) => m.id);
+    state.blueprint.scenes.forEach((sc, i) => {
+      if (!sc.custom_image_id) {
+        sc.visual_seed = Math.floor(100000 + Math.random() * 98000000);
+        if (motifs.length > 1) {
+          sc.visual_motif = motifs[(Math.floor(Math.random() * motifs.length) + i) % motifs.length];
+        }
+      }
+    });
+    await renderBlueprintEditor(state.blueprint);
+  });
+}
+
+if (el("autoDiscoverTopicBtn")) {
+  el("autoDiscoverTopicBtn").addEventListener("click", async () => {
+    await runResearchAndScript({ silentInit: false, autoDiscover: true });
+  });
+}
+
 el("researchAndScriptBtn").addEventListener("click", async () => {
-  await runResearchAndScript({ silentInit: false });
+  await runResearchAndScript({ silentInit: false, autoDiscover: false });
 });
 
 el("oneClickFullVideoBtn").addEventListener("click", async () => {

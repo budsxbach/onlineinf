@@ -126,12 +126,13 @@
         </div>
 
         <div class="field-group">
-          <label for="durationTarget">Ziel-Länge &amp; Tiefe</label>
+          <label for="durationTarget">Ziel-Länge &amp; Retention-Struktur</label>
           <div class="dual-select-num">
             <select id="durationTarget">
-              <option value="short_60">Viraler Short (6 Szenen • ca. 50–65 Sek.)</option>
+              <option value="short_60">Viraler Short (6 Szenen • ca. 55–65 Sek.)</option>
               <option value="mid_180">Kompakt-Analyse (8 Szenen • ca. 2,5–3,5 Min.)</option>
               <option value="long_300">Mini-Dokumentation (10 Szenen • ca. 4,5–6 Min.)</option>
+              <option value="docu_540">9-Minuten Hauptvideo • 6-Akt Open-Loop Doku (18 Szenen • &gt;40% Bindung)</option>
             </select>
             <input
               type="number"
@@ -142,7 +143,7 @@
               title="Exakte Anzahl der Szenen (2 bis 30)"
             />
           </div>
-          <small class="field-hint">Rechts daneben: Exakte Szenen-Anzahl (z. B. 6, 8, 10 oder bis zu 30 Szenen).</small>
+          <small class="field-hint">Für 9-Minuten-Hauptvideos (16:9) wähle <strong>18 Szenen</strong> mit Cold Open, 3 Open Loops &amp; Binge-Bridge.</small>
         </div>
 
         <div class="field-group">
@@ -324,11 +325,11 @@
           <div class="toggles-grid">
             <label class="checkbox-line">
               <input type="checkbox" id="includeIntro" checked />
-              <span>Offizielles AuronOrigin Intro</span>
+              <span>2,2s Brand-Stinger NACH Cold Open</span>
             </label>
             <label class="checkbox-line">
               <input type="checkbox" id="includeOutro" checked />
-              <span>Offizielles 7s AuronOrigin Outro</span>
+              <span>5,5s End-Screen Outro</span>
             </label>
             <label class="checkbox-line">
               <input type="checkbox" id="includeWatermark" checked />
@@ -357,22 +358,22 @@
       <div id="blueprintEditorWrap" class="blueprint-editor">
         <div class="blueprint-meta-grid">
           <div class="field-group field-span-2">
-            <label for="videoTitleInput">YouTube-Haupttitel (jederzeit anpassbar)</label>
+            <label for="videoTitleInput">High-CTR YouTube-Startseiten-Titel (Curiosity Gap • jederzeit anpassbar)</label>
             <input type="text" id="videoTitleInput" placeholder="Wird bei der Skript-Erstellung automatisch ausgefüllt…" />
           </div>
           <div class="field-group">
-            <label for="thumbTextInput">Thumbnail-Trigger (2–3 Worte Versalien)</label>
-            <input type="text" id="thumbTextInput" placeholder="DER ZEIT-CODE" />
+            <label for="thumbTextInput">Thumbnail-Trigger A (2–3 Worte Kontrast-Hook)</label>
+            <input type="text" id="thumbTextInput" placeholder="KEIN SIGNAL?" />
           </div>
           <div class="field-group">
-            <label for="thumbSubInput">Thumbnail-Unterzeile</label>
-            <input type="text" id="thumbSubInput" placeholder="FAKTEN &amp; MYSTERIUM" />
+            <label for="thumbSubInput">Optionale Zusatzzeile (leer = höchste Klickrate)</label>
+            <input type="text" id="thumbSubInput" placeholder="Leer empfohlen für maximalen Mobile-Fokus" />
           </div>
         </div>
 
         <div class="scenes-header-bar">
           <div>
-            <h3>🎬 Szenen-Ablauf • Automatische AuronOrigin-Bilder &amp; Eigene Uploads (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
+            <h3>🎬 Szenen-Ablauf • Open-Loop Dramaturgie &amp; Unikat-Bilder (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0 Sek.</span>)</h3>
             <p class="muted-note scenes-subhint">
               Zu <strong>jedem Video und jeder Szene</strong> wird automatisch ein <strong>neues Unikat-Bild im AuronOrigin-Stil (Dunkelblau &amp; Gold)</strong> generiert. Mit <strong>„🎲 Neu“</strong> erzeugst du jederzeit ein neues Bild pro Szene – oder lädst mit <strong>„📷 Datei“</strong>, <strong>„🗂️ PC / URL“</strong>, <strong>Drag &amp; Drop</strong> oder <strong>STRG+V</strong> eigene Bilder hoch.
             </p>
@@ -445,7 +446,9 @@
             <a id="downloadActiveCoverBtn" href="#" class="btn btn-gold btn-xs" download>⬇️ Aktuelles Cover laden</a>
           </div>
           <div class="cover-selector-pills" id="coverSelectorPills">
-            <button type="button" class="cover-pill active" data-cover-key="youtube_16x9">YouTube 16:9</button>
+            <button type="button" class="cover-pill active" data-cover-key="youtube_16x9">YT 16:9 (A • Kontrast)</button>
+            <button type="button" class="cover-pill" data-cover-key="youtube_16x9_b">YT 16:9 (B • Anomalie)</button>
+            <button type="button" class="cover-pill" data-cover-key="youtube_16x9_c">YT 16:9 (C • Mysterium)</button>
             <button type="button" class="cover-pill" data-cover-key="youtube_shorts_9x16">YT Shorts 9:16</button>
             <button type="button" class="cover-pill" data-cover-key="tiktok_9x16">TikTok 9:16</button>
             <button type="button" class="cover-pill" data-cover-key="instagram_reel_9x16">IG Reel 9:16</button>
@@ -456,7 +459,7 @@
           <div class="cover-stage-wrap">
             <img id="finalThumbnailImg" alt="Generiertes Plattform-Cover" class="thumb-preview" />
           </div>
-          <p class="muted-note" id="activeCoverHint">YouTube High-CTR Thumbnail (1280×720) – alle 7 Cover sind auch im .ZIP-Paket unter <code>02_Covers_und_Thumbnails/</code> enthalten.</p>
+          <p class="muted-note" id="activeCoverHint">YouTube High-CTR Thumbnail A/B/C (1280×720 für „Testen &amp; Vergleichen“) – alle 9 Cover liegen im .ZIP-Paket unter <code>02_Covers_und_Thumbnails/</code>.</p>
         </div>
       </div>
     </section>

@@ -25,8 +25,102 @@ def get_ffmpeg_bin() -> str:
     return imageio_ffmpeg.get_ffmpeg_exe()
 
 
+def get_mastering_ffmpeg_bin() -> str:
+    """Return an FFmpeg binary guaranteed to include librubberband & libsoxr for vocal-tract mastering."""
+    try:
+        iio_ff = imageio_ffmpeg.get_ffmpeg_exe()
+        if iio_ff and Path(iio_ff).exists():
+            return iio_ff
+    except Exception:
+        pass
+    return get_ffmpeg_bin()
+
+
 FFMPEG_BIN = get_ffmpeg_bin()
+MASTERING_FFMPEG_BIN = get_mastering_ffmpeg_bin()
 SAMPLE_RATE = 48000
+
+# Curated German Male Narrator Characters tailored to the AuronOrigin brand
+VOICE_PROFILES: list[dict[str, Any]] = [
+    {
+        "id": "wise_elder",
+        "name": "Auron – Der Alte Weise (Tief, Beruhigend & Mysteriös • Empfohlen)",
+        "description": "Tiefe, warme, gereifte Männerstimme mit sonorer Brustresonanz, sanften Höhen, ruhigem Erzählfluss und dunklem Mysterien-Raumklang.",
+        "edge_voice": "de-DE-ConradNeural",
+        "browser_voice": "de_DE-thorsten-high",
+        "default_rate_pct": -16,
+        "default_depth_semitones": -2.6,
+        "default_warmth_db": 4.8,
+        "edge_pitch_hz": -10,
+        "serenity_cut_db": -3.6,
+        "reverb_wet": 0.12,
+        "min_scene_pause": 0.98,
+    },
+    {
+        "id": "mystic_chronicler",
+        "name": "Wächter der Alten Codes (Sehr tiefer Bass-Bariton • Dunkel & Hypnotisch)",
+        "description": "Noch dunklerer, geheimnisvoller Bass-Bariton mit starker Tiefen-Autorität – ideal für Alte Codes & Matrix-Narrativ.",
+        "edge_voice": "de-DE-FlorianMultilingualNeural",
+        "browser_voice": "de_DE-thorsten-high",
+        "default_rate_pct": -18,
+        "default_depth_semitones": -3.3,
+        "default_warmth_db": 5.4,
+        "edge_pitch_hz": -12,
+        "serenity_cut_db": -4.0,
+        "reverb_wet": 0.145,
+        "min_scene_pause": 1.05,
+    },
+    {
+        "id": "calm_philosopher",
+        "name": "Der Ruhige Philosoph (Sanft, Gütig & Bedächtig)",
+        "description": "Beruhigende, väterlich-weise Erzählstimme ohne dunkle Schwere – perfekt für Bewusstseins-Hacks & tiefe Gedankenreisen.",
+        "edge_voice": "de-DE-KillianNeural",
+        "browser_voice": "de_DE-thorsten-medium",
+        "default_rate_pct": -15,
+        "default_depth_semitones": -2.0,
+        "default_warmth_db": 4.2,
+        "edge_pitch_hz": -8,
+        "serenity_cut_db": -3.4,
+        "reverb_wet": 0.105,
+        "min_scene_pause": 0.95,
+    },
+    {
+        "id": "cosmos_documentary",
+        "name": "Kosmos-Dokumentar (Markanter Tiefer Studio-Sprecher)",
+        "description": "Seriöser, klar artikulierter Wissenschafts- und Mystery-Doku-Bariton mit dezenter Tiefe.",
+        "edge_voice": "de-DE-ConradNeural",
+        "browser_voice": "de_DE-thorsten-high",
+        "default_rate_pct": -11,
+        "default_depth_semitones": -1.5,
+        "default_warmth_db": 3.2,
+        "edge_pitch_hz": -6,
+        "serenity_cut_db": -2.4,
+        "reverb_wet": 0.08,
+        "min_scene_pause": 0.85,
+    },
+    {
+        "id": "elevenlabs_custom",
+        "name": "ElevenLabs Eigene Stimme (Optional mit eigenem API-Key)",
+        "description": "Nutzt deinen ElevenLabs API-Key (Standard: gereifte tiefe Erzählstimme ‚Bill‘ oder deine eigene Voice-ID) inkl. Auron-Wärme.",
+        "edge_voice": "de-DE-ConradNeural",
+        "browser_voice": "de_DE-thorsten-high",
+        "default_rate_pct": -12,
+        "default_depth_semitones": -1.2,
+        "default_warmth_db": 3.5,
+        "edge_pitch_hz": -6,
+        "serenity_cut_db": -2.5,
+        "reverb_wet": 0.10,
+        "min_scene_pause": 0.90,
+    },
+]
+
+
+def get_voice_profile(profile_id: str | None) -> dict[str, Any]:
+    pid = str(profile_id or "wise_elder").strip()
+    for p in VOICE_PROFILES:
+        if p["id"] == pid:
+            return p
+    return VOICE_PROFILES[0]
 
 # Selectable high-craft AuronOrigin background music catalog
 MUSIC_PRESETS: list[dict[str, str]] = [
@@ -85,43 +179,192 @@ def get_wav_duration(path: Path) -> float:
         return frames / float(rate) if rate else 0.0
 
 
-def _convert_to_standard_wav(src: Path, dst: Path, apply_reverb: bool = True) -> None:
-    """Convert any audio file into 48 kHz 16-bit stereo WAV with AuronOrigin mastering."""
-    filters = [
-        "highpass=f=70",
-        "acompressor=threshold=-19dB:ratio=2.5:attack=10:release=160:makeup=2dB",
-    ]
-    if apply_reverb:
-        filters.append("aecho=0.8:0.88:60:0.24")
-    filters.append("alimiter=limit=0.93")
-    af_chain = ",".join(filters)
+def _prepare_sage_prosody_text(text: str) -> str:
+    """Encourage calm, deliberate breathing pauses at dashes, colons, and ellipses for a wise narrator cadence."""
+    import re as _re
 
-    cmd = [
-        FFMPEG_BIN,
+    t = _re.sub(r"\s+", " ", str(text or "")).strip()
+    # Replace bare dashes with calm ellipsis-style pauses so neural TTS takes a thoughtful breath
+    t = _re.sub(r"\s+[–—-]\s+", " … ", t)
+    t = _re.sub(r":\s+", ": … ", t)
+    return t
+
+
+def _biquad_peaking_sos(freq_hz: float, gain_db: float, q: float = 1.1) -> np.ndarray:
+    """Robert Bristow-Johnson peaking EQ biquad filter row in float64 second-order-section format."""
+    if abs(gain_db) < 0.05:
+        return np.array([[1.0, 0.0, 0.0, 1.0, 0.0, 0.0]], dtype=np.float64)
+    a_lin = 10.0 ** (gain_db / 40.0)
+    w0 = 2.0 * math.pi * freq_hz / float(SAMPLE_RATE)
+    alpha = math.sin(w0) / (2.0 * max(0.2, q))
+    cos_w0 = math.cos(w0)
+
+    b0 = 1.0 + alpha * a_lin
+    b1 = -2.0 * cos_w0
+    b2 = 1.0 - alpha * a_lin
+    a0 = 1.0 + alpha / a_lin
+    a1 = -2.0 * cos_w0
+    a2 = 1.0 - alpha / a_lin
+    return np.array([[b0 / a0, b1 / a0, b2 / a0, 1.0, a1 / a0, a2 / a0]], dtype=np.float64)
+
+
+def _master_voice_with_sage_character(
+    src: Path,
+    dst: Path,
+    *,
+    depth_semitones: float = -2.6,
+    warmth_db: float = 4.8,
+    serenity_cut_db: float = -3.6,
+    apply_reverb: bool = True,
+    reverb_wet: float = 0.12,
+    source_kind: str = "edge_neural",
+) -> None:
+    """Transform speech into a deep, warm, calm, mysterious wise elder voice (48 kHz stereo WAV).
+
+    1. Split Vocal-Tract Lengthening (42% via libsoxr resampling) + Formant-Preserved Pitch Deepening
+       (58% via librubberband) -> authentic aged vocal tract without vocoder metallic artifacts.
+    2. Broadcast Parametric EQ: +Chest Resonance (112 Hz), +Body (215 Hz), -Harshness (2.85 kHz),
+       -Sibilance (6.6 kHz) & Velvet Silk Roll-Off (10.8 kHz).
+    3. Subtle Warm Tube Harmonic Saturation + Abbey-Road Band-Passed Dark-Sanctuary Reverb (135–880 Hz).
+    """
+    eff_st = float(depth_semitones)
+    # Offline Browser VITS ('Thorsten') starts brighter & higher than Conrad/Florian, so deepen slightly more
+    if source_kind == "browser_vits" and eff_st < -0.3:
+        eff_st -= 0.75
+    eff_st = max(-5.5, min(2.0, eff_st))
+
+    tmp_pitched = dst.with_name(dst.stem + "_stage1.wav")
+    af_parts: list[str] = ["aresample=48000"]
+
+    if abs(eff_st) >= 0.12:
+        # 42% natural vocal-tract lengthening (gives genuine 60+ yr throat & chest size)
+        formant_st = max(-1.65, min(0.8, eff_st * 0.42))
+        formant_ratio = 2.0 ** (formant_st / 12.0)
+        tempo_comp = 1.0 / formant_ratio
+        af_parts.append(f"asetrate={int(round(SAMPLE_RATE * formant_ratio))}")
+        af_parts.append(f"aresample={SAMPLE_RATE}:resampler=soxr")
+        af_parts.append(f"atempo={tempo_comp:.6f}")
+
+        # 58% pure fundamental pitch deepening with preserved formants via librubberband
+        rem_st = eff_st - formant_st
+        if abs(rem_st) >= 0.08:
+            rb_ratio = 2.0 ** (rem_st / 12.0)
+            af_parts.append(
+                f"rubberband=pitch={rb_ratio:.6f}:formant=preserved:pitchq=quality:transients=crisp:window=short"
+            )
+
+    af_parts.append("acompressor=threshold=-20dB:ratio=2.6:attack=14:release=210:makeup=2.5dB")
+
+    cmd_primary = [
+        MASTERING_FFMPEG_BIN,
         "-y",
         "-i",
         str(src),
         "-af",
-        af_chain,
+        ",".join(af_parts),
         "-ar",
         str(SAMPLE_RATE),
         "-ac",
         "2",
         "-c:a",
         "pcm_s16le",
-        str(dst),
+        str(tmp_pitched),
     ]
-    subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    res = subprocess.run(cmd_primary, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    if res.returncode != 0 or not tmp_pitched.exists():
+        # Ultra-safe fallback without librubberband/soxr in case of unusual system binary
+        ratio_all = max(0.72, min(1.15, 2.0 ** (eff_st / 12.0)))
+        t_comp = max(0.55, min(1.85, 1.0 / ratio_all))
+        fb_af = (
+            f"aresample={SAMPLE_RATE},asetrate={int(round(SAMPLE_RATE * ratio_all))},"
+            f"aresample={SAMPLE_RATE},atempo={t_comp:.6f},"
+            "acompressor=threshold=-20dB:ratio=2.5:attack=14:release=200:makeup=2dB"
+        )
+        subprocess.run(
+            [FFMPEG_BIN, "-y", "-i", str(src), "-af", fb_af, "-ar", str(SAMPLE_RATE), "-ac", "2", "-c:a", "pcm_s16le", str(tmp_pitched)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+    # Stage 2: Precision Float64 Parametric EQ + Soft-Tube Warmth + Dark-Sanctuary Abbey-Road Reverb
+    _sr, pcm16 = wavfile.read(str(tmp_pitched))
+    tmp_pitched.unlink(missing_ok=True)
+    x = pcm16.astype(np.float64) / 32768.0
+    if x.ndim == 1:
+        x = np.column_stack([x, x])
+
+    sos_hp = sp_signal.butter(2, 56.0, btype="highpass", fs=SAMPLE_RATE, output="sos")
+    sos_lp = sp_signal.butter(2, 10800.0, btype="lowpass", fs=SAMPLE_RATE, output="sos")
+    sos_chain = np.vstack(
+        [
+            sos_hp,
+            _biquad_peaking_sos(112.0, float(warmth_db), q=1.02),
+            _biquad_peaking_sos(218.0, float(warmth_db) * 0.44, q=1.25),
+            _biquad_peaking_sos(2850.0, float(serenity_cut_db), q=1.55),
+            _biquad_peaking_sos(6600.0, -3.2, q=1.85),
+            sos_lp,
+        ]
+    )
+    y = sp_signal.sosfilt(sos_chain, x, axis=0)
+
+    # Subtle warm analog tube harmonic saturation in the low baritone chest register
+    drive = 1.24
+    y = np.tanh(y * drive) / math.tanh(drive)
+
+    if apply_reverb and reverb_wet > 0.005:
+        # Abbey-Road Dark-Temple Reverb: bandpass reflections to 135..880 Hz so consonants stay 100% crisp
+        sos_rev_bp = sp_signal.butter(2, [135.0, 880.0], btype="bandpass", fs=SAMPLE_RATE, output="sos")
+        rev_src = sp_signal.sosfilt(sos_rev_bp, y, axis=0)
+        n = len(y)
+        wet_l = np.zeros(n, dtype=np.float64)
+        wet_r = np.zeros(n, dtype=np.float64)
+        # Prime-spaced diffused stereo sanctuary taps (ms, gain, cross-stereo)
+        sage_taps = [
+            (0.039, 0.42, False),
+            (0.071, 0.34, True),
+            (0.119, 0.27, False),
+            (0.187, 0.21, True),
+            (0.277, 0.15, False),
+            (0.397, 0.10, True),
+        ]
+        for delay_s, tap_g, swap in sage_taps:
+            d = int(delay_s * SAMPLE_RATE)
+            if 0 < d < n:
+                if swap:
+                    wet_l[d:] += rev_src[:-d, 1] * tap_g
+                    wet_r[d:] += rev_src[:-d, 0] * tap_g
+                else:
+                    wet_l[d:] += rev_src[:-d, 0] * tap_g
+                    wet_r[d:] += rev_src[:-d, 1] * tap_g
+        wet_sig = np.column_stack([wet_l, wet_r])
+        y = y * (1.0 - reverb_wet * 0.25) + wet_sig * float(reverb_wet)
+
+    # Normalize narrator peak cleanly to -0.9 dBFS (0.90) with soft ceiling
+    peak = float(np.max(np.abs(y))) if len(y) else 0.0
+    if peak > 1e-4:
+        target_gain = min(2.2, 0.89 / peak)
+        y = y * target_gain
+    y = np.clip(y, -0.95, 0.95)
+
+    out_pcm16 = (y * 32767.0).astype(np.int16)
+    wavfile.write(str(dst), SAMPLE_RATE, out_pcm16)
+
+
+def _convert_to_standard_wav(src: Path, dst: Path, apply_reverb: bool = True) -> None:
+    """Backward-compatible wrapper using Auron's Wise Elder mastering."""
+    _master_voice_with_sage_character(src, dst, apply_reverb=apply_reverb)
 
 
 async def _edge_tts_save(text: str, out_mp3: Path, voice: str, rate_pct: int, pitch_hz: int) -> None:
     import edge_tts
 
-    # Strictly enforce a German voice ID
+    # Strictly enforce a German male neural voice ID
     de_voice = voice if str(voice).lower().startswith("de-") else "de-DE-ConradNeural"
+    calm_text = _prepare_sage_prosody_text(text)
     rate_str = f"{rate_pct:+d}%"
     pitch_str = f"{pitch_hz:+d}Hz"
-    comm = edge_tts.Communicate(text, voice=de_voice, rate=rate_str, pitch=pitch_str)
+    comm = edge_tts.Communicate(calm_text, voice=de_voice, rate=rate_str, pitch=pitch_str)
     await comm.save(str(out_mp3))
 
 
@@ -134,21 +377,23 @@ def _try_edge_tts(text: str, out_mp3: Path, voice: str, rate_pct: int, pitch_hz:
 
 
 def _try_elevenlabs_tts(text: str, out_mp3: Path, api_key: str, voice_id: str) -> bool:
-    if not api_key or not voice_id:
+    if not api_key:
         return False
+    # Default to ElevenLabs' mature, comforting, deep male documentary narrator ('Bill') if Voice ID omitted
+    eff_voice_id = (voice_id or "").strip() or "pqHfZKP75CvOlQylNhV4"
     try:
         resp = requests.post(
-            f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+            f"https://api.elevenlabs.io/v1/text-to-speech/{eff_voice_id}",
             headers={
                 "xi-api-key": api_key.strip(),
                 "Content-Type": "application/json",
                 "Accept": "audio/mpeg",
             },
             json={
-                "text": text,
+                "text": _prepare_sage_prosody_text(text),
                 "model_id": "eleven_multilingual_v2",
                 "language_code": "de",
-                "voice_settings": {"stability": 0.62, "similarity_boost": 0.80, "style": 0.25},
+                "voice_settings": {"stability": 0.72, "similarity_boost": 0.84, "style": 0.18},
             },
             timeout=35,
         )
@@ -594,6 +839,98 @@ def _make_glitch_whoosh_sfx(duration_sec: float = 0.26) -> np.ndarray:
     return np.column_stack([mono, mono * 0.92])
 
 
+def synthesize_voice_preview(
+    *,
+    text: str,
+    voice_character: str = "wise_elder",
+    tts_engine: str = "sage_neural",
+    rate_pct: int | None = None,
+    depth_semitones: float | None = None,
+    warmth_db: float | None = None,
+    apply_reverb: bool = True,
+    elevenlabs_api_key: str = "",
+    elevenlabs_voice_id: str = "",
+) -> dict[str, Any]:
+    """Synthesize & master a preview WAV using the exact selected AuronOrigin voice character."""
+    profile = get_voice_profile(voice_character)
+    eff_rate = int(rate_pct if rate_pct is not None else profile["default_rate_pct"])
+    eff_depth = float(depth_semitones if depth_semitones is not None else profile["default_depth_semitones"])
+    eff_warmth = float(warmth_db if warmth_db is not None else profile["default_warmth_db"])
+    eff_pitch_hz = int(profile.get("edge_pitch_hz", -10))
+    edge_voice = str(profile.get("edge_voice") or "de-DE-ConradNeural")
+    clean_text = enforce_german_narration(text, fallback_topic="AuronOrigin")
+
+    prev_dir = CACHE_DIR / "voice_previews"
+    prev_dir.mkdir(parents=True, exist_ok=True)
+    raw_mp3 = prev_dir / "preview_raw.mp3"
+    out_wav = prev_dir / "preview_mastered.wav"
+    raw_mp3.unlink(missing_ok=True)
+
+    ok = False
+    source_kind = "edge_neural"
+    engine_label = ""
+
+    if voice_character == "elevenlabs_custom" or tts_engine == "elevenlabs":
+        ok = _try_elevenlabs_tts(clean_text, raw_mp3, elevenlabs_api_key, elevenlabs_voice_id)
+        if ok:
+            source_kind = "elevenlabs"
+            engine_label = f"ElevenLabs ({profile['name']})"
+
+    if not ok and tts_engine != "browser_neural":
+        ok = _try_edge_tts(clean_text, raw_mp3, edge_voice, eff_rate, eff_pitch_hz)
+        if ok:
+            source_kind = "edge_neural"
+            engine_label = f"{profile['name']} [{edge_voice}]"
+
+    if not ok:
+        return {
+            "ok": False,
+            "needs_browser_vits": True,
+            "browser_voice": str(profile.get("browser_voice") or "de_DE-thorsten-high"),
+            "rate_pct": eff_rate,
+            "profile": profile,
+        }
+
+    _master_voice_with_sage_character(
+        raw_mp3,
+        out_wav,
+        depth_semitones=eff_depth,
+        warmth_db=eff_warmth,
+        serenity_cut_db=float(profile.get("serenity_cut_db", -3.6)),
+        apply_reverb=apply_reverb,
+        reverb_wet=float(profile.get("reverb_wet", 0.12)),
+        source_kind=source_kind,
+    )
+    raw_mp3.unlink(missing_ok=True)
+    return {"ok": True, "wav_path": out_wav, "engine_label": engine_label}
+
+
+def master_browser_voice_preview(
+    *,
+    raw_wav_path: Path,
+    voice_character: str = "wise_elder",
+    depth_semitones: float | None = None,
+    warmth_db: float | None = None,
+    apply_reverb: bool = True,
+) -> Path:
+    """Apply the exact AuronOrigin Wise-Sage Vocal-Tract & Chest-Resonance DSP to a browser-synthesized WAV."""
+    profile = get_voice_profile(voice_character)
+    eff_depth = float(depth_semitones if depth_semitones is not None else profile["default_depth_semitones"])
+    eff_warmth = float(warmth_db if warmth_db is not None else profile["default_warmth_db"])
+    out_wav = raw_wav_path.with_name(raw_wav_path.stem + "_sage_mastered.wav")
+    _master_voice_with_sage_character(
+        raw_wav_path,
+        out_wav,
+        depth_semitones=eff_depth,
+        warmth_db=eff_warmth,
+        serenity_cut_db=float(profile.get("serenity_cut_db", -3.6)),
+        apply_reverb=apply_reverb,
+        reverb_wet=float(profile.get("reverb_wet", 0.12)),
+        source_kind="browser_vits",
+    )
+    return out_wav
+
+
 def build_master_audio_timeline(
     *,
     scenes: list[dict[str, Any]],
@@ -603,23 +940,33 @@ def build_master_audio_timeline(
     custom_music_path: Path | None = None,
     progress_cb: Any = None,
 ) -> dict[str, Any]:
-    """Synthesize 100% German per-scene voiceovers, record exact timings, duck background music, and mix master WAV."""
+    """Synthesize 100% German per-scene voiceovers with locked AuronOrigin Sage character, duck music, and mix WAV."""
     work_dir.mkdir(parents=True, exist_ok=True)
     uploaded_map = uploaded_scene_audio or {}
 
-    tts_engine = str(settings.get("tts_engine") or "auto")
-    edge_voice = str(settings.get("edge_voice") or "de-DE-ConradNeural")
+    voice_character = str(settings.get("voice_character") or "wise_elder")
+    profile = get_voice_profile(voice_character)
+
+    tts_engine = str(settings.get("tts_engine") or "sage_neural")
+    edge_voice = str(profile.get("edge_voice") or settings.get("edge_voice") or "de-DE-ConradNeural")
     if not edge_voice.lower().startswith("de-"):
         edge_voice = "de-DE-ConradNeural"
-    rate_pct = int(settings.get("voice_rate_pct", -15))
-    pitch_hz = int(settings.get("voice_pitch_hz", -3))
+
+    rate_pct = int(settings.get("voice_rate_pct", profile["default_rate_pct"]))
+    depth_semitones = float(settings.get("voice_depth_semitones", profile["default_depth_semitones"]))
+    warmth_db = float(settings.get("voice_warmth_db", profile["default_warmth_db"]))
+    pitch_hz = int(profile.get("edge_pitch_hz", -10))
+    serenity_cut_db = float(profile.get("serenity_cut_db", -3.6))
+    reverb_wet = float(profile.get("reverb_wet", 0.12))
+    min_scene_pause = float(profile.get("min_scene_pause", 0.95))
+
     apply_reverb = bool(settings.get("voice_reverb", True))
     music_preset = str(settings.get("music_preset") or "dark_cosmos_cinematic")
-    music_vol_db = float(settings.get("music_volume_db", -17.0))
+    music_vol_db = float(settings.get("music_volume_db", -17.5))
     include_glitch_sfx = bool(settings.get("include_glitch_sfx", True))
 
-    lead_in_sec = 0.45
-    tail_out_sec = 0.75
+    lead_in_sec = 0.55
+    tail_out_sec = 0.85
 
     scene_timings: list[dict[str, Any]] = []
     voice_segments_pcm: list[np.ndarray] = []
@@ -638,25 +985,39 @@ def build_master_audio_timeline(
         raw_text = str(sc.get("narration") or "").strip()
         # Final German safety lock before voice synthesis
         text = enforce_german_narration(raw_text, fallback_topic=str(sc.get("on_screen_headline") or ""))
-        pause_after = float(sc.get("pause_after", 0.85))
+        pause_after = max(min_scene_pause, float(sc.get("pause_after", 0.95)))
         if progress_cb:
             progress_cb(
                 int(10 + (idx / max(1, total_scenes)) * 30),
-                f"Synthetisiere deutsche Tonstimme für Szene {scene_num}/{total_scenes}…",
+                f"Synthetisiere Stimme ({profile['name'].split('(')[0].strip()}) für Szene {scene_num}/{total_scenes}…",
             )
 
         raw_audio_path = work_dir / f"scene_{scene_num:02d}_raw"
         std_wav_path = work_dir / f"scene_{scene_num:02d}_voice.wav"
         engine_used = "offline_cadence"
+        mastered_done = False
 
-        # Priority 1: Pre-synthesized German Browser Neural VITS WAV uploaded by client
-        if scene_num in uploaded_map and uploaded_map[scene_num].exists():
-            _convert_to_standard_wav(uploaded_map[scene_num], std_wav_path, apply_reverb=apply_reverb)
-            engine_used = "browser_neural_vits_de"
-        else:
+        # If user explicitly picked 100% local Browser Neural mode and client uploaded WAV, master it directly
+        if tts_engine == "browser_neural" and scene_num in uploaded_map and uploaded_map[scene_num].exists():
+            _master_voice_with_sage_character(
+                uploaded_map[scene_num],
+                std_wav_path,
+                depth_semitones=depth_semitones,
+                warmth_db=warmth_db,
+                serenity_cut_db=serenity_cut_db,
+                apply_reverb=apply_reverb,
+                reverb_wet=reverb_wet,
+                source_kind="browser_vits",
+            )
+            engine_used = f"{voice_character} (Lokale KI + Sage-Mastering)"
+            mastered_done = True
+
+        if not mastered_done:
             ok = False
+            source_kind = "edge_neural"
             mp3_candidate = raw_audio_path.with_suffix(".mp3")
-            if tts_engine == "elevenlabs" or (tts_engine == "auto" and settings.get("elevenlabs_api_key") and settings.get("elevenlabs_voice_id")):
+
+            if voice_character == "elevenlabs_custom" or tts_engine == "elevenlabs":
                 ok = _try_elevenlabs_tts(
                     text,
                     mp3_candidate,
@@ -664,26 +1025,60 @@ def build_master_audio_timeline(
                     str(settings.get("elevenlabs_voice_id") or ""),
                 )
                 if ok:
-                    engine_used = "elevenlabs_de"
+                    source_kind = "elevenlabs"
+                    engine_used = f"{voice_character} (ElevenLabs DE)"
 
-            if not ok and (tts_engine == "openai" or (tts_engine == "auto" and settings.get("openai_tts_api_key"))):
+            if not ok and (tts_engine == "openai" or (settings.get("openai_tts_api_key") and tts_engine == "auto")):
                 ok = _try_openai_tts(text, mp3_candidate, str(settings.get("openai_tts_api_key") or ""))
                 if ok:
-                    engine_used = "openai_tts_de"
+                    source_kind = "openai"
+                    engine_used = f"{voice_character} (OpenAI Onyx DE)"
 
-            if not ok and edge_tts_available and tts_engine in ("auto", "edge", "browser_neural"):
+            if not ok and edge_tts_available and tts_engine in ("sage_neural", "auto", "edge"):
                 ok = _try_edge_tts(text, mp3_candidate, edge_voice, rate_pct, pitch_hz)
                 if ok:
-                    engine_used = f"edge_tts ({edge_voice})"
+                    source_kind = "edge_neural"
+                    engine_used = f"{voice_character} ({edge_voice})"
                 else:
                     edge_tts_available = False
 
             if ok and mp3_candidate.exists():
-                _convert_to_standard_wav(mp3_candidate, std_wav_path, apply_reverb=apply_reverb)
+                _master_voice_with_sage_character(
+                    mp3_candidate,
+                    std_wav_path,
+                    depth_semitones=depth_semitones,
+                    warmth_db=warmth_db,
+                    serenity_cut_db=serenity_cut_db,
+                    apply_reverb=apply_reverb,
+                    reverb_wet=reverb_wet,
+                    source_kind=source_kind,
+                )
+            elif scene_num in uploaded_map and uploaded_map[scene_num].exists():
+                # Automatic offline / sandbox fallback: use browser neural WAV + full Sage Deep-Voice Mastering!
+                _master_voice_with_sage_character(
+                    uploaded_map[scene_num],
+                    std_wav_path,
+                    depth_semitones=depth_semitones,
+                    warmth_db=warmth_db,
+                    serenity_cut_db=serenity_cut_db,
+                    apply_reverb=apply_reverb,
+                    reverb_wet=reverb_wet,
+                    source_kind="browser_vits",
+                )
+                engine_used = f"{voice_character} (Offline-KI + Sage-Mastering)"
             else:
                 fallback_raw = raw_audio_path.with_suffix(".wav")
                 _synthesize_offline_baritone_cadence(text, fallback_raw, rate_pct=rate_pct)
-                _convert_to_standard_wav(fallback_raw, std_wav_path, apply_reverb=apply_reverb)
+                _master_voice_with_sage_character(
+                    fallback_raw,
+                    std_wav_path,
+                    depth_semitones=depth_semitones,
+                    warmth_db=warmth_db,
+                    serenity_cut_db=serenity_cut_db,
+                    apply_reverb=apply_reverb,
+                    reverb_wet=reverb_wet,
+                    source_kind="offline",
+                )
                 engine_used = "studio_acoustic_synth_de"
 
         used_tts_engines.add(engine_used)

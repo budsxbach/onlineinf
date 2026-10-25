@@ -24,7 +24,16 @@ from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from .arena_client import DEFAULT_ARENA_MODELS, discover_arena_models, extract_json_object
-from .audio_engine import FFMPEG_BIN, MUSIC_PRESETS, build_master_audio_timeline, get_or_create_music_preview
+from .audio_engine import (
+    FFMPEG_BIN,
+    MUSIC_PRESETS,
+    VOICE_PROFILES,
+    build_master_audio_timeline,
+    get_or_create_music_preview,
+    get_voice_profile,
+    master_browser_voice_preview,
+    synthesize_voice_preview,
+)
 from .config import (
     BRAND_DIR,
     BRAND_IDENTITY,
@@ -115,10 +124,13 @@ class SettingsPayload(BaseModel):
     arena_gateway_url: str | None = None
     arena_model: str | None = None
     arena_protocol: str | None = None
+    voice_character: str | None = None
     tts_engine: str | None = None
     edge_voice: str | None = None
     browser_voice: str | None = None
     voice_rate_pct: int | None = None
+    voice_depth_semitones: float | None = None
+    voice_warmth_db: float | None = None
     voice_pitch_hz: int | None = None
     voice_reverb: bool | None = None
     elevenlabs_api_key: str | None = None
@@ -345,22 +357,19 @@ def api_bootstrap() -> dict[str, Any]:
             {"id": "custom", "label": "Eigene Musikdatei hochladen (MP3 / WAV / M4A)", "mood": "Eigener Soundtrack"},
             {"id": "none", "label": "Keine Hintergrundmusik (Nur deutsche Tonstimme)", "mood": "Reines Voiceover"},
         ],
+        "voice_profiles": VOICE_PROFILES,
         "voice_presets": [
             {
-                "id": "auto",
-                "label": "Automatik (ConradNeural -15%/-3Hz + Browser Neural Thorsten Fallback)",
+                "id": "sage_neural",
+                "label": "Auron Neural-Engine (Gewählter Weiser-Charakter + Tiefbass-Mastering • Empfohlen)",
             },
             {
                 "id": "browser_neural",
-                "label": "Lokale KI-Stimme im Browser (Thorsten Neural VITS • 100% Offlinefähig)",
-            },
-            {
-                "id": "edge",
-                "label": "Microsoft Neural Cloud – ConradNeural (-15% Tempo, -3Hz Tiefe)",
+                "label": "100% Lokal / Offline KI + Auron Weiser-Mastering",
             },
             {
                 "id": "elevenlabs",
-                "label": "ElevenLabs Multilingual v2 (Optional mit eigenem Key)",
+                "label": "ElevenLabs Multilingual v2 (Optional mit eigenem API-Key)",
             },
         ],
         "history": load_history()[:15],
@@ -637,6 +646,78 @@ def api_local_browser(payload: LocalBrowserPayload) -> dict[str, Any]:
         "directories": dirs[:200],
         "files": files[:300],
     }
+
+
+class VoicePreviewPayload(BaseModel):
+    text: str = ""
+    voice_character: str = "wise_elder"
+    tts_engine: str = "sage_neural"
+    voice_rate_pct: int | None = None
+    voice_depth_semitones: float | None = None
+    voice_warmth_db: float | None = None
+    voice_reverb: bool = True
+    elevenlabs_api_key: str | None = None
+    elevenlabs_voice_id: str | None = None
+
+
+@app.post("/api/voice-preview")
+def api_voice_preview(payload: VoicePreviewPayload) -> Response:
+    """Synthesize & master a German sample sentence using the exact selected AuronOrigin voice character."""
+    cfg = load_settings()
+    sample_text = (payload.text or "").strip() or (
+        "Manche Wahrheiten liegen nicht im Verborgenen, weil niemand hinsieht … "
+        "sondern weil wir verlernt haben, die Zeichen der Zeit in Ruhe zu deuten."
+    )
+    el_key = payload.elevenlabs_api_key or ""
+    if not el_key or el_key.startswith("••••"):
+        el_key = str(cfg.get("elevenlabs_api_key") or "")
+    el_vid = (payload.elevenlabs_voice_id or "").strip() or str(cfg.get("elevenlabs_voice_id") or "")
+
+    res = synthesize_voice_preview(
+        text=sample_text,
+        voice_character=payload.voice_character,
+        tts_engine=payload.tts_engine,
+        rate_pct=payload.voice_rate_pct,
+        depth_semitones=payload.voice_depth_semitones,
+        warmth_db=payload.voice_warmth_db,
+        apply_reverb=payload.voice_reverb,
+        elevenlabs_api_key=el_key,
+        elevenlabs_voice_id=el_vid,
+    )
+    if res.get("ok") and res.get("wav_path"):
+        return FileResponse(str(res["wav_path"]), media_type="audio/wav")
+    return Response(content=json.dumps(res, ensure_ascii=False), media_type="application/json")
+
+
+@app.post("/api/voice-preview-master")
+async def api_voice_preview_master(
+    file: UploadFile = File(...),
+    voice_character: str = Form("wise_elder"),
+    voice_depth_semitones: float = Form(-2.6),
+    voice_warmth_db: float = Form(4.8),
+    voice_reverb: str = Form("true"),
+) -> Response:
+    """Master a browser-synthesized VITS WAV through the AuronOrigin Wise-Sage Vocal-Tract & Chest-EQ DSP."""
+    data = await file.read()
+    if not data:
+        raise HTTPException(status_code=400, detail="Leere Audiodatei.")
+    tmp_dir = UPLOADS_DIR / "voice_preview_tmp"
+    tmp_dir.mkdir(parents=True, exist_ok=True)
+    raw_in = tmp_dir / f"raw_{uuid.uuid4().hex[:8]}.wav"
+    raw_in.write_bytes(data)
+    try:
+        mastered = master_browser_voice_preview(
+            raw_wav_path=raw_in,
+            voice_character=voice_character,
+            depth_semitones=voice_depth_semitones,
+            warmth_db=voice_warmth_db,
+            apply_reverb=(voice_reverb.lower() == "true"),
+        )
+        wav_bytes = mastered.read_bytes()
+        mastered.unlink(missing_ok=True)
+        return Response(content=wav_bytes, media_type="audio/wav")
+    finally:
+        raw_in.unlink(missing_ok=True)
 
 
 @app.get("/api/music-preview/{preset_id}")

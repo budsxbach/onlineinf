@@ -131,11 +131,18 @@ async function initStudio() {
   el("arenaGatewayUrl").value = cfg.arena_gateway_url || "https://api.preview.arena.ai";
   populateModelDropdown(data.default_models || [], cfg.arena_model);
 
-  el("ttsEngine").value = cfg.tts_engine || "auto";
-  el("browserVoiceSelect").value = cfg.browser_voice || "de_DE-thorsten-medium";
-  el("voiceRate").value = cfg.voice_rate_pct ?? -15;
+  populateVoiceCharacterDropdown(data.voice_profiles || [], cfg.voice_character || "wise_elder");
+  const engVal = cfg.tts_engine && cfg.tts_engine !== "auto" && cfg.tts_engine !== "edge" ? cfg.tts_engine : "sage_neural";
+  el("ttsEngine").value = engVal;
+  el("browserVoiceSelect").value = cfg.browser_voice || "de_DE-thorsten-high";
+  el("voiceDepth").value = cfg.voice_depth_semitones ?? -2.6;
+  el("voiceDepthLabel").textContent = `${Number(el("voiceDepth").value).toFixed(1)} Halbtöne`;
+  el("voiceWarmth").value = cfg.voice_warmth_db ?? 4.8;
+  el("voiceWarmthLabel").textContent = `+${Number(el("voiceWarmth").value).toFixed(1)} dB`;
+  el("voiceRate").value = cfg.voice_rate_pct ?? -16;
   el("voiceRateLabel").textContent = `${el("voiceRate").value}%`;
   el("voiceReverb").checked = cfg.voice_reverb !== false;
+  syncVoiceUiVisibility();
 
   populateMusicDropdown(data.music_presets || [], cfg.music_preset || "dark_cosmos_cinematic");
   el("musicVolume").value = cfg.music_volume_db ?? -17;
@@ -161,6 +168,44 @@ async function initStudio() {
     el("topicInput").value = pick.topic;
     await runResearchAndScript({ silentInit: true });
   }
+}
+
+function populateVoiceCharacterDropdown(profiles, selectedId) {
+  const sel = el("voiceCharacterSelect");
+  if (!sel || !profiles.length) return;
+  sel.innerHTML = "";
+  for (const p of profiles) {
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name || p.id;
+    opt.dataset.description = p.description || "";
+    opt.dataset.rate = String(p.default_rate_pct ?? -16);
+    opt.dataset.depth = String(p.default_depth_semitones ?? -2.6);
+    opt.dataset.warmth = String(p.default_warmth_db ?? 4.8);
+    opt.dataset.browserVoice = p.browser_voice || "de_DE-thorsten-high";
+    sel.appendChild(opt);
+  }
+  const target = [...sel.options].some((o) => o.value === selectedId) ? selectedId : "wise_elder";
+  sel.value = target;
+  updateVoiceCharacterHint();
+}
+
+function updateVoiceCharacterHint() {
+  const sel = el("voiceCharacterSelect");
+  const hint = el("voiceCharacterHint");
+  if (!sel || !hint) return;
+  const opt = sel.options[sel.selectedIndex];
+  if (opt?.dataset?.description) {
+    hint.textContent = opt.dataset.description;
+  }
+}
+
+function syncVoiceUiVisibility() {
+  const charVal = el("voiceCharacterSelect")?.value || "wise_elder";
+  const engVal = el("ttsEngine")?.value || "sage_neural";
+  const showEleven = charVal === "elevenlabs_custom" || engVal === "elevenlabs";
+  if (el("elevenlabsExtra")) el("elevenlabsExtra").classList.toggle("hidden", !showEleven);
+  if (el("browserVoiceRow")) el("browserVoiceRow").classList.toggle("hidden", engVal !== "browser_neural");
 }
 
 function populateMusicDropdown(presets, selectedId) {
@@ -1019,15 +1064,42 @@ async function runResearchAndScript({ silentInit = false, autoDiscover = false }
 
 async function synthesizeBrowserSceneAudioIfNeeded(scenes, progressCb) {
   const mode = el("ttsEngine").value;
-  if (mode !== "browser_neural" && mode !== "auto") {
+  const charId = el("voiceCharacterSelect")?.value || "wise_elder";
+  if (mode === "elevenlabs" || charId === "elevenlabs_custom") {
     return {};
   }
+
+  // When 'sage_neural' is active, check whether backend neural TTS (Conrad/Florian/Killian) is reachable.
+  // On Ubuntu PCs with internet, backend neural TTS runs directly so Browser-Thorsten NEVER overrides your chosen voice!
+  if (mode === "sage_neural") {
+    try {
+      const probe = await fetch("/api/voice-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: "Auron bereit.",
+          voice_character: charId,
+          tts_engine: "sage_neural",
+          voice_rate_pct: Number(el("voiceRate").value || -16),
+          voice_depth_semitones: Number(el("voiceDepth").value || -2.6),
+          voice_warmth_db: Number(el("voiceWarmth").value || 4.8),
+          voice_reverb: el("voiceReverb").checked,
+        }),
+      });
+      const ct = (probe.headers.get("content-type") || "").toLowerCase();
+      if (probe.ok && ct.includes("audio/")) {
+        return {};
+      }
+    } catch (_) {}
+  }
+
   if (!window.AuronBrowserTTS?.synthesizeBrowserNeural) {
     return {};
   }
 
-  const voiceId = el("browserVoiceSelect").value || "de_DE-thorsten-medium";
-  const ratePct = Number(el("voiceRate").value || -15);
+  const voiceId = el("browserVoiceSelect").value || "de_DE-thorsten-high";
+  const ratePct = Number(el("voiceRate").value || -16);
+  const lengthScaleOverride = 1.0 / Math.max(0.68, 1.0 + ratePct / 100.0);
   const uploadedMap = {};
 
   try {
@@ -1036,15 +1108,18 @@ async function synthesizeBrowserSceneAudioIfNeeded(scenes, progressCb) {
       if (!text) continue;
       progressCb(
         Math.round(5 + ((i + 0.5) / scenes.length) * 28),
-        `Erzeuge deutsche KI-Tonstimme (${voiceId}) für Szene ${i + 1}/${scenes.length}…`
+        `Erzeuge deutsche KI-Basisstimme + Alter-Weiser-Mastering für Szene ${i + 1}/${scenes.length}…`
       );
-      const wavBlob = await window.AuronBrowserTTS.synthesizeBrowserNeural(text, voiceId, ratePct, (dl) => {
-        if (dl.total > 0) {
-          const mb = (dl.loaded / 1048576).toFixed(1);
-          const tot = (dl.total / 1048576).toFixed(1);
-          progressCb(8, `Lade deutsches KI-Sprachmodell einmalig (${mb} / ${tot} MB)…`);
+      const wavBlob = await window.AuronBrowserTTS.synthesizeBrowserNeural(
+        { text, voiceId, lengthScaleOverride },
+        (dl) => {
+          if (dl.total > 0) {
+            const mb = (dl.loaded / 1048576).toFixed(1);
+            const tot = (dl.total / 1048576).toFixed(1);
+            progressCb(8, `Lade deutsches KI-Sprachmodell einmalig (${mb} / ${tot} MB)…`);
+          }
         }
-      });
+      );
       const fd = new FormData();
       fd.append("file", wavBlob, `scene_${i + 1}.wav`);
       fd.append("kind", "audio");
@@ -1207,9 +1282,12 @@ function gatherSettingsPayload() {
     arena_api_key: el("arenaApiKey").value.trim(),
     arena_gateway_url: el("arenaGatewayUrl").value,
     arena_model: el("arenaModel").value,
+    voice_character: el("voiceCharacterSelect")?.value || "wise_elder",
     tts_engine: el("ttsEngine").value,
     browser_voice: el("browserVoiceSelect").value,
     voice_rate_pct: Number(el("voiceRate").value),
+    voice_depth_semitones: Number(el("voiceDepth")?.value ?? -2.6),
+    voice_warmth_db: Number(el("voiceWarmth")?.value ?? 4.8),
     voice_reverb: el("voiceReverb").checked,
     elevenlabs_api_key: el("elevenlabsKey").value.trim() || undefined,
     elevenlabs_voice_id: el("elevenlabsVoiceId").value.trim() || undefined,
@@ -1285,13 +1363,57 @@ el("verifyKeyBtn").addEventListener("click", async () => {
   }
 });
 
+if (el("voiceCharacterSelect")) {
+  el("voiceCharacterSelect").addEventListener("change", () => {
+    const sel = el("voiceCharacterSelect");
+    const opt = sel.options[sel.selectedIndex];
+    if (opt?.dataset) {
+      if (opt.dataset.depth) {
+        el("voiceDepth").value = opt.dataset.depth;
+        el("voiceDepthLabel").textContent = `${Number(opt.dataset.depth).toFixed(1)} Halbtöne`;
+      }
+      if (opt.dataset.warmth) {
+        el("voiceWarmth").value = opt.dataset.warmth;
+        el("voiceWarmthLabel").textContent = `+${Number(opt.dataset.warmth).toFixed(1)} dB`;
+      }
+      if (opt.dataset.rate) {
+        el("voiceRate").value = opt.dataset.rate;
+        el("voiceRateLabel").textContent = `${opt.dataset.rate}%`;
+      }
+      if (opt.dataset.browserVoice && el("browserVoiceSelect")) {
+        el("browserVoiceSelect").value = opt.dataset.browserVoice;
+      }
+    }
+    updateVoiceCharacterHint();
+    syncVoiceUiVisibility();
+    saveCurrentSettingsQuietly();
+  });
+}
+
 el("ttsEngine").addEventListener("change", () => {
-  el("elevenlabsExtra").classList.toggle("hidden", el("ttsEngine").value !== "elevenlabs");
+  syncVoiceUiVisibility();
+  saveCurrentSettingsQuietly();
 });
+
+if (el("voiceDepth")) {
+  el("voiceDepth").addEventListener("input", () => {
+    el("voiceDepthLabel").textContent = `${Number(el("voiceDepth").value).toFixed(1)} Halbtöne`;
+  });
+  el("voiceDepth").addEventListener("change", saveCurrentSettingsQuietly);
+}
+
+if (el("voiceWarmth")) {
+  el("voiceWarmth").addEventListener("input", () => {
+    el("voiceWarmthLabel").textContent = `+${Number(el("voiceWarmth").value).toFixed(1)} dB`;
+  });
+  el("voiceWarmth").addEventListener("change", saveCurrentSettingsQuietly);
+}
 
 el("voiceRate").addEventListener("input", () => {
   el("voiceRateLabel").textContent = `${el("voiceRate").value}%`;
 });
+el("voiceRate").addEventListener("change", saveCurrentSettingsQuietly);
+el("voiceReverb").addEventListener("change", saveCurrentSettingsQuietly);
 
 el("musicVolume").addEventListener("input", () => {
   el("musicVolumeLabel").textContent = `${el("musicVolume").value} dB`;
@@ -1359,28 +1481,75 @@ el("previewVoiceBtn").addEventListener("click", async () => {
   const btn = el("previewVoiceBtn");
   const sampleText =
     state.blueprint?.scenes?.[0]?.narration ||
-    "Willkommen bei AuronOrigin. Fakten zuerst, Mystery als Deutung.";
+    "Manche Wahrheiten liegen nicht im Verborgenen, weil niemand hinsieht … sondern weil wir verlernt haben, die Zeichen der Zeit in Ruhe zu deuten.";
   btn.disabled = true;
-  btn.textContent = "Lade KI-Stimme…";
+  btn.textContent = "⏳ Erzeuge Weiser-Stimme…";
+
   try {
-    if (window.AuronBrowserTTS?.synthesizeBrowserNeural) {
-      const wav = await window.AuronBrowserTTS.synthesizeBrowserNeural(
-        sampleText,
-        el("browserVoiceSelect").value,
-        Number(el("voiceRate").value || -15)
-      );
+    await saveCurrentSettingsQuietly();
+    const charId = el("voiceCharacterSelect")?.value || "wise_elder";
+    const ratePct = Number(el("voiceRate").value || -16);
+    const depthSt = Number(el("voiceDepth")?.value ?? -2.6);
+    const warmthDb = Number(el("voiceWarmth")?.value ?? 4.8);
+    const reverbOn = el("voiceReverb").checked;
+
+    const resp = await fetch("/api/voice-preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: sampleText,
+        voice_character: charId,
+        tts_engine: el("ttsEngine").value,
+        voice_rate_pct: ratePct,
+        voice_depth_semitones: depthSt,
+        voice_warmth_db: warmthDb,
+        voice_reverb: reverbOn,
+        elevenlabs_api_key: el("elevenlabsKey").value.trim() || undefined,
+        elevenlabs_voice_id: el("elevenlabsVoiceId").value.trim() || undefined,
+      }),
+    });
+
+    const ct = (resp.headers.get("content-type") || "").toLowerCase();
+    let finalWavBlob = null;
+
+    if (resp.ok && ct.includes("audio/")) {
+      finalWavBlob = await resp.blob();
+    } else if (window.AuronBrowserTTS?.synthesizeBrowserNeural) {
+      btn.textContent = "⏳ Lade lokale KI-Stimme & Mastering…";
+      const voiceId = el("browserVoiceSelect").value || "de_DE-thorsten-high";
+      const lengthScaleOverride = 1.0 / Math.max(0.68, 1.0 + ratePct / 100.0);
+      const rawWav = await window.AuronBrowserTTS.synthesizeBrowserNeural({
+        text: sampleText,
+        voiceId,
+        lengthScaleOverride,
+      });
+      const fd = new FormData();
+      fd.append("file", rawWav, "preview_raw.wav");
+      fd.append("voice_character", charId);
+      fd.append("voice_depth_semitones", String(depthSt));
+      fd.append("voice_warmth_db", String(warmthDb));
+      fd.append("voice_reverb", String(reverbOn));
+      const mResp = await fetch("/api/voice-preview-master", { method: "POST", body: fd });
+      if (mResp.ok) {
+        finalWavBlob = await mResp.blob();
+      } else {
+        finalWavBlob = rawWav;
+      }
+    }
+
+    if (finalWavBlob) {
       const player = el("voicePreviewPlayer");
-      player.src = URL.createObjectURL(wav);
+      player.src = URL.createObjectURL(finalWavBlob);
       player.classList.remove("hidden");
       await player.play();
     } else {
-      alert("Browser-Sprachmodul lädt noch – bitte in 2 Sekunden erneut klicken.");
+      alert("Stimm-Vorschau konnte aktuell nicht geladen werden – bitte prüfe deine Internetverbindung oder versuche es in 2 Sekunden erneut.");
     }
   } catch (err) {
     alert(`Stimm-Vorschau Hinweis: ${err.message}`);
   } finally {
     btn.disabled = false;
-    btn.textContent = "🔊 Vorhören";
+    btn.textContent = "🔊 Stimme vorhören";
   }
 });
 

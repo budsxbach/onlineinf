@@ -65,22 +65,25 @@ BRAND_IDENTITY = {
 }
 
 DEFAULT_SETTINGS: dict[str, Any] = {
-    "settings_version": 2,
+    "settings_version": 3,
     "arena_api_key": "",
     "arena_gateway_url": "https://api.preview.arena.ai",
     "arena_model": "coding-router-preview",
     "arena_protocol": "auto",  # auto | openai | anthropic | responses
-    "tts_engine": "auto",      # auto | edge | browser_neural | elevenlabs | openai
+    "voice_character": "wise_elder",  # wise_elder | mystic_chronicler | calm_philosopher | cosmos_documentary | elevenlabs_custom
+    "tts_engine": "sage_neural",      # sage_neural | browser_neural | elevenlabs | openai
     "edge_voice": "de-DE-ConradNeural",
-    "browser_voice": "de_DE-thorsten-medium",
-    "voice_rate_pct": -15,
-    "voice_pitch_hz": -3,
+    "browser_voice": "de_DE-thorsten-high",
+    "voice_rate_pct": -16,
+    "voice_depth_semitones": -2.6,
+    "voice_warmth_db": 4.5,
+    "voice_pitch_hz": -10,
     "voice_reverb": True,
     "elevenlabs_api_key": "",
     "elevenlabs_voice_id": "",
     "openai_tts_api_key": "",
     "music_preset": "dark_cosmos_cinematic",
-    "music_volume_db": -17.0,
+    "music_volume_db": -17.5,
     "scene_image_mode": "auto_ai_brand",  # auto_ai_brand | procedural_brand
     "include_brand_intro": True,
     "include_brand_outro": True,
@@ -164,7 +167,22 @@ def load_settings() -> dict[str, Any]:
                 # Migrate old v1 default 'glitch_horizon' to the new cinematic default
                 if prev_ver < 2 and merged.get("music_preset") == "glitch_horizon":
                     merged["music_preset"] = "dark_cosmos_cinematic"
-                    merged["settings_version"] = 2
+                # Migrate v1/v2 'auto' Thorsten voice to v3 locked 'wise_elder' (Auron – Der Alte Weise)
+                if prev_ver < 3:
+                    merged["voice_character"] = "wise_elder"
+                    if merged.get("tts_engine") in ("auto", "edge", "", None):
+                        merged["tts_engine"] = "sage_neural"
+                    merged["edge_voice"] = "de-DE-ConradNeural"
+                    merged["browser_voice"] = "de_DE-thorsten-high"
+                    merged["voice_rate_pct"] = -16
+                    merged["voice_depth_semitones"] = -2.6
+                    merged["voice_warmth_db"] = 4.5
+                    merged["voice_pitch_hz"] = -10
+                    merged["settings_version"] = 3
+                    try:
+                        SETTINGS_PATH.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
+                    except Exception:
+                        pass
         except Exception:
             pass
     env_key = os.environ.get("ARENA_API_KEY", "").strip()

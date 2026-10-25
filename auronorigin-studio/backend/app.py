@@ -24,7 +24,7 @@ from PIL import Image, ImageOps
 from pydantic import BaseModel, Field
 
 from .arena_client import DEFAULT_ARENA_MODELS, discover_arena_models, extract_json_object
-from .audio_engine import FFMPEG_BIN, build_master_audio_timeline
+from .audio_engine import FFMPEG_BIN, MUSIC_PRESETS, build_master_audio_timeline, get_or_create_music_preview
 from .config import (
     BRAND_DIR,
     BRAND_IDENTITY,
@@ -118,6 +118,7 @@ class SettingsPayload(BaseModel):
     openai_tts_api_key: str | None = None
     music_preset: str | None = None
     music_volume_db: float | None = None
+    scene_image_mode: str | None = None
     include_brand_intro: bool | None = None
     include_brand_outro: bool | None = None
     include_watermark: bool | None = None
@@ -132,7 +133,7 @@ class VerifyKeyPayload(BaseModel):
 
 
 class ResearchPayload(BaseModel):
-    topic: str
+    topic: str = ""
     pillar: str | None = None
     editorial_mode: str = "fakten_mystery"
     browser_sources: list[dict[str, Any]] = Field(default_factory=list)
@@ -142,7 +143,7 @@ class ResearchPayload(BaseModel):
 
 
 class ScriptPayload(BaseModel):
-    topic: str
+    topic: str = ""
     dossier: dict[str, Any] | None = None
     video_format: str = "9:16"
     duration_target: str = "short_60"
@@ -168,6 +169,9 @@ class RenderPayload(BaseModel):
 class PreviewMotifPayload(BaseModel):
     visual_motif: str = "eye_of_horus"
     video_format: str = "9:16"
+    visual_seed: int | None = None
+    image_prompt_en: str = ""
+    scene_image_mode: str | None = None
     custom_image_id: str | None = None
 
 
@@ -307,19 +311,31 @@ def api_bootstrap() -> dict[str, Any]:
         "default_models": DEFAULT_ARENA_MODELS,
         "topic_suggestions": TOPIC_SUGGESTIONS,
         "visual_motifs": [
-            {"id": "eye_of_horus", "label": "Auge des Horus • Hologramm-Linse"},
-            {"id": "ouroboros_seal", "label": "Ouroboros • Goldenes Siegel"},
-            {"id": "quantum_lattice", "label": "Quanten-Gitter • Zeitkristall"},
-            {"id": "pyramid_radar", "label": "Gizeh-Pyramide • SAR-Radarscan"},
-            {"id": "neural_cosmos", "label": "Bewusstseins-Netz • Thalamus-Kosmos"},
-            {"id": "sacred_archive", "label": "Tempel-Archiv • Hieroglyphen-Code"},
+            {"id": "solar_eclipse_crown", "label": "Kosmische Korona-Finsternis (Gold & Dunkelblau)"},
+            {"id": "event_horizon", "label": "Ereignishorizont • Raumzeit-Linse"},
+            {"id": "atomic_clock", "label": "Atomuhr-Resonator • Goldene Laser-Ringe"},
+            {"id": "quantum_lattice", "label": "Quanten-Gitter • Zeitkristall-Matrix"},
+            {"id": "deep_telescope", "label": "Weltraum-Spiegel • Tiefraum-Galaxien"},
+            {"id": "pyramid_radar", "label": "Gizeh-Pyramide • Myonen-Radarscan"},
+            {"id": "temple_monolith", "label": "Obsidian-Monolith • Goldene Schaltkreise"},
+            {"id": "sacred_archive", "label": "Tempel-Archiv • Leuchtende Glyphen"},
+            {"id": "ouroboros_seal", "label": "Ouroboros • Kosmisches Ring-Portal"},
+            {"id": "eye_of_horus", "label": "Horus-Linse • Geometrische Iris"},
+            {"id": "neural_cosmos", "label": "Bewusstseins-Netz • Synapsen-Kosmos"},
+            {"id": "synapse_pulse", "label": "Gehirnwellen-Impuls • Goldene Resonanz"},
+            {"id": "dna_biophoton", "label": "Goldene Doppelhelix • Biophotonen"},
+            {"id": "astral_labyrinth", "label": "Metatrons Geometrie • Astrolabium"},
+            {"id": "cymatic_resonance", "label": "Kymatische Klangwelle • Mandala"},
+            {"id": "simulation_horizon", "label": "Simulations-Horizont • Matrix-Fäden"},
         ],
         "music_presets": [
-            {"id": "glitch_horizon", "label": "AuronOrigin Original – 'Glitch Horizon' (60 BPM Dark Cosmic)"},
-            {"id": "temple_drone_432", "label": "Tempel-Resonanz 432 Hz (Tiefen-Drone & Herzschlag)"},
-            {"id": "quantum_pulse", "label": "Quanten-Puls (Dunkler Sci-Fi Arpeggio-Takt)"},
-            {"id": "custom", "label": "Eigene Musikdatei hochladen (MP3/WAV)"},
-            {"id": "none", "label": "Keine Hintergrundmusik (Nur Tonstimme)"},
+            *[
+                {"id": m["id"], "label": m["name"], "mood": m["mood"]}
+                for m in MUSIC_PRESETS
+                if m["id"] != "none"
+            ],
+            {"id": "custom", "label": "Eigene Musikdatei hochladen (MP3 / WAV / M4A)", "mood": "Eigener Soundtrack"},
+            {"id": "none", "label": "Keine Hintergrundmusik (Nur deutsche Tonstimme)", "mood": "Reines Voiceover"},
         ],
         "voice_presets": [
             {
@@ -370,8 +386,6 @@ def api_verify_arena(payload: VerifyKeyPayload) -> dict[str, Any]:
 
 @app.post("/api/research")
 def api_research(payload: ResearchPayload) -> dict[str, Any]:
-    if not payload.topic.strip():
-        raise HTTPException(status_code=400, detail="Bitte gib ein Thema ein.")
     eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
     if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
         save_settings({"arena_api_key": payload.arena_api_key.strip()})
@@ -382,6 +396,7 @@ def api_research(payload: ResearchPayload) -> dict[str, Any]:
         editorial_mode=payload.editorial_mode,
         browser_sources=payload.browser_sources,
         arena_settings=eff_cfg,
+        auto_expand_keyword=True,
     )
     return {
         "ok": True,
@@ -393,8 +408,9 @@ def api_research(payload: ResearchPayload) -> dict[str, Any]:
 @app.post("/api/script/prompts")
 def api_script_prompts(payload: ScriptPayload) -> dict[str, Any]:
     """Return official AuronOrigin Showrunner prompts so browser-direct Arena Router mode can call api.arena.ai."""
+    resolved_t = payload.topic.strip() or (payload.dossier or {}).get("topic") or "Quantenphysik & Zeit"
     sys_p, usr_p = build_auron_script_prompts(
-        topic=payload.topic,
+        topic=resolved_t,
         dossier=payload.dossier,
         video_format=payload.video_format,
         duration_target=payload.duration_target,
@@ -407,8 +423,20 @@ def api_script_prompts(payload: ScriptPayload) -> dict[str, Any]:
 
 @app.post("/api/script")
 def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
-    if not payload.topic.strip():
-        raise HTTPException(status_code=400, detail="Bitte gib ein Thema ein.")
+    eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
+    if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
+        save_settings({"arena_api_key": payload.arena_api_key.strip()})
+
+    dossier = payload.dossier
+    if not dossier:
+        dossier = run_topic_research(
+            topic=payload.topic,
+            pillar=payload.pillar,
+            editorial_mode=payload.editorial_mode,
+            arena_settings=eff_cfg,
+            auto_expand_keyword=True,
+        )
+    resolved_topic = (dossier or {}).get("topic") or payload.topic.strip() or "Rätsel der Raumzeit"
 
     if payload.browser_raw_llm_text:
         parsed = extract_json_object(payload.browser_raw_llm_text)
@@ -417,31 +445,27 @@ def api_generate_script(payload: ScriptPayload) -> dict[str, Any]:
         totals = record_token_usage(payload.prompt_tokens, payload.completion_tokens)
         bp = normalize_blueprint(
             parsed,
-            topic=payload.topic,
+            topic=resolved_topic,
             video_format=payload.video_format,
             editorial_mode=payload.editorial_mode,
-            pillar=payload.pillar,
+            pillar=payload.pillar or (dossier or {}).get("pillar"),
         )
         bp["arena_router_used"] = True
         bp["arena_model_used"] = payload.arena_model or "coding-router-preview (Browser-Direkt)"
         bp["cumulative_usage"] = totals
-        return {"ok": True, "blueprint": bp, "settings": _public_settings_view(load_settings())}
-
-    eff_cfg = _effective_arena_cfg(payload.arena_api_key, payload.arena_gateway_url, payload.arena_model)
-    if payload.arena_api_key and not payload.arena_api_key.startswith("••••"):
-        save_settings({"arena_api_key": payload.arena_api_key.strip()})
+        return {"ok": True, "blueprint": bp, "dossier": dossier, "settings": _public_settings_view(load_settings())}
 
     bp = generate_video_blueprint(
-        topic=payload.topic,
-        dossier=payload.dossier,
+        topic=resolved_topic,
+        dossier=dossier,
         video_format=payload.video_format,
         duration_target=payload.duration_target,
         editorial_mode=payload.editorial_mode,
-        pillar=payload.pillar,
+        pillar=payload.pillar or (dossier or {}).get("pillar"),
         scene_count=payload.scene_count,
         arena_settings=eff_cfg,
     )
-    return {"ok": True, "blueprint": bp, "settings": _public_settings_view(load_settings())}
+    return {"ok": True, "blueprint": bp, "dossier": dossier, "settings": _public_settings_view(load_settings())}
 
 
 @app.get("/api/uploads/{file_id}")
@@ -607,16 +631,32 @@ def api_local_browser(payload: LocalBrowserPayload) -> dict[str, Any]:
     }
 
 
+@app.get("/api/music-preview/{preset_id}")
+def api_music_preview(preset_id: str) -> Response:
+    """Stream a 16-second browser preview of any AuronOrigin background music preset."""
+    audio_file = get_or_create_music_preview(preset_id)
+    if audio_file is None or not audio_file.exists():
+        raise HTTPException(status_code=404, detail="Keine Musik-Vorschau für diese Auswahl verfügbar.")
+    mime = "audio/mpeg" if audio_file.suffix.lower() == ".mp3" else "audio/wav"
+    return FileResponse(str(audio_file), media_type=mime)
+
+
 @app.post("/api/preview-motif")
 def api_preview_motif(payload: PreviewMotifPayload) -> Response:
     w, h = (360, 640) if payload.video_format == "9:16" else (640, 360)
     custom_path = (UPLOADS_DIR / Path(payload.custom_image_id).name) if payload.custom_image_id else None
+    cfg = load_settings()
+    img_mode = payload.scene_image_mode or str(cfg.get("scene_image_mode") or "auto_ai_brand")
+    seed_val = int(payload.visual_seed) if payload.visual_seed is not None else 424242
+
     img = render_sacred_motif_plate(
-        motif=payload.visual_motif if payload.visual_motif in VISUAL_MOTIFS else "eye_of_horus",
+        motif=payload.visual_motif if payload.visual_motif in VISUAL_MOTIFS else "solar_eclipse_crown",
         width=w,
         height=h,
-        seed=42,
+        seed=seed_val,
         custom_image_path=custom_path if (custom_path and custom_path.exists()) else None,
+        prompt_en=payload.image_prompt_en,
+        scene_image_mode=img_mode,
     ).resize((w, h))
     buf = io.BytesIO()
     img.save(buf, format="JPEG", quality=88)

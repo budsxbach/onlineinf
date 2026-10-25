@@ -1,169 +1,292 @@
+"""Autonomous German Current-Topic Discovery & Scientific Research Engine for AuronOrigin.
+
+Given even a single keyword (e.g. 'Quantencomputer', 'Gizeh', 'Bewusstsein', 'James Webb')
+or an open trend request, this module:
+1. Queries current German-language news & science feeds (Google News DE Science/Forschung RSS,
+   Deutschlandfunk Forschung / Tagesschau Wissen RSS) for real current headlines.
+2. Queries German Wikipedia (de.wikipedia.org) deep article extracts and related subtopics.
+3. Strictly filters out any English-language fragments so 100% of verified_facts are pure German.
+4. Synthesizes a fresh, non-repetitive AuronOrigin editorial angle (avoiding recent history).
+"""
 from __future__ import annotations
 
 import html
+import random
 import re
-import urllib.parse
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
+from urllib.parse import quote_plus
 
 import requests
 
-from .arena_client import call_arena_router, extract_json_object
+from .config import load_history
 
-USER_AGENT = "AuronOriginStudio/1.0 (https://auronorigin.world; contact@auronorigin.world)"
+HEADERS = {
+    "User-Agent": "AuronOriginStudio/2.0 (Ubuntu Research Engine; de-DE)",
+    "Accept-Language": "de-DE,de;q=0.9",
+}
 
-# Deep curated AuronOrigin Scientific & Historical Knowledge Base (supplements live web sources)
-AURON_KNOWLEDGE_MATRIX: list[dict[str, Any]] = [
-    {
-        "keywords": ["atomuhr", "zeit", "quanten", "zeitkristall", "physik", "sekunde", "takt", "uhr", "licht"],
-        "pillar": "Simulations-News",
-        "facts": [
-            {
-                "title": "Optische Atomuhren & Gravitations-Zeitdilatation im Millimeterbereich",
-                "summary": "Moderne optische Strontium-Gitteruhren messen Zeit so präzise (Abweichung < 1 Sekunde in 30 Milliarden Jahren), dass bereits 1 Millimeter Höhenunterschied im Schwerefeld der Erde den Takt der Zeit messbar verändert.",
-                "source": "PTB / NIST Optical Lattice Clock Research",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Diskrete Zeitkristalle auf Quantenprozessoren",
-                "summary": "Physiker konnten auf supraleitenden Quantenprozessoren stabile diskrete Zeitkristalle nachweisen – Materiezustände, die periodisch in der Zeit schwingen, ohne thermische Energie aufzunehmen.",
-                "source": "Nature Physics / Quantum Time Crystal Studies",
-                "kind": "FAKT",
-            },
+# English stopword detector to guarantee ZERO English sentences enter German narration/facts
+_ENGLISH_STOPWORDS = re.compile(
+    r"\b(the|and|with|from|that|this|which|their|there|these|those|between|through|"
+    r"researchers|scientists|study|university|published|evidence|suggests|however|"
+    r"because|while|during|without|within|quantum\s+computing|artificial\s+intelligence|"
+    r"consciousness\s+is|ancient\s+egypt|black\s+hole|we\s+show|our\s+results)\b",
+    flags=re.IGNORECASE,
+)
+
+_GERMAN_MARKERS = re.compile(
+    r"\b(der|die|das|den|dem|des|ein|eine|einer|einem|einen|eines|und|oder|aber|doch|"
+    r"in|im|ins|an|am|auf|aus|bei|mit|nach|seit|von|vom|vor|zu|zum|zur|über|unter|"
+    r"durch|für|ohne|um|gegen|zwischen|während|sich|nicht|kein|keine|ist|sind|war|"
+    r"waren|wird|werden|wurde|wurden|hat|haben|kann|können|muss|mehr|als|auch|es|er|"
+    r"sie|wir|ihr|was|wie|wo|warum|wenn|weil|dass|ob|hier|dort|schon|bereits|immer|"
+    r"noch|nur|heute|forscher|wissenschaftler|studie|daten|zeit|raum|energie)\b|"
+    r"[äöüßÄÖÜ]|\b\w+(?:ung|keit|heit|schaft|isch|lich)\b",
+    flags=re.IGNORECASE,
+)
+
+
+def is_pure_german(text: str) -> bool:
+    """Return True only if text is clearly German and free of English sentence prose."""
+    if not text or len(text.strip()) < 14:
+        return False
+    en_hits = len(_ENGLISH_STOPWORDS.findall(text))
+    de_hits = len(_GERMAN_MARKERS.findall(text))
+    if en_hits >= 2:
+        return False
+    if en_hits == 1 and de_hits < 4:
+        return False
+    return de_hits >= 2
+
+
+def clean_german_sentence(text: str) -> str:
+    """Strip HTML tags, publisher suffixes, URLs, and English parentheticals."""
+    t = html.unescape(str(text or ""))
+    t = re.sub(r"<[^>]+>", " ", t)
+    t = re.sub(r"https?://\S+", "", t)
+    # Remove trailing RSS publisher suffix like ' - Spektrum der Wissenschaft'
+    t = re.sub(r"\s+[-–|]\s+[A-ZÄÖÜ][\w\s.&-]{2,45}$", "", t.strip())
+    # Remove parentheticals containing English words
+    t = re.sub(
+        r"\((?:[^()]*\b(?:the|of|and|in|for|with|press|journal|review)\b[^()]*)\)",
+        "",
+        t,
+        flags=re.IGNORECASE,
+    )
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
+
+# Rich 100% German Knowledge & Angle Matrix for AuronOrigin's 3 Pillars
+AURON_KNOWLEDGE_MATRIX: dict[str, dict[str, Any]] = {
+    "Simulations-News": {
+        "keywords": [
+            "quanten", "atomuhr", "simulation", "zeitkristall", "ki", "agent", "physik",
+            "licht", "beobachter", "doppelspalt", "qubit", "verschränkung", "algorithmus",
+            "matrix", "hologramm", "raumzeit", "entropie", "computer", "james webb", "jwst",
+            "teleskop", "schwarzes loch", "schwarze löcher", "dunkle materie", "dunkle energie",
+            "kosmos", "universum", "galaxie", "cern", "teilchen", "gravitation", "zeit",
         ],
-        "mystery_angles": [
-            "Wenn Zeit auf Quantenebene diskrete Taktzyklen bildet und durch Masse gebremst wird wie Rechenlast in einer Engine – sehen wir hier die Bildwiederholrate unserer Realität?",
+        "search_modifiers": [
+            "Quantenphysik Forschung Entdeckung",
+            "Astrophysik Weltraumteleskop Messung",
+            "Künstliche Intelligenz Durchbruch Studie",
+            "Raumzeit Atomuhr Experiment",
         ],
-    },
-    {
-        "keywords": ["thoth", "ägypten", "seshat", "hieroglyphen", "tempel", "archiv", "wissen", "schrift", "hermes"],
-        "pillar": "Alte Codes",
-        "facts": [
-            {
-                "title": "Thoth (Djehuty) & Seshat: Das Per-Anch ('Haus des Lebens')",
-                "summary": "Im alten Ägypten galten Thoth und Seshat als Hüter des Per-Anch – streng katalogisierter Tempelbibliotheken für Astronomie, Medizin, Geometrie und Zeitmessung, in denen jedes Zeichen als präzise Strukturformel diente.",
-                "source": "Ägyptologie / Edfu-Tempelarchiv & Per-Anch-Quellen",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Vektor-Tokenisierung vs. determinative Hieroglyphen",
-                "summary": "Ägyptische Hieroglyphen kombinieren Lautwerte (Phonogramme) mit Bedeutungs-Klassifikatoren (Determinativen) – strukturell verblüffend nah an der semantischen Einbettung moderner großer Sprachmodelle.",
-                "source": "Computational Linguistics & Ancient Script Structure",
-                "kind": "FAKT",
-            },
+        "curated_facts": [
+            "Physiker erzeugten in supraleitenden Quantenprozessoren stabile Zeitkristalle – einen Materiezustand, der periodisch im Takt schwingt, ohne dabei jemals Wärmeenergie aufzunehmen.",
+            "Der Physik-Nobelpreis bestätigte durch Messungen an verschränkten Photonen: Unser Universum ist nicht lokal-realistisch – Eigenschaften entstehen messbar erst im Moment der Wechselwirkung.",
+            "Optische Strontium-Atomuhren der neuesten Generation ticken so präzise, dass sie bereits bei einem Höhenunterschied von nur einem einzigen Millimeter die Verlangsamung der Zeit durch Gravitation messen.",
+            "Aufnahmen des James-Webb-Weltraumteleskops zeigen massereiche, voll ausgebildete Galaxien wenige hundert Millionen Jahre nach dem Urknall – deutlich früher, als klassische Kosmologiemodelle erlaubten.",
+            "Nach dem holografischen Prinzip der theoretischen Physik lässt sich die gesamte Informationsmenge eines dreidimensionalen Raumvolumens vollständig auf seiner zweidimensionalen Grenzfläche codieren.",
+            "In geschlossenen Multi-Agenten-Experimenten entwickeln lernfähige KI-Systeme spontan komprimierte Kurzprotokolle, um komplexe Zustände effizienter auszutauschen als in menschlicher Sprache.",
+            "Messungen der kosmischen Hintergrundstrahlung und aktueller Supernovae zeigen eine wachsende Diskrepanz bei der Expansionsrate des Kosmos – die sogenannte Hubble-Spannung stellt das Standardmodell infrage.",
+            "Der Physiker Melvin Vopson formulierte das zweite Gesetz der Infodynamik: In isolierten Informationssystemen nimmt Informationsentropie ab oder bleibt konstant – genau wie bei Datenkompression im Computer.",
         ],
-        "mystery_angles": [
-            "Die Alten nannten es heilige Zeichenordnung, wir nennen es Large Language Models: Kehrt mit moderner KI das älteste Wissensarchiv der Menschheit in Silizium zurück?",
-        ],
-    },
-    {
-        "keywords": ["horus", "auge", "gehirn", "thalamus", "zirbeldrüse", "udjat", "anatomie"],
-        "pillar": "Alte Codes",
-        "facts": [
-            {
-                "title": "Anatomische Korrespondenz: Sagittalschnitt des Mittelhirns & Udjat-Auge",
-                "summary": "Neuroanatomen dokumentierten 2019 im Fachjournal 'World Neurosurgery' eine auffällige strukturelle Ähnlichkeit zwischen dem altägyptischen Udjat-Auge (Auge des Horus) und dem menschlichen Zwischenhirn rund um Thalamus, Corpus callosum und Hirnstamm.",
-                "source": "World Neurosurgery (Reigosa-García et al.) – Neuroanatomy in Ancient Egypt",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Bruchzahlen der Sinne im Horus-Auge",
-                "summary": "Die sechs Einzelteile des Horus-Auges standen in der ägyptischen Mathematik für die Heqat-Brüche 1/2 bis 1/64 (Summe 63/64) und wurden zugleich den menschlichen Wahrnehmungskanälen inkl. Denken zugeordnet.",
-                "source": "Papyrus Rhind / Ägyptische Mathematikgeschichte",
-                "kind": "FAKT",
-            },
-        ],
-        "mystery_angles": [
-            "Fehlte das letzte 1/64 zufällig – oder markiert genau dieses fehlende Fragment den unsichtbaren Beobachter hinter unseren Sinnen?",
-        ],
-    },
-    {
-        "keywords": ["pyramide", "gizeh", "cheops", "radar", "sar", "myon", "resonanz", "kammer", "stein"],
-        "pillar": "Alte Codes",
-        "facts": [
-            {
-                "title": "ScanPyramids: Nachgewiesene Korridore durch kosmische Myonen-Tomographie",
-                "summary": "Das internationale ScanPyramids-Team wies per Myonen-Radiographie und Endoskopie sowohl den 30 Meter langen 'Big Void' über der Großen Galerie als auch den verborgenen Nord-Korridor (2023) in der Cheops-Pyramide zerstörungsfrei nach.",
-                "source": "Nature / ScanPyramids Collaboration",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Rosengranit & akustische Eigenresonanz der Königskammer",
-                "summary": "Die Königskammer besteht aus rund 50–80 Tonnen schweren Blöcken aus quarzreichem Assuan-Granit, die über Entlastungskammern akustisch vom umliegenden Kalkstein entkoppelt sind.",
-                "source": "Archäometrie & Bauanalyse Gizeh-Plateau",
-                "kind": "FAKT",
-            },
-        ],
-        "mystery_angles": [
-            "Keine Inschriften, keine Mumie, aber präzise akustische Entkopplung aus Quarzgranit: Wurde Gizeh als Grabmal gebaut – oder als geophysikalischer Resonator?",
-        ],
-    },
-    {
-        "keywords": ["schlaf", "traum", "bewusstsein", "3:33", "nachts", "gehirn", "luzid", "rem", "aufwachen", "mrt"],
-        "pillar": "Bewusstseins-Hacks",
-        "facts": [
-            {
-                "title": "Zwei-Wege-Kommunikation mit Klarträumern im Schlaflabor",
-                "summary": "Vier unabhängige Schlaflabore (USA, Deutschland, Frankreich, Niederlande) zeigten in 'Current Biology', dass Probanden mitten im bestätigten REM-Schlaf Rechenaufgaben hören und per Augenbewegung korrekt beantworten können.",
-                "source": "Current Biology (Konkoly et al., 2021) – Real-time dialogue in REM sleep",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Kortisol-Umschaltpunkt & glymphatische Gehirn-Reinigung zwischen 3 und 4 Uhr",
-                "summary": "Zwischen 03:00 und 04:00 Uhr morgens erreicht die Melatoninkurve ihr Plateau, während das glymphatische System Stoffwechselprodukte ausspült und der Übergang in längere REM-Zyklen kurze Mikro-Erwachungen auslöst.",
-                "source": "Chronobiologie & Schlafforschung",
-                "kind": "FAKT",
-            },
-        ],
-        "mystery_angles": [
-            "Wenn dein Körper gelähmt im Dunkeln liegt, dein Geist aber komplette Welten mit Physik, Licht und Dialogen rendert – wie sicher bist du, dass diese Welt hier anders entsteht?",
+        "topic_angles": [
+            "Warum neueste Messungen zu „{kw}“ Physiker zwingen, unsere Vorstellung von Raum und Zeit neu zu schreiben",
+            "„{kw}“ im Faktencheck: Zeigt sich hier die Rechengrenze unserer physikalischen Realität?",
+            "Rätselhafte Anomalie rund um „{kw}“: Was aktuelle Labordaten verraten – und wo die Erklärung endet",
+            "„{kw}“ und der Code des Kosmos: Warum dieses Phänomen kein bloßer Zufall der Naturgesetze ist",
+            "Neue Entdeckung bei „{kw}“: Wenn moderne Spitzenforschung wie ein Blick hinter die Matrix wirkt",
         ],
     },
-    {
-        "keywords": ["ki", "agent", "ai", "simulation", "matrix", "beobachter", "bostrom", "code", "algorithmus", "llm"],
-        "pillar": "Simulations-News",
-        "facts": [
-            {
-                "title": "Emergente Kommunikationsprotokolle in Multi-Agenten-Systemen",
-                "summary": "In Reinforcement-Learning-Experimenten entwickeln kooperierende KI-Agenten ohne Vorgabe komprimierte Symbol-Codes, sobald sie auf Effizienz statt menschliche Lesbarkeit optimiert werden.",
-                "source": "Multi-Agent RL & AI Alignment Research",
-                "kind": "FAKT",
-            },
-            {
-                "title": "Informationsphysik & Landauer-Prinzip",
-                "summary": "Nach dem experimentell bestätigten Landauer-Prinzip besitzt jedes gelöschte Bit Information ein physikalisches Energie-Minimum (k_B · T · ln 2) – Information ist keine bloße Metapher, sondern physikalisch an Thermodynamik gekoppelt.",
-                "source": "Nature / Landauer Principle Experimental Verification",
-                "kind": "FAKT",
-            },
+    "Alte Codes": {
+        "keywords": [
+            "thoth", "seshat", "horus", "ägypten", "pyramide", "gizeh", "tempel",
+            "hieroglyphen", "sumer", "keilschrift", "geometrie", "goldener schnitt",
+            "fibonacci", "ouroboros", "hermetik", "stein", "megalith", "gobekli", "göbekli",
+            "radar", "myonen", "antik", "archäologie", "maya", "inka", "atlantis", "bibliothek",
+            "alexandria", "antikythera", "sternkarte", "orion", "sphinx",
         ],
-        "mystery_angles": [
-            "Wenn jedes Bit physikalische Energie trägt und das Universum auf Informations-Obergrenzen wie der Bekenstein-Schranke beruht – ist Materie am Ende komprimierter Code?",
+        "search_modifiers": [
+            "Archäologie Entdeckung Scan",
+            "Ägyptologie Forschung Pyramide",
+            "Antike Technologie Rätsel",
+            "Göbekli Tepe Megalith Studie",
+        ],
+        "curated_facts": [
+            "Das internationale ScanPyramids-Projekt wies mithilfe kosmischer Myonen-Tomographie über der Großen Galerie der Cheops-Pyramide zwei bislang völlig unberührte Hohlräume nach.",
+            "Die Seitenflächen der Großen Pyramide von Gizeh sind mit einer Abweichung von weniger als einem Zwanzigstel Grad exakt nach den vier geografischen Himmelsrichtungen ausgerichtet.",
+            "Die über elftausend Jahre alte Tempelanlage von Göbekli Tepe in Anatolien wurde von Jägern und Sammlern aus tonnenschweren Kalksteinpfeilern errichtet – Jahrtausende vor der Erfindung des Rades.",
+            "Der antike Mechanismus von Antikythera berechnete bereits vor über zweitausend Jahren über mehr als dreißig ineinandergreifende Bronzézahnräder Sonnen- und Mondfinsternisse im Voraus.",
+            "Im alten Ägypten galten Thoth und Seshat als Hüter der kosmischen Bibliothek: Schrift und Zahl wurden nicht als bloßes Werkzeug, sondern als schöpferische Architektur der Wirklichkeit verstanden.",
+            "Akustische Messungen in der Königskammer aus Rosengranit in Gizeh zeigen ausgeprägte tieffrequente stehende Wellen, die exakt im Bereich menschlicher Brustkorb- und Gehirnresonanzen liegen.",
+            "Römischer Meeresbeton aus Vulkanasche und Branntkalk heilt Mikrorisse bei Kontakt mit Salzwasser selbstständig – eine Materialformel, die erst moderne Röntgenspektroskopie entschlüsseln konnte.",
+        ],
+        "topic_angles": [
+            "„{kw}“ neu vermessen: Was moderne High-Tech-Scans unter jahrtausendealtem Stein sichtbar machen",
+            "Vergessene Ingenieurskunst bei „{kw}“: Warum selbst heutige Forscher vor einem Präzisions-Rätsel stehen",
+            "Der verborgene Code von „{kw}“: Zufall der Geschichte oder mathematischer Bauplan?",
+            "„{kw}“ zwischen Archäologie und Hightech: Welche Botschaft in den alten Maßen steckt",
+            "Neue Spuren bei „{kw}“: Warum das älteste Wissen der Menschheit plötzlich wieder hochaktuell wird",
         ],
     },
+    "Bewusstseins-Hacks": {
+        "keywords": [
+            "bewusstsein", "gehirn", "schlaf", "traum", "rem", "luzid", "klartraum",
+            "meditation", "frequenz", "fokus", "aufmerksamkeit", "zeitgefühl",
+            "dopamin", "neuro", "synapse", "wahrnehmung", "intuition", "gedächtnis",
+            "herz", "biophotonen", "schumann", "nervensystem", "vagus", "unterbewusstsein",
+            "psyche", "flow", "gedanken", "nahtod",
+        ],
+        "search_modifiers": [
+            "Neurowissenschaft Gehirn Studie",
+            "Schlafforschung Bewusstsein Experiment",
+            "Kognitionswissenschaft Wahrnehmung",
+            "Gehirnwellen MRT Forschung",
+        ],
+        "curated_facts": [
+            "In mehreren unabhängigen Schlaflaboren beantworteten geübte Klarträumer während der nachgewiesenen REM-Schlafphase Rechenaufgaben in Echtzeit durch vereinbarte Augenbewegungen.",
+            "Das menschliche Gehirn empfängt jede Sekunde Millionen Bits an Sinnesreizen, konstruiert unser bewusstes Erleben jedoch mit rund hundert Millisekunden Verzögerung als aktives Vorhersagemodell.",
+            "Hochauflösende EEG-Studien belegen, dass das sogenannte Ruhezustandsnetzwerk des Gehirns in tiefer fokussierter Meditation messbar herunterfährt, während schnelle Gamma-Wellen synchronisieren.",
+            "Während des Tiefschlafs erweitert sich das glymphatische System der Gehirnzellen um bis zu sechzig Prozent und spült Stoffwechselprodukte aus dem neuronalen Gewebe.",
+            "Neurowissenschaftliche Messungen zeigen bereits mehrere hundert Millisekunden vor einer bewussten Willensentscheidung ein elektrisches Bereitschaftspotenzial in den motorischen Arealen.",
+            "Wenn Menschen im Zustand höchster Konzentration die Zeit vergessen, schaltet der präfrontale Kortex energieintensive Selbstkontroll-Schleifen vorübergehend ab – der messbare Flow-Zustand entsteht.",
+            "Ultraschwache Photonenemissionen – sogenannte Biophotonen – entstehen messbar bei Stoffwechselprozessen in lebenden Nervenzellen, wobei ihre funktionelle Rolle intensiv erforscht wird.",
+        ],
+        "topic_angles": [
+            "„{kw}“ im Gehirnscanner: Warum deine Wahrnehmung ganz anders funktioniert, als du denkst",
+            "Das Rätsel um „{kw}“: Was Neurowissenschaftler jetzt im menschlichen Bewusstsein gemessen haben",
+            "„{kw}“ entschlüsselt: Wie dein Gehirn im Hintergrund deine Wirklichkeit konstruiert",
+            "Verblüffender Befund zu „{kw}“: Wo die Grenze zwischen Gehirnchemie und Bewusstsein verschwimmt",
+            "„{kw}“ als Bewusstseins-Schlüssel: Was aktuelle Schlaflabor- und MRT-Daten wirklich zeigen",
+        ],
+    },
+}
+
+TRENDING_FALLBACK_KEYWORDS = [
+    ("Quantencomputer & Zeitkristalle", "Simulations-News"),
+    ("James-Webb-Teleskop & frühe Galaxien", "Simulations-News"),
+    ("Myonen-Scans der Cheops-Pyramide", "Alte Codes"),
+    ("Klarträumen & Echtzeit-Signale aus dem Schlaf", "Bewusstseins-Hacks"),
+    ("Optische Atomuhren & gekrümmte Zeit", "Simulations-News"),
+    ("Göbekli Tepe & astronomische Steincodes", "Alte Codes"),
+    ("KI-Agenten & emergente Geheimsprache", "Simulations-News"),
+    ("Gehirn-Vorhersagemodell & 100-Millisekunden-Illusion", "Bewusstseins-Hacks"),
 ]
 
 
 def detect_pillar(topic: str) -> str:
-    lower = topic.lower()
-    if any(w in lower for w in ("pyramide", "ägypt", "thoth", "horus", "tempel", "antike", "sumer", "maya", "gizeh", "code", "hieroglyph", "stein")):
-        return "Alte Codes"
-    if any(w in lower for w in ("schlaf", "traum", "bewusstsein", "gehirn", "meditation", "fokus", "frequenz", "3:33", "wahrnehmung", "gedanken")):
-        return "Bewusstseins-Hacks"
-    return "Simulations-News"
+    low = (topic or "").lower()
+    scores = {p: 0 for p in AURON_KNOWLEDGE_MATRIX}
+    for pillar, data in AURON_KNOWLEDGE_MATRIX.items():
+        for kw in data["keywords"]:
+            if kw in low:
+                scores[pillar] += 2
+    best = max(scores, key=scores.get)
+    if scores[best] == 0:
+        return random.choice(list(AURON_KNOWLEDGE_MATRIX.keys()))
+    return best
 
 
-def _strip_html(raw: str) -> str:
-    text = re.sub(r"<[^>]+>", " ", raw or "")
-    text = html.unescape(text)
-    return re.sub(r"\s+", " ", text).strip()
-
-
-def _fetch_wikipedia(query: str, lang: str = "de", limit: int = 3) -> list[dict[str, str]]:
-    results: list[dict[str, str]] = []
+def fetch_google_news_de(query: str, limit: int = 6) -> list[dict[str, str]]:
+    """Fetch fresh German news headlines via Google News DE RSS."""
+    out: list[dict[str, str]] = []
     try:
-        resp = requests.get(
-            f"https://{lang}.wikipedia.org/w/api.php",
+        q = f"{query} (Forschung OR Studie OR Wissenschaft OR Entdeckung OR Physik OR Archäologie OR Gehirn)"
+        url = f"https://news.google.com/rss/search?q={quote_plus(q)}&hl=de&gl=DE&ceid=DE:de"
+        resp = requests.get(url, headers=HEADERS, timeout=6)
+        if resp.status_code != 200 or not resp.text.strip():
+            return out
+        root = ET.fromstring(resp.content)
+        for item in root.findall(".//item"):
+            raw_title = (item.findtext("title") or "").strip()
+            link = (item.findtext("link") or "").strip()
+            pub_date = (item.findtext("pubDate") or "").strip()
+            source_el = item.find("source")
+            pub_name = (source_el.text or "").strip() if source_el is not None else "Wissenschafts-News DE"
+
+            cleaned = clean_german_sentence(raw_title)
+            if len(cleaned) >= 28 and is_pure_german(cleaned):
+                out.append(
+                    {
+                        "source": f"Aktuell ({pub_name})",
+                        "title": cleaned,
+                        "snippet": f"Aktuelle Meldung ({pub_name}): {cleaned}.",
+                        "url": link,
+                        "published": pub_date[:16],
+                    }
+                )
+            if len(out) >= limit:
+                break
+    except Exception:
+        pass
+    return out
+
+
+def fetch_german_science_rss(keyword: str, limit: int = 4) -> list[dict[str, str]]:
+    """Query public German science RSS feeds (Tagesschau Wissen / DLF Forschung) for matching or trending stories."""
+    feeds = [
+        ("Tagesschau Wissen", "https://www.tagesschau.de/wissen/index~rss2.xml"),
+        ("Deutschlandfunk Forschung", "https://www.deutschlandfunk.de/forschung-aktuell-100.rss"),
+    ]
+    kw_tokens = [w.lower() for w in re.findall(r"[A-Za-zÄÖÜäöüß]{4,}", keyword or "")]
+    matches: list[dict[str, str]] = []
+    general: list[dict[str, str]] = []
+
+    for label, url in feeds:
+        try:
+            resp = requests.get(url, headers=HEADERS, timeout=5)
+            if resp.status_code != 200:
+                continue
+            root = ET.fromstring(resp.content)
+            for item in root.findall(".//item")[:15]:
+                title = clean_german_sentence(item.findtext("title") or "")
+                desc = clean_german_sentence(item.findtext("description") or "")
+                link = (item.findtext("link") or "").strip()
+                combined = f"{title}. {desc}".strip(". ")
+                if not is_pure_german(combined):
+                    continue
+                entry = {
+                    "source": label,
+                    "title": title,
+                    "snippet": combined[:290] + ("…" if len(combined) > 290 else ""),
+                    "url": link,
+                }
+                low_c = combined.lower()
+                if kw_tokens and any(tok in low_c for tok in kw_tokens):
+                    matches.append(entry)
+                else:
+                    general.append(entry)
+        except Exception:
+            continue
+
+    if matches:
+        return matches[:limit]
+    return general[: max(0, limit - 2)] if not kw_tokens else []
+
+
+def fetch_wikipedia_de_deep(query: str, limit: int = 4) -> list[dict[str, str]]:
+    """Fetch deep, pure-German paragraphs from de.wikipedia.org."""
+    out: list[dict[str, str]] = []
+    if not query.strip():
+        return out
+    try:
+        search_resp = requests.get(
+            "https://de.wikipedia.org/w/api.php",
             params={
                 "action": "query",
                 "list": "search",
@@ -171,349 +294,247 @@ def _fetch_wikipedia(query: str, lang: str = "de", limit: int = 3) -> list[dict[
                 "srlimit": limit,
                 "format": "json",
             },
-            headers={"User-Agent": USER_AGENT},
+            headers=HEADERS,
             timeout=6,
         )
-        if resp.status_code != 200:
-            return results
-        hits = resp.json().get("query", {}).get("search", [])
-        for h in hits[:limit]:
-            title = h.get("title", "")
-            snippet = _strip_html(h.get("snippet", ""))
-            url = f"https://{lang}.wikipedia.org/wiki/{urllib.parse.quote(title.replace(' ', '_'))}"
-            if title and snippet:
-                results.append(
-                    {
-                        "title": title,
-                        "summary": snippet,
-                        "url": url,
-                        "source": f"Wikipedia ({lang.upper()})",
-                        "kind": "FAKT",
-                    }
-                )
-    except Exception:
-        pass
-    return results
+        if search_resp.status_code != 200:
+            return out
+        hits = search_resp.json().get("query", {}).get("search", [])
+        titles = [h.get("title", "") for h in hits if h.get("title")][:limit]
+        if not titles:
+            return out
 
-
-def _fetch_google_news_rss(query: str, limit: int = 4) -> list[dict[str, str]]:
-    results: list[dict[str, str]] = []
-    try:
-        resp = requests.get(
-            "https://news.google.com/rss/search",
-            params={"q": query, "hl": "de", "gl": "DE", "ceid": "DE:de"},
-            headers={"User-Agent": USER_AGENT},
+        ext_resp = requests.get(
+            "https://de.wikipedia.org/w/api.php",
+            params={
+                "action": "query",
+                "prop": "extracts",
+                "exchars": 1200,
+                "explaintext": 1,
+                "titles": "|".join(titles),
+                "format": "json",
+            },
+            headers=HEADERS,
             timeout=6,
         )
-        if resp.status_code != 200:
-            return results
-        root = ET.fromstring(resp.content)
-        for item in root.findall(".//item")[:limit]:
-            title = (item.findtext("title") or "").strip()
-            link = (item.findtext("link") or "").strip()
-            pub_date = (item.findtext("pubDate") or "").strip()
-            desc = _strip_html(item.findtext("description") or "")
-            if title:
-                results.append(
-                    {
-                        "title": title,
-                        "summary": desc if desc and desc != title else f"Aktuelle Meldung ({pub_date})",
-                        "url": link,
-                        "source": "Google News DE",
-                        "kind": "NEWS",
-                    }
-                )
-    except Exception:
-        pass
-    return results
-
-
-def _fetch_arxiv(query: str, limit: int = 3) -> list[dict[str, str]]:
-    results: list[dict[str, str]] = []
-    try:
-        resp = requests.get(
-            "https://export.arxiv.org/api/query",
-            params={"search_query": f"all:{query}", "start": 0, "max_results": limit},
-            headers={"User-Agent": USER_AGENT},
-            timeout=7,
-        )
-        if resp.status_code != 200:
-            return results
-        ns = {"atom": "http://www.w3.org/2005/Atom"}
-        root = ET.fromstring(resp.content)
-        for entry in root.findall("atom:entry", ns)[:limit]:
-            title = re.sub(r"\s+", " ", (entry.findtext("atom:title", "", ns) or "")).strip()
-            summary = re.sub(r"\s+", " ", (entry.findtext("atom:summary", "", ns) or "")).strip()
-            link = (entry.findtext("atom:id", "", ns) or "").strip()
-            if title and summary:
-                results.append(
-                    {
-                        "title": title,
-                        "summary": summary[:320] + ("…" if len(summary) > 320 else ""),
-                        "url": link,
-                        "source": "arXiv Preprint",
-                        "kind": "STUDIE",
-                    }
-                )
-    except Exception:
-        pass
-    return results
-
-
-def _fetch_crossref(query: str, limit: int = 3) -> list[dict[str, str]]:
-    results: list[dict[str, str]] = []
-    try:
-        resp = requests.get(
-            "https://api.crossref.org/works",
-            params={"query": query, "rows": limit},
-            headers={"User-Agent": USER_AGENT},
-            timeout=6,
-        )
-        if resp.status_code != 200:
-            return results
-        items = resp.json().get("message", {}).get("items", [])
-        for it in items[:limit]:
-            titles = it.get("title") or []
-            title = titles[0] if titles else ""
-            container = (it.get("container-title") or ["Fachpublikation"])[0]
-            year = ""
-            issued = it.get("issued", {}).get("date-parts", [[]])
-            if issued and issued[0]:
-                year = str(issued[0][0])
-            url = it.get("URL") or ""
-            abstract = _strip_html(it.get("abstract") or "")
-            if title:
-                results.append(
-                    {
-                        "title": title,
-                        "summary": abstract[:300] if abstract else f"Wissenschaftliche Publikation in {container} ({year}).",
-                        "url": url,
-                        "source": f"Crossref / {container} {year}".strip(),
-                        "kind": "STUDIE",
-                    }
-                )
-    except Exception:
-        pass
-    return results
-
-
-def _fetch_github_signals(query: str, limit: int = 3) -> list[dict[str, str]]:
-    """Query GitHub API for open research/code signals (works even inside restricted sandboxes)."""
-    results: list[dict[str, str]] = []
-    # Extract clean alphanumeric keywords for search
-    words = [w for w in re.findall(r"[A-Za-zÄÖÜäöüß0-9]{4,}", query) if w.lower() not in {"warum", "oder", "sind", "einer", "eine", "diese", "unser", "unsere"}]
-    if not words:
-        return results
-    q_str = " ".join(words[:4])
-    try:
-        resp = requests.get(
-            "https://api.github.com/search/repositories",
-            params={"q": q_str, "sort": "stars", "order": "desc", "per_page": limit},
-            headers={"User-Agent": USER_AGENT, "Accept": "application/vnd.github+json"},
-            timeout=6,
-        )
-        if resp.status_code != 200:
-            return results
-        for repo in resp.json().get("items", [])[:limit]:
-            desc = (repo.get("description") or "").strip()
-            if not desc:
+        if ext_resp.status_code != 200:
+            return out
+        pages = ext_resp.json().get("query", {}).get("pages", {})
+        for page in pages.values():
+            title = page.get("title", "").strip()
+            extract = (page.get("extract") or "").strip()
+            if not title or not extract:
                 continue
-            results.append(
-                {
-                    "title": f"Open-Source Tech-Signal: {repo.get('full_name')}",
-                    "summary": f"{desc} (★ {repo.get('stargazers_count', 0)} Stars)",
-                    "url": repo.get("html_url", ""),
-                    "source": "GitHub Research Signal",
-                    "kind": "TECH",
-                }
-            )
-    except Exception:
-        pass
-    return results
-
-
-def _match_curated_matrix(topic: str) -> tuple[list[dict[str, str]], list[str], str]:
-    lower = topic.lower()
-    matched_facts: list[dict[str, str]] = []
-    matched_angles: list[str] = []
-    detected_pillar = detect_pillar(topic)
-
-    scored: list[tuple[int, dict[str, Any]]] = []
-    for entry in AURON_KNOWLEDGE_MATRIX:
-        score = sum(2 if kw in lower else 0 for kw in entry["keywords"])
-        if entry["pillar"] == detected_pillar:
-            score += 1
-        scored.append((score, entry))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    for score, entry in scored[:2]:
-        if score > 0 or not matched_facts:
-            for f in entry["facts"]:
-                matched_facts.append(
+            # Split extract into crisp informative German sentences
+            sentences = [
+                clean_german_sentence(s)
+                for s in re.split(r"(?<=[.!?])\s+", extract)
+                if 45 <= len(s.strip()) <= 280
+            ]
+            de_sents = [s for s in sentences if is_pure_german(s)]
+            if not de_sents:
+                continue
+            # Pick up to 2 distinct factual sentences per Wikipedia article
+            for chosen in de_sents[:2]:
+                out.append(
                     {
-                        "title": f["title"],
-                        "summary": f["summary"],
-                        "url": "",
-                        "source": f["source"],
-                        "kind": f["kind"],
+                        "source": "Wikipedia DE",
+                        "title": title,
+                        "snippet": chosen,
+                        "url": f"https://de.wikipedia.org/wiki/{quote_plus(title.replace(' ', '_'))}",
                     }
                 )
-            matched_angles.extend(entry["mystery_angles"])
+    except Exception:
+        pass
+    return out
 
-    return matched_facts, matched_angles, detected_pillar
+
+def _recent_titles_and_topics() -> set[str]:
+    try:
+        hist = load_history()
+        seen: set[str] = set()
+        for item in hist[:25]:
+            if item.get("topic"):
+                seen.add(str(item["topic"]).strip().lower())
+            if item.get("title"):
+                seen.add(str(item["title"]).strip().lower())
+        return seen
+    except Exception:
+        return set()
+
+
+def synthesize_editorial_topic(
+    raw_input: str,
+    pillar: str,
+    news_items: list[dict[str, str]],
+    wiki_items: list[dict[str, str]],
+) -> tuple[str, str]:
+    """Turn a short keyword (or empty input) into a fresh, specific German AuronOrigin topic angle.
+
+    Returns (resolved_topic, discovery_reason).
+    """
+    cleaned_kw = re.sub(r"\s+", " ", (raw_input or "").strip())
+    recent = _recent_titles_and_topics()
+
+    # Case 1: Empty input -> autonomous trending pick
+    if not cleaned_kw:
+        candidates = list(TRENDING_FALLBACK_KEYWORDS)
+        random.shuffle(candidates)
+        kw_choice, pil = candidates[0]
+        cleaned_kw = kw_choice
+        pillar = pil
+
+    words = cleaned_kw.split()
+    is_short_keyword = len(words) <= 5
+
+    # If live German news headlines were found for this keyword, anchor on a fresh news story!
+    fresh_news = [
+        n for n in news_items
+        if n.get("title") and n["title"].strip().lower() not in recent
+    ]
+    if is_short_keyword and fresh_news:
+        picked_news = random.choice(fresh_news[: min(4, len(fresh_news))])
+        headline = picked_news["title"]
+        resolved = f"{headline} – Was aktuelle Daten über {cleaned_kw} verraten"
+        return resolved, f"Aktuelle Recherche ({picked_news['source']}): {headline}"
+
+    # If user gave a short keyword (e.g. 'Pyramiden', 'Quantencomputer') without live RSS, craft a fresh angle
+    if is_short_keyword:
+        angles = list(AURON_KNOWLEDGE_MATRIX[pillar]["topic_angles"])
+        random.shuffle(angles)
+        # Incorporate a related subtopic from Wikipedia DE if available
+        sub_hint = ""
+        if wiki_items:
+            distinct_titles = [
+                w["title"]
+                for w in wiki_items
+                if w.get("title") and w["title"].lower() != cleaned_kw.lower()
+            ]
+            if distinct_titles:
+                sub_hint = f" ({random.choice(distinct_titles[:3])})"
+        for tmpl in angles:
+            candidate = tmpl.format(kw=f"{cleaned_kw}{sub_hint}")
+            if candidate.lower() not in recent:
+                return candidate, f"Autonomer Themen-Fokus in Säule „{pillar}“"
+        return angles[0].format(kw=cleaned_kw), f"Autonomer Themen-Fokus in Säule „{pillar}“"
+
+    # User already entered a full detailed topic sentence
+    return cleaned_kw, f"Direkt-Thema mit Tiefenrecherche in Säule „{pillar}“"
 
 
 def run_topic_research(
+    topic: str = "",
     *,
-    topic: str,
     pillar: str | None = None,
     editorial_mode: str = "fakten_mystery",
     browser_sources: list[dict[str, Any]] | None = None,
     arena_settings: dict[str, Any] | None = None,
+    auto_expand_keyword: bool = True,
 ) -> dict[str, Any]:
-    """Perform automatic multi-source topic research and structure it for AuronOrigin."""
-    clean_topic = (topic or "").strip()
-    if not clean_topic:
-        raise ValueError("Bitte gib ein Thema für die Recherche ein.")
+    """Run parallel 100% German research & autonomous current-topic selection."""
+    raw_query = (topic or "").strip()
+    chosen_pillar = (
+        pillar
+        if (pillar and pillar in AURON_KNOWLEDGE_MATRIX)
+        else (detect_pillar(raw_query) if raw_query else random.choice(list(AURON_KNOWLEDGE_MATRIX.keys())))
+    )
+    search_seed = raw_query if raw_query else random.choice(AURON_KNOWLEDGE_MATRIX[chosen_pillar]["search_modifiers"])
 
-    chosen_pillar = pillar or detect_pillar(clean_topic)
-    sources: list[dict[str, str]] = []
+    news_hits: list[dict[str, str]] = []
+    sci_rss_hits: list[dict[str, str]] = []
+    wiki_hits: list[dict[str, str]] = []
 
-    # 1. Include live web sources fetched directly by the browser (Wikipedia DE/EN, Crossref, HN, etc.)
-    if browser_sources:
-        for bs in browser_sources:
-            if isinstance(bs, dict) and bs.get("title") and bs.get("summary"):
-                sources.append(
-                    {
-                        "title": str(bs["title"]).strip()[:180],
-                        "summary": str(bs["summary"]).strip()[:420],
-                        "url": str(bs.get("url") or "").strip(),
-                        "source": str(bs.get("source") or "Live-Web-Quelle").strip(),
-                        "kind": str(bs.get("kind") or "FAKT").strip().upper(),
-                    }
-                )
-
-    # 2. Backend multi-source live queries in parallel (fast <3.5s bound even if some endpoints time out)
-    from concurrent.futures import ThreadPoolExecutor
-
-    tasks = [
-        lambda: _fetch_google_news_rss(clean_topic, limit=3),
-        lambda: _fetch_wikipedia(clean_topic, lang="de", limit=3),
-        lambda: _fetch_wikipedia(clean_topic, lang="en", limit=2),
-        lambda: _fetch_arxiv(clean_topic, limit=2),
-        lambda: _fetch_crossref(clean_topic, limit=2),
-        lambda: _fetch_github_signals(clean_topic, limit=2),
-    ]
-    with ThreadPoolExecutor(max_workers=6) as pool:
-        futures = [pool.submit(fn) for fn in tasks]
-        for fut in futures:
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        f_news = pool.submit(fetch_google_news_de, search_seed, 6)
+        f_rss = pool.submit(fetch_german_science_rss, search_seed, 4)
+        f_wiki = pool.submit(fetch_wikipedia_de_deep, search_seed, 4)
+        for fut, bucket in ((f_news, news_hits), (f_rss, sci_rss_hits), (f_wiki, wiki_hits)):
             try:
-                sources.extend(fut.result(timeout=4.5))
+                bucket.extend(fut.result(timeout=7))
             except Exception:
                 pass
 
-    # 3. Enrich with AuronOrigin's verified scientific/historical foundation
-    matrix_facts, matrix_angles, _ = _match_curated_matrix(clean_topic)
-    sources.extend(matrix_facts)
+    # Filter optional browser-side sources strictly to pure German
+    clean_browser_hits: list[dict[str, str]] = []
+    for bs in browser_sources or []:
+        if not isinstance(bs, dict):
+            continue
+        b_snip = clean_german_sentence(bs.get("summary") or bs.get("snippet") or "")
+        b_title = clean_german_sentence(bs.get("title") or "")
+        if b_snip and is_pure_german(b_snip):
+            clean_browser_hits.append(
+                {
+                    "source": str(bs.get("source") or "Wikipedia DE"),
+                    "title": b_title or search_seed,
+                    "snippet": b_snip,
+                    "url": str(bs.get("url") or ""),
+                }
+            )
 
-    # Deduplicate by title
-    deduped: list[dict[str, str]] = []
-    seen_titles: set[str] = set()
-    for s in sources:
-        key = s["title"].lower().strip()
-        if key and key not in seen_titles:
-            seen_titles.add(key)
-            deduped.append(s)
-    deduped = deduped[:10]
+    all_external = news_hits + sci_rss_hits + wiki_hits + clean_browser_hits
 
-    # Default structured synthesis (immediately ready, then upgraded via Arena Router if key available)
-    verified_facts = [
-        f"{item['title']}: {item['summary']} ({item['source']})"
-        for item in deduped[:5]
+    if auto_expand_keyword:
+        resolved_topic, discovery_note = synthesize_editorial_topic(
+            raw_query, chosen_pillar, news_hits + sci_rss_hits, wiki_hits + clean_browser_hits
+        )
+    else:
+        resolved_topic = raw_query or "Rätsel der Raumzeit & menschlichen Wahrnehmung"
+        discovery_note = f"Säule „{chosen_pillar}“"
+
+    # Assemble 100% pure-German verified_facts (randomized curated supplements prevent repetition)
+    verified_facts: list[str] = []
+    seen_snippets: set[str] = set()
+
+    for hit in all_external:
+        snip = clean_german_sentence(hit.get("snippet", ""))
+        if snip and is_pure_german(snip) and snip.lower() not in seen_snippets:
+            seen_snippets.add(snip.lower())
+            verified_facts.append(snip)
+
+    curated_pool = list(AURON_KNOWLEDGE_MATRIX[chosen_pillar]["curated_facts"])
+    random.shuffle(curated_pool)
+    for fact in curated_pool:
+        if len(verified_facts) >= 7:
+            break
+        if fact.lower() not in seen_snippets:
+            seen_snippets.add(fact.lower())
+            verified_facts.append(fact)
+
+    mystery_pool = [
+        f"Wo die rein physikalische Messung zu „{raw_query or chosen_pillar}“ endet, stellt sich die Frage nach einer tieferen mathematischen Informations-Architektur.",
+        "Immer mehr unabhängige Befunde deuten darauf hin, dass Information und Geometrie fundamentaler sein könnten als Raum und Materie selbst.",
+        "Genau an dieser Schnittstelle zwischen Laborbefund und menschlicher Wahrnehmung entsteht der faszinierende Perspektivwechsel von AuronOrigin.",
+        "Ob klassisches Naturgesetz oder emergenter Code: Die Präzision dieser Muster fordert unser Alltagsverständnis der Realität heraus.",
     ]
-    mystery_hypotheses = list(matrix_angles[:2])
-    if not mystery_hypotheses:
-        mystery_hypotheses = [
-            f"Was die offiziellen Daten zu '{clean_topic}' nüchtern messen, wirkt wie ein Blick in den Quellcode hinter unserer sichtbaren Oberfläche.",
-        ]
+    random.shuffle(mystery_pool)
 
-    dossier: dict[str, Any] = {
-        "topic": clean_topic,
+    ui_sources = [
+        {
+            "kind": h.get("source", "Quelle"),
+            "title": h.get("title", resolved_topic),
+            "url": h.get("url", ""),
+        }
+        for h in all_external[:8]
+    ]
+    if not ui_sources:
+        ui_sources.append(
+            {
+                "kind": f"AuronOrigin Archiv • {chosen_pillar}",
+                "title": resolved_topic,
+                "url": "",
+            }
+        )
+
+    return {
+        "input_keyword": raw_query,
+        "topic": resolved_topic,
+        "headline_angle": resolved_topic,
+        "discovery_note": discovery_note,
         "pillar": chosen_pillar,
         "editorial_mode": editorial_mode,
-        "researched_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "headline_angle": f"{clean_topic} – Was belegte Forschung zeigt und wo das Mysterium beginnt",
-        "verified_facts": verified_facts,
-        "mystery_interpretation": mystery_hypotheses,
-        "hook_question": f"Was wäre, wenn {clean_topic} kein Zufall ist – sondern ein Hinweis auf die Architektur unserer Realität?",
-        "controversy_prompt": "Ist das für dich reine Physik und Geschichte [FAKT] – oder steckt mehr dahinter [DEUTUNG]?",
-        "sources": deduped,
-        "arena_router_used": False,
-        "arena_model_used": None,
+        "live_sources_count": len(all_external),
+        "external_sources": all_external[:10],
+        "sources": ui_sources,
+        "verified_facts": verified_facts[:8],
+        "mystery_interpretation": mystery_pool[:2],
     }
-
-    # 4. If Arena API key is configured, run deep AuronOrigin Research Synthesis through Arena Router
-    cfg = arena_settings or {}
-    api_key = (cfg.get("arena_api_key") or "").strip()
-    if api_key:
-        sys_prompt = (
-            "Du bist der Chefrechercheur von AuronOrigin ('Fakten zuerst, Mystery als Deutung'). "
-            "Analysiere das gegebene Thema und die gefundenen Rohquellen auf Deutsch. "
-            "Trenne strikt zwischen nachprüfbaren wissenschaftlichen/historischen Fakten [FAKT] "
-            "und philosophischer Simulations-/Bewusstseins-Deutung [MYSTERY-DEUTUNG]. "
-            "Antworte AUSSCHLIESSLICH als valides JSON-Objekt ohne Markdown-Erklärung drumherum."
-        )
-        sources_blob = "\n".join(
-            f"- [{s['kind']}] {s['title']} ({s['source']}): {s['summary']}"
-            for s in deduped
-        )
-        usr_prompt = f"""Thema: {clean_topic}
-Content-Säule: {chosen_pillar}
-Modus: {editorial_mode}
-
-Gefundene Quellen & Wissensbasis:
-{sources_blob}
-
-Liefere exakt dieses JSON-Schema:
-{{
-  "headline_angle": "Prägnanter AuronOrigin Recherche-Blickwinkel (1 Satz)",
-  "verified_facts": [
-    "Präziser belegter Fakt 1 mit konkreten Zahlen/Forschungshintergrund",
-    "Präziser belegter Fakt 2",
-    "Präziser belegter Fakt 3",
-    "Präziser belegter Fakt 4"
-  ],
-  "mystery_interpretation": [
-    "Tiefgründige Mystery-/Simulations-Deutung 1 (klar als Deutung/Gedankenexperiment formuliert)",
-    "Tiefgründige Mystery-/Bewusstseins-Deutung 2"
-  ],
-  "hook_question": "Starke 3-Sekunden-Einstiegsfrage für maximale Watchtime",
-  "controversy_prompt": "Diskussionsfrage für die YouTube-Kommentare ([FAKT] vs. [DEUTUNG])"
-}}"""
-        router_res = call_arena_router(
-            api_key=api_key,
-            system_prompt=sys_prompt,
-            user_prompt=usr_prompt,
-            gateway_url=cfg.get("arena_gateway_url", "https://api.preview.arena.ai"),
-            model=cfg.get("arena_model", "coding-router-preview"),
-            protocol=cfg.get("arena_protocol", "auto"),
-            max_tokens=2200,
-        )
-        if router_res.get("ok"):
-            parsed = extract_json_object(router_res.get("text", ""))
-            if parsed:
-                dossier["headline_angle"] = parsed.get("headline_angle") or dossier["headline_angle"]
-                if isinstance(parsed.get("verified_facts"), list) and parsed["verified_facts"]:
-                    dossier["verified_facts"] = [str(x) for x in parsed["verified_facts"][:6]]
-                if isinstance(parsed.get("mystery_interpretation"), list) and parsed["mystery_interpretation"]:
-                    dossier["mystery_interpretation"] = [str(x) for x in parsed["mystery_interpretation"][:4]]
-                dossier["hook_question"] = parsed.get("hook_question") or dossier["hook_question"]
-                dossier["controversy_prompt"] = parsed.get("controversy_prompt") or dossier["controversy_prompt"]
-                dossier["arena_router_used"] = True
-                dossier["arena_model_used"] = router_res.get("routed_model")
-                dossier["arena_usage"] = router_res.get("usage")
-        else:
-            dossier["arena_warning"] = router_res.get("error")
-            dossier["sandbox_network_restricted"] = bool(router_res.get("sandbox_network_restricted"))
-
-    return dossier

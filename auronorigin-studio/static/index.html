@@ -94,24 +94,24 @@
     <section class="card">
       <div class="card-header-row">
         <div>
-          <span class="step-badge">THEMA &amp; RECHERCHE</span>
-          <h2>2. Neues Thema eingeben &amp; automatisch recherchieren lassen</h2>
+          <span class="step-badge">STICHWORT &amp; AKTUELLE RECHERCHE</span>
+          <h2>2. Stichwort eingeben – AuronOrigin recherchiert aktuelle Themen auf Deutsch</h2>
           <p class="muted-note">
-            Gib einfach ein Stichwort, eine Entdeckung oder eine Frage ein – oder wähle unten einen AuronOrigin-Impuls.
+            Schon <strong>ein einziges Stichwort</strong> reicht (z. B. <code>Quantencomputer</code>, <code>Gizeh</code>, <code>James Webb</code>, <code>Gehirn</code>) – oder lass das Studio komplett selbstständig ein aktuelles Thema in deiner Nische finden. Jedes Skript wird frisch und zu <strong>100 % auf Deutsch</strong> verfasst.
           </p>
         </div>
       </div>
 
       <div class="topic-box">
-        <label for="topicInput" class="sr-only">Video-Thema</label>
+        <label for="topicInput" class="sr-only">Stichwort oder Video-Thema</label>
         <textarea
           id="topicInput"
           rows="2"
-          placeholder="z. B. Warum moderne Quantencomputer Zeitkristalle erzeugen – wackelt der Takt unserer Realität?"
+          placeholder="Stichwort genügt – z. B. „Quantencomputer“, „Pyramiden von Gizeh“, „Schwarzes Loch“ oder leer lassen für automatische Themenwahl…"
         ></textarea>
 
         <div class="suggestions-bar">
-          <span class="suggestions-label">Schnellauswahl (3 Säulen):</span>
+          <span class="suggestions-label">Stichwort-Impulse (3 Säulen):</span>
           <div class="chip-list" id="topicChips"></div>
         </div>
       </div>
@@ -165,8 +165,11 @@
       </div>
 
       <div class="action-bar-main">
+        <button type="button" class="btn btn-secondary btn-lg" id="autoDiscoverTopicBtn" title="Wählt selbstständig ein aktuelles Thema in der AuronOrigin-Nische und schreibt ein frisches deutsches Skript">
+          🎲 Aktuelles Trend-Thema automatisch finden
+        </button>
         <button type="button" class="btn btn-secondary btn-lg" id="researchAndScriptBtn">
-          🔍 Thema recherchieren &amp; Skript entwerfen
+          🔍 Stichwort recherchieren &amp; neues Skript
         </button>
         <button type="button" class="btn btn-gold btn-lg btn-glow" id="oneClickFullVideoBtn">
           ⚡ Komplettes YouTube-Video in 1 Klick erstellen
@@ -212,10 +215,10 @@
     <section class="card" id="productionCard">
       <div class="card-header-row">
         <div>
-          <span class="step-badge">TONSTIMME, MUSIK &amp; REGIE</span>
-          <h2>3. Stimme, Hintergrundmusik &amp; Szenen-Feinschliff</h2>
+          <span class="step-badge">DEUTSCHE STIMME, MUSIK &amp; NEUE SZENENBILDER</span>
+          <h2>3. Deutsche Tonstimme, Hintergrundmusik &amp; Szenen-Bilder</h2>
           <p class="muted-note">
-            Alle AuronOrigin-Markenstandards (Conrad/Thorsten-Tonstimme, kosmischer Hall, „Glitch Horizon“-Soundtrack mit Auto-Ducking, Intro/Outro &amp; Wasserzeichen) sind bereits voreingestellt.
+            100 % deutsche Tonstimme (Conrad/Thorsten), mehrstimmige filmische Hintergrundmusik mit Vorhör-Player sowie automatisch neu generierte AuronOrigin-Szenenbilder in Dunkelblau &amp; Gold für jede Szene.
           </p>
         </div>
       </div>
@@ -271,22 +274,19 @@
         <div class="subpanel">
           <h3>🎵 Hintergrundmusik &amp; Marken-Elemente</h3>
           <div class="field-group">
-            <label for="musicPreset">Hintergrundmusik (mit Auto-Ducking unter der Stimme)</label>
+            <label for="musicPreset">Hintergrundmusik auswählen (mit Auto-Ducking unter der Sprache)</label>
             <div class="input-with-actions">
               <select id="musicPreset">
-                <option value="glitch_horizon">AuronOrigin Original – „Glitch Horizon“ (60 BPM)</option>
-                <option value="temple_drone_432">Tempel-Resonanz 432 Hz (Tiefen-Drone &amp; Puls)</option>
-                <option value="quantum_pulse">Quanten-Puls (Dark Sci-Fi Synth 60 BPM)</option>
-                <option value="custom">Eigene Musikdatei hochladen (MP3 / WAV)</option>
-                <option value="none">Ohne Hintergrundmusik</option>
+                <option value="dark_cosmos_cinematic">Dark Cosmos – Interstellar Cello &amp; Analog-Pad (Empfohlen)</option>
               </select>
               <button type="button" class="btn btn-secondary btn-sm" id="previewMusicBtn">🎵 Anhören</button>
             </div>
+            <small class="field-hint" id="musicMoodHint">Episch, tief, warmes Streicher-Pad &amp; kosmische Weite</small>
           </div>
 
           <div id="customMusicRow" class="field-group hidden">
-            <label for="customMusicInput">Eigene Hintergrundmusik (MP3/WAV)</label>
-            <input type="file" id="customMusicInput" accept=".mp3,.wav,.ogg,.m4a" />
+            <label for="customMusicInput">Eigene Hintergrundmusik (MP3/WAV/M4A)</label>
+            <input type="file" id="customMusicInput" accept=".mp3,.wav,.ogg,.m4a,.flac" />
           </div>
 
           <div class="field-group">
@@ -294,7 +294,7 @@
             <input type="range" id="musicVolume" min="-28" max="-8" step="1" value="-17" />
           </div>
 
-          <audio id="musicPreviewPlayer" src="/brand-assets/glitch_horizon.mp3" controls class="mini-audio hidden"></audio>
+          <audio id="musicPreviewPlayer" controls class="mini-audio hidden"></audio>
 
           <div class="toggles-grid">
             <label class="checkbox-line">
@@ -347,15 +347,22 @@
 
         <div class="scenes-header-bar">
           <div>
-            <h3>🎬 Szenen-Ablauf &amp; Eigene Bilder (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
+            <h3>🎬 Szenen-Ablauf • Automatische AuronOrigin-Bilder &amp; Eigene Uploads (<span id="sceneCountBadge">0</span> Szenen • ca. <span id="estDurationBadge">0</span> Sek.)</h3>
             <p class="muted-note scenes-subhint">
-              Für <strong>jede Szene (1 bis 30)</strong> frei wählbar: Klicke auf <strong>„📷 Datei wählen“</strong>, nutze <strong>„🗂️ PC-Ordner / URL“</strong> (auch für USB-Laufwerke, <code>/media</code>, <code>/mnt</code> &amp; Web-Links), ziehe Bilder per <strong>Drag &amp; Drop</strong> direkt auf eine Szene oder füge sie mit <strong>STRG+V</strong> ein.
+              Zu <strong>jedem Video und jeder Szene</strong> wird automatisch ein <strong>neues Unikat-Bild im AuronOrigin-Stil (Dunkelblau &amp; Gold)</strong> generiert. Mit <strong>„🎲 Neu“</strong> erzeugst du jederzeit ein neues Bild pro Szene – oder lädst mit <strong>„📷 Datei“</strong>, <strong>„🗂️ PC / URL“</strong>, <strong>Drag &amp; Drop</strong> oder <strong>STRG+V</strong> eigene Bilder hoch.
             </p>
           </div>
           <div class="scenes-toolbar-btns">
+            <select id="sceneImageModeSelect" class="scene-mode-select" title="Bild-Engine für automatisch generierte Szenenbilder">
+              <option value="auto_ai_brand">Bild-Stil: KI-Szene + Auron Gold/Dunkelblau</option>
+              <option value="procedural_brand">Bild-Stil: Sacred-Tech Kosmos-Kunst (Lokal)</option>
+            </select>
+            <button type="button" class="btn btn-secondary btn-sm" id="regenAllSceneImagesBtn" title="Generiert für alle Szenen (ohne eigenes Upload-Bild) sofort frische AuronOrigin-Bilder in Dunkelblau & Gold">
+              🎨 Alle Bilder neu generieren
+            </button>
             <input type="file" id="batchImagesInput" multiple class="visually-hidden-file" />
-            <button type="button" class="btn btn-secondary btn-sm" id="batchUploadImagesBtn" title="Mehrere Bilder gleichzeitig auswählen und der Reihe nach auf Szene 1, 2, 3 … verteilen">
-              🖼️ Mehrere Bilder verteilen
+            <button type="button" class="btn btn-secondary btn-sm" id="batchUploadImagesBtn" title="Mehrere eigene Bilder gleichzeitig auswählen und der Reihe nach auf Szene 1, 2, 3 … verteilen">
+              🖼️ Eigene Bilder verteilen
             </button>
             <button type="button" class="btn btn-gold btn-sm" id="addSceneBtn">+ Szene hinzufügen</button>
           </div>

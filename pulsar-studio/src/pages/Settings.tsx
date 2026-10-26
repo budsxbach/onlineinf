@@ -8,8 +8,10 @@ import {
   HardDrive,
   KeyRound,
   Loader2,
+  Copy,
   RefreshCw,
   ShieldCheck,
+  Smartphone,
   Sparkles,
   User,
   XCircle,
@@ -18,9 +20,9 @@ import {
 import { useEffect, useState } from 'react';
 import { Page, PageHeader } from '../components/layout/Page';
 import { PageLoader } from '../components/ui';
-import { Badge, Button, Field, Input, SectionHeader, Switch, cn } from '../components/ui';
+import { Badge, Button, Field, IconButton, Input, SectionHeader, Switch, cn } from '../components/ui';
 import { api } from '../lib/api';
-import { useSettings, useStats, useTestAi, useUpdateSettings } from '../lib/hooks';
+import { useDeviceLink, useSettings, useStats, useTestAi, useUpdateSettings } from '../lib/hooks';
 import { timeAgo } from '../lib/format';
 import { toast } from '../store/toast';
 
@@ -29,6 +31,7 @@ export default function Settings() {
   const { data: stats } = useStats();
   const update = useUpdateSettings();
   const test = useTestAi();
+  const { data: link } = useDeviceLink();
 
   const [displayName, setDisplayName] = useState('');
   const [studioName, setStudioName] = useState('');
@@ -432,6 +435,87 @@ export default function Settings() {
             </div>
             <div className="mt-4 rounded-lg border border-ink-700/60 bg-ink-800/40 px-2.5 py-2 text-[10px] leading-relaxed text-ink-500">
               Without a key, the built-in composer still generates full arrangements using the same pattern engine.
+            </div>
+          </div>
+
+          <div className="panel relative overflow-hidden p-4">
+            <div className="pointer-events-none absolute -right-12 -top-14 h-36 w-36 rounded-full bg-sky-400/10 blur-3xl" />
+            <SectionHeader
+              title={
+                <span className="flex items-center gap-2">
+                  <Smartphone className="h-3.5 w-3.5 text-ink-400" /> Control it from your phone
+                </span>
+              }
+              subtitle="Same Wi-Fi, no app store. Scan once and Pulsar lives on your home screen."
+              className="mb-3"
+            />
+
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="mx-auto w-[132px] shrink-0 rounded-xl bg-white p-1.5 shadow-sm sm:mx-0">
+                {link?.qrSvg ? (
+                  <div
+                    className="[&>svg]:h-full [&>svg]:w-full"
+                    dangerouslySetInnerHTML={{ __html: link.qrSvg }}
+                    aria-label={`QR code for ${link.primary}`}
+                  />
+                ) : (
+                  <div className="flex aspect-square items-center justify-center rounded-lg bg-ink-900 text-[9px] text-ink-500">
+                    QR
+                  </div>
+                )}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="text-[9px] uppercase tracking-wider text-ink-600">Open on iPhone</p>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <code className="min-w-0 flex-1 truncate rounded-md border border-ink-700/70 bg-ink-900/70 px-2 py-1.5 font-mono text-[11px] text-acid-300">
+                    {link?.primary || 'http://—:4000'}
+                  </code>
+                  <IconButton
+                    label="Copy phone link"
+                    onClick={() => {
+                      if (!link?.primary) return;
+                      void navigator.clipboard.writeText(link.primary).then(
+                        () => toast.success('Phone link copied', link.primary),
+                        () => toast.error('Could not copy', 'Select the address manually.')
+                      );
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                  </IconButton>
+                </div>
+
+                <ol className="mt-2.5 space-y-1 text-[10px] leading-relaxed text-ink-500">
+                  <li>1 · Connect the iPhone to the same Wi-Fi as this machine.</li>
+                  <li>2 · Scan the code with the Camera app (or type the address).</li>
+                  <li>3 · Safari → Share → <span className="text-ink-300">Add to Home Screen</span>.</li>
+                  <li>4 · Tap the icon, then press play once to unlock iOS audio.</li>
+                </ol>
+              </div>
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-1.5">
+              <Badge className="border-ink-700 bg-ink-800/60 text-ink-400">
+                <span className="font-mono">{link?.local || 'localhost:4000'}</span>
+              </Badge>
+              {(link?.hosts || []).slice(0, 3).map((host) => (
+                <Badge
+                  key={host.url}
+                  className={
+                    host.url === link?.primary
+                      ? 'border-acid-300/40 bg-acid-300/10 text-acid-200'
+                      : 'border-ink-700 bg-ink-800/60 text-ink-400'
+                  }
+                >
+                  <span className="font-mono">{host.url.replace(/^https?:\/\//, '')}</span>
+                </Badge>
+              ))}
+            </div>
+
+            <div className="mt-3 rounded-lg border border-ink-700/60 bg-ink-800/40 px-2.5 py-2 text-[10px] leading-relaxed text-ink-500">
+              Phone can’t reach it? Allow the port and check the IP:{' '}
+              <code className="font-mono text-ink-300">sudo ufw allow {link?.port || 4000}/tcp</code> ·{' '}
+              <code className="font-mono text-ink-300">npm run link</code> reprints this QR in your terminal.
             </div>
           </div>
 

@@ -1,6 +1,8 @@
 import express from 'express';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import QRCode from 'qrcode';
 import { fileURLToPath } from 'node:url';
 import {
   COLORS,
@@ -194,6 +196,100 @@ app.get('/api/meta', (_req, res) => {
     waves: WAVES,
     synthDefaults: SYNTH_DEFAULTS,
     drumDefaults: DRUM_DEFAULTS,
+  });
+});
+
+
+/* ------------------------------------------------------------------ *
+ *  Device links — lets a phone on the same Wi-Fi drive the studio
+ * ------------------------------------------------------------------ */
+
+const PRIVATE_RANGES = [
+  /^10\./,
+  /^192\.168\./,
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  /^169\.254\./,
+];
+
+export function lanAddresses() {
+  const result = [];
+  const interfaces = os.networkInterfaces();
+  for (const [name, entries] of Object.entries(interfaces)) {
+    for (const entry of entries || []) {
+      if (entry.family !== 'IPv4' && entry.family !== 4) continue;
+      if (entry.internal) continue;
+      if (entry.address.startsWith('127.')) continue;
+      const isPrivate = PRIVATE_RANGES.some((rx) => rx.test(entry.address));
+      result.push({
+        name,
+        address: entry.address,
+        url: `http://${entry.address}:${PORT}`,
+        private: isPrivate,
+      });
+    }
+  }
+  // Prefer home/office LAN addresses over container bridges.
+  result.sort((a, b) => {
+    const aWifi = /^(wlan|wl|wlp|enp|eno|eth)/.test(a.name) ? 0 : 1;
+    const bWifi = /^(wlan|wl|wlp|enp|eno|eth)/.test(b.name) ? 0 : 1;
+    if (aWifi !== bWifi) return aWifi - bWifi;
+    return Number(b.private) - Number(a.private);
+  });
+  return result;
+}
+
+function publicOrigin(req) {
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const host = (req.headers['x-forwarded-host'] || req.headers.host || '').toString().split(',')[0].trim();
+  if (!host) return null;
+  const bare = host.split(':')[0];
+  const isLocal = ['localhost', '127.0.0.1', '0.0.0.0', '::1', '[::1]'].includes(bare);
+  const hasExplicitPort = /:\d+$/.test(host);
+  let proto = (forwardedProto || req.protocol || 'http').toString().split(',')[0].trim();
+  // Behind a TLS-terminating proxy that does not forward the header: https is the safe guess.
+  if (!forwardedProto && !isLocal && !hasExplicitPort) proto = 'https';
+  return { origin: `${proto}://${host}`, host: bare, isLocal, proto };
+}
+
+async function qrSvg(url) {
+  try {
+    return await QRCode.toString(url, {
+      type: 'svg',
+      margin: 1,
+      errorCorrectionLevel: 'M',
+      color: { dark: '#06070a', light: '#ffffff' },
+    });
+  } catch {
+    return null;
+  }
+}
+
+app.get('/api/link', async (req, res) => {
+  const request = publicOrigin(req);
+  const lan = lanAddresses();
+  const candidates = [];
+
+  if (request && !request.isLocal) {
+    candidates.push({ label: 'This address', url: request.origin, kind: 'public' });
+  }
+  for (const entry of lan) {
+    candidates.push({ label: entry.name, url: entry.url, kind: 'lan' });
+  }
+  const primary = candidates[0]?.url || `http://localhost:${PORT}`;
+  const seen = new Set();
+  const hosts = candidates.filter((entry) => {
+    if (seen.has(entry.url)) return false;
+    seen.add(entry.url);
+    return true;
+  });
+
+  res.json({
+    port: PORT,
+    primary,
+    local: `http://localhost:${PORT}`,
+    hosts,
+    secure: primary.startsWith('https://'),
+    qrSvg: await qrSvg(primary),
   });
 });
 
@@ -1183,5 +1279,30 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, HOST, () => {
-  console.log(`Pulsar Studio running at http://${HOST}:${PORT}`);
+  const lan = lanAddresses();
+  const local = `http://localhost:${PORT}`;
+  const remote = lan[0]?.url || null;
+
+  console.log('');
+  console.log('  \x1b[38;5;191mPULSAR STUDIO\x1b[0m  beat lab');
+  console.log(`  \x1b[2mdesktop\x1b[0m  ${local}`);
+  if (remote) {
+    console.log(`  \x1b[2mphone  \x1b[0m  ${remote}   \x1b[2m(same Wi-Fi, then scan the QR below)\x1b[0m`);
+    lan.forEach((entry) => {
+      if (entry.url !== remote) console.log(`  \x1b[2m       \x1b[0m  ${entry.url}  ${entry.name}`);
+    });
+  } else {
+    console.log('  \x1b[2mphone  \x1b[0m  no LAN address found — check your Wi-Fi connection');
+  }
+  console.log('');
+
+  if (remote) {
+    QRCode.toString(remote, { type: 'terminal', small: true, errorCorrectionLevel: 'M' })
+      .then((qr) => {
+        console.log(qr);
+        console.log('  Open your iPhone camera and point it at the code.');
+        console.log('');
+      })
+      .catch(() => {});
+  }
 });

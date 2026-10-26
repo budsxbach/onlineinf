@@ -1,7 +1,18 @@
-import { Database, Menu, Plus, Search } from 'lucide-react';
+import {
+  AudioLines,
+  Database,
+  FolderOpen,
+  LayoutDashboard,
+  Menu,
+  Plus,
+  Search,
+  Settings as SettingsIcon,
+  Sparkles,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Kbd } from '../ui';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { engine } from '../../lib/engine';
+import { Button, Kbd, cn } from '../ui';
 import { CommandPalette } from './CommandPalette';
 import { MobileSidebar, SidebarContent } from './Sidebar';
 
@@ -14,6 +25,47 @@ const TITLES: Record<string, { title: string; subtitle: string }> = {
   '/presets': { title: 'Presets', subtitle: 'Saved instrument recipes' },
   '/settings': { title: 'Settings', subtitle: 'Arena key, studio & storage' },
 };
+
+const TABS = [
+  { label: 'Overview', to: '/dashboard', icon: LayoutDashboard, end: true },
+  { label: 'Projects', to: '/projects', icon: FolderOpen },
+  { label: 'Studio', to: '/studio', icon: AudioLines },
+  { label: 'Composer', to: '/composer', icon: Sparkles },
+  { label: 'Settings', to: '/settings', icon: SettingsIcon },
+];
+
+function MobileTabBar() {
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-ink-700/70 bg-ink-950/90 backdrop-blur-xl lg:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      aria-label="Primary"
+    >
+      <div className="flex items-stretch">
+        {TABS.map(({ label, to, icon: Icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            className={({ isActive }) =>
+              cn(
+                'flex flex-1 flex-col items-center gap-1 py-2.5 text-[9px] font-medium transition-colors',
+                isActive ? 'text-acid-300' : 'text-ink-500 active:text-ink-300'
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <Icon className="h-[18px] w-[18px]" strokeWidth={isActive ? 2.4 : 1.9} />
+                <span className={cn('tracking-wide', isActive && 'text-acid-300')}>{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </div>
+    </nav>
+  );
+}
 
 export function AppShell() {
   const location = useLocation();
@@ -39,6 +91,19 @@ export function AppShell() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
+  // iOS needs one real gesture before the Web Audio clock is allowed to start.
+  useEffect(() => {
+    const unlock = () => engine.unlock();
+    window.addEventListener('pointerdown', unlock, { once: true, passive: true });
+    window.addEventListener('touchend', unlock, { once: true, passive: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('touchend', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, []);
+
   const base = `/${location.pathname.split('/')[1] || 'dashboard'}`;
   const meta = TITLES[base] || TITLES['/dashboard'];
   const isStudio = base === '/studio';
@@ -50,7 +115,10 @@ export function AppShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col lg:pl-[248px]">
-        <header className="sticky top-0 z-20 border-b border-ink-700/50 bg-ink-950/80 backdrop-blur-xl">
+        <header
+          className="sticky top-0 z-20 border-b border-ink-700/50 bg-ink-950/80 backdrop-blur-xl"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
           <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
             <button
               onClick={() => setMobileOpen(true)}
@@ -102,11 +170,12 @@ export function AppShell() {
           </div>
         </header>
 
-        <main className="relative min-w-0 flex-1 pb-16">
+        <main className="relative min-w-0 flex-1 pb-24 lg:pb-16">
           <Outlet />
         </main>
       </div>
 
+      <MobileTabBar />
       <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>

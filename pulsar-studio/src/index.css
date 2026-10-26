@@ -188,3 +188,54 @@
     background-size: 32px 32px;
   }
 }
+
+/* ------------------------------------------------------------------ *
+ *  Touch & iOS standalone (Add to Home Screen)
+ * ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  button,
+  [role='button'],
+  .step-cell {
+    touch-action: manipulation;
+  }
+
+  .step-cell {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* iOS zooms into any input below 16px when focused — keep it readable and still. */
+@media (max-width: 767px) and (-webkit-min-device-pixel-ratio: 2) {
+  input:not([type='range']):not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

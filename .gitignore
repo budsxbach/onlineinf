@@ -50,3 +50,6 @@ pids
 # OS
 .DS_Store
 Thumbs.db
+# Pulsar Studio runtime data
+pulsar-studio/data/
+pulsar-studio/*.db

@@ -77,3 +77,13 @@ $body=@{fields=@{name=@{stringValue="Noch ein Betrieb"}; email=@{stringValue="in
   - Checks for duplicates based on email and phone number
   - Sets `isDuplicate: true` for duplicates
   - Logs validation results with "Lead validiert:" prefix
+
+---
+
+## Pulsar Studio
+
+A separate full-stack music production app lives in [`pulsar-studio/`](pulsar-studio/README.md): a browser beat lab with a step sequencer, piano roll, mixer, offline WAV export and an AI co-writer routed through Arena.
+
+```bash
+cd pulsar-studio && npm install && npm run build && npm start
+```

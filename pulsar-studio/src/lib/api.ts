@@ -1,4 +1,4 @@
-import type { Bank, Idea, Preset, Project, Sample, Settings, Stats, Track } from './types';
+import type { Bank, DeviceLink, Idea, Preset, Project, Sample, Settings, Stats, Track } from './types';
 
 export class ApiError extends Error {
   status: number;
@@ -125,6 +125,9 @@ export const api = {
       }),
     open: (id: string) => request<Project>(`/ideas/${id}/open`, { method: 'POST' }),
   },
+
+  link: () =>
+    request<DeviceLink>('/link'),
 
   settings: {
     get: () => request<Settings>('/settings'),

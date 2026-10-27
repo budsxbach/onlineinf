@@ -408,3 +408,12 @@ export function patchProjectInCache(id: string, patch: Partial<Project>) {
 export function getCachedStats(): Stats | undefined {
   return queryClient.getQueryData<Stats>(keys.stats);
 }
+
+export function useDeviceLink() {
+  return useQuery({
+    queryKey: ['device-link'],
+    queryFn: () => api.link(),
+    staleTime: 60_000,
+    retry: false,
+  });
+}

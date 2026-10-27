@@ -205,3 +205,18 @@ export interface Kit {
   name: string;
   description: string;
 }
+
+export interface DeviceLinkHost {
+  label: string;
+  url: string;
+  kind: 'public' | 'lan';
+}
+
+export interface DeviceLink {
+  port: number;
+  primary: string;
+  local: string;
+  hosts: DeviceLinkHost[];
+  secure: boolean;
+  qrSvg: string | null;
+}

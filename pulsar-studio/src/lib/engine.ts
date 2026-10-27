@@ -614,15 +614,56 @@ export class AudioEngine {
   private uiQueue: { time: number; step: number; sectionIndex: number; repeat: number; bank: Bank }[] = [];
   private lookahead = 0.14;
 
+  private unlocked = false;
+
   ensureCtx(): AudioContext {
     if (!this.ctx) {
       const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new Ctor();
       this.graph = new StudioGraph(this.ctx, this.project, { masterAnalyser: true });
       this.graph.ctx = this.ctx;
+      if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && this.ctx?.state === 'suspended') void this.ctx.resume();
+        });
+      }
     }
     if (this.ctx.state === 'suspended') void this.ctx.resume();
     return this.ctx;
+  }
+
+  /**
+   * iOS/Safari only starts audio inside a real user gesture, and the hardware
+   * mute switch silences a context that was never "unlocked" through a media
+   * element. Playing a one-sample silent buffer plus a muted looping element
+   * once fixes both — after that every sequencer hit is audible.
+   */
+  unlock() {
+    if (this.unlocked) return;
+    try {
+      const ctx = this.ensureCtx();
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+
+      if (!document.getElementById('pulsar-silent-unlock')) {
+        const el = document.createElement('audio');
+        el.id = 'pulsar-silent-unlock';
+        el.setAttribute('playsinline', 'true');
+        el.loop = true;
+        el.volume = 0.0001;
+        el.src =
+          'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        document.body.appendChild(el);
+        void el.play().catch(() => {});
+      }
+      void ctx.resume();
+      this.unlocked = true;
+    } catch {
+      /* audio will still work on the first play gesture */
+    }
   }
 
   setProject(project: Project) {

@@ -36,6 +36,45 @@ If no key is configured — or the router is unreachable — the composer transp
 
 ---
 
+## Control it from your iPhone (or any phone)
+
+Pulsar runs as a normal website, so the iPhone just needs the address of the machine that
+runs the server. No app store, no account.
+
+1. Start the studio: `npm start` (or `npm run dev`). The server binds `0.0.0.0`, so it is
+   reachable from the local network.
+2. Print the link + a scannable QR code in the terminal:
+
+   ```bash
+   npm run link
+   ```
+
+   ```
+     desktop   http://localhost:4000
+     iPhone    http://192.168.1.42:4000   (wlp2s0)
+   ```
+3. Scan the QR with the iPhone camera (same Wi-Fi), or type the address in Safari.
+4. Safari → **Share → Add to Home Screen** — Pulsar then starts full-screen from its own
+   icon, with no browser chrome.
+5. Tap the play button once. iOS only allows audio after a real gesture; the app unlocks
+   the Web Audio graph on your first touch and keeps it alive in the background.
+
+The same QR code plus copy button is in **Settings → Control it from your phone**.
+
+### Troubleshooting the phone connection
+
+| Symptom | Fix |
+| --- | --- |
+| Phone cannot open the address | Both devices must be on the same Wi-Fi (not guest/isolated networks). |
+| Still blocked | Open the firewall: `sudo ufw allow 4000/tcp` |
+| Wrong address shown | `npm run link` lists every interface; pick the `wlp*/enp*/eth*` one that matches your LAN. |
+| No sound | Silent switch is off, volume up, and tap play once (iOS audio unlock). |
+| Want access from outside your home | Point a tunnel at the port: `cloudflared tunnel --url http://localhost:4000` or install Tailscale and use `http://<tailscale-ip>:4000`. |
+
+The app is a PWA: `manifest.webmanifest`, Apple touch icons and standalone display mode are
+included, and the layout collapses to a five-tab bottom bar on phones with safe-area insets
+for the notch and home indicator.
+
 ## Features
 
 ### Dashboard
@@ -147,6 +186,7 @@ All endpoints are under `/api` and speak JSON.
 | `npm run build` | Production client build |
 | `npm start` / `npm run serve` | Start the server on `PORT` (default 4000) |
 | `npm run typecheck` | TypeScript project check |
+| `npm run link` | Print LAN URLs + QR code for your phone |
 
 ## Data & backups
 

@@ -1,0 +1,16 @@
+{
+  "name": "powerpack",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Konfigurator, Stückliste und Bauanleitung für ein 48-V-LiFePO4-Powerpack mit 2000-W-Bidirektionalinverter",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "test": "node test/calc.test.mjs",
+    "plan": "node assets/gen-schaltplan.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

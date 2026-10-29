@@ -80,6 +80,21 @@ $body=@{fields=@{name=@{stringValue="Noch ein Betrieb"}; email=@{stringValue="in
 
 ---
 
+## Powerpack-Konfigurator
+
+Ein eigenständiges Werkzeug für ein tragbares 48-V-Powerpack (13S LiFePO4,
+2000-W-Bidirektionalinverter): Stückliste, Verdrahtungsplan, Sicherungs- und
+Querschnittsauslegung, Bauanleitung. Reines HTML/CSS/JS ohne Build-Schritt.
+
+```bash
+cd powerpack && npm start   # → http://localhost:4173
+cd powerpack && npm test    # 35 Auslegungstests
+```
+
+Siehe [`powerpack/README.md`](powerpack/README.md).
+
+---
+
 ## Pulsar Studio
 
 A separate full-stack music production app lives in [`pulsar-studio/`](pulsar-studio/README.md): a browser beat lab with a step sequencer, piano roll, mixer, offline WAV export and an AI co-writer routed through Arena.

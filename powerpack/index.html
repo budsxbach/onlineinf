@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Powerpack 2 kW — Konfigurator & Bauanleitung</title>
+<meta name="description" content="Auslegung, Stückliste und Verdrahtung für ein 48-V-LiFePO4-Powerpack mit 2000-W-Bidirektionalinverter und 13S-BMS." />
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M35 8 18 36h11l-3 20 20-30H34l1-18z' fill='%23fbbf24'/%3E%3C/svg%3E" />
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="bolt" aria-hidden="true">⚡</span>
+      <div>
+        <h1>Powerpack 2 kW</h1>
+        <p>13S LiFePO4 · 2000-W-Bidirektionalinverter · BMS mit gemeinsamer Plusklemme</p>
+      </div>
+    </div>
+    <nav class="quick">
+      <a href="#konfigurator">Konfigurator</a>
+      <a href="#ergebnis">Ergebnis</a>
+      <a href="#teile">Stückliste</a>
+      <a href="#bau">Bauanleitung</a>
+      <a href="#fotos">Fotos</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ═══════════ ERKANNT ═══════════ -->
+  <section class="card intro" aria-labelledby="erkannt">
+    <div class="intro-head">
+      <div>
+        <h2 id="erkannt">Das steckt in deinen Teilen</h2>
+        <p class="lead">
+          Aus den zehn Fotos ausgelesen. Der Aufbau ist ein <strong>48-V-System der Klasse 36–50 V</strong>:
+          dreizehn LiFePO4-Zellen, ein BMS mit gemeinsamer Plusklemme und ein bidirektionaler
+          2000-W-Umrichter, der aus dem Akku 230 V macht und aus 230 V wieder den Akku lädt.
+          Die Zellzahl folgt aus dem Spannungsfenster des Inverters — nur 13S passt mit Ladeschluss
+          <em>und</em> Entladeschluss hinein. Der 14-polige Sensorstecker am BMS bestätigt das:
+          13 Zellen plus Bezugsleitung.
+        </p>
+      </div>
+      <div class="badge-set">
+        <span class="badge good">13S · 41,6 V</span>
+        <span class="badge good">2000 W</span>
+        <span class="badge good">B+ = P+</span>
+        <span class="badge warn">2 Bauteile passen nicht</span>
+      </div>
+    </div>
+
+    <div class="part-grid">
+      <article class="part">
+        <div class="part-tag">Bild 4 · BMS</div>
+        <h3>BMS, gemeinsame Plusklemme</h3>
+        <p>Klemmen <strong>B+</strong> (Akku plus), <strong>P+</strong> (Ausgang plus, fest mit B+ verbunden),
+        <strong>B−</strong> und <strong>P−</strong> (Ausgang minus, wird geschaltet). Dazu ein 14-poliger
+        Sensorstecker für die Zellspannungen und ein Temperaturfühler.</p>
+        <ul class="facts">
+          <li>Schaltet die Minus-Seite — typisch für diese Bauform</li>
+          <li>14-poliger Sensorstecker = 13 Zellen + Bezugsleitung</li>
+          <li>Platine „HTB053“ mit Leistungs-MOSFETs in zwei Reihen</li>
+          <li>Der Aufdruck B+ auf beiden Seiten bestätigt: Plus ist durchverbunden</li>
+        </ul>
+      </article>
+
+      <article class="part">
+        <div class="part-tag">Bilder 6, 7, 8 · Inverter</div>
+        <h3>2000-W-Bidirektionalinverter</h3>
+        <p>Aufkleber: <strong>2000 W</strong>, Eingang <strong>36–50 V DC</strong>, Ausgang <strong>230 V AC</strong>,
+        Ladeleistung <strong>1500 W</strong>. Zwei gelbe XT90-Stecker sind bereits verpresst.</p>
+        <ul class="facts">
+          <li>Lädt den Akku aus dem Netz — kein Extra-Ladegerät nötig</li>
+          <li>36–50 V passt exakt zum 13S-Fenster (36,4–47,5 V)</li>
+          <li>Zwei dicke Kühlkörper + Lüfter: Luftzufuhr einplanen</li>
+        </ul>
+      </article>
+
+      <article class="part">
+        <div class="part-tag">Bilder 1, 5, 9, 10 · 500-W-Boards</div>
+        <h3>Reserve oder Zweitprojekt</h3>
+        <p>Trafo ER42, Aufdruck <strong>230 V / 500 W</strong>, dazu eine Netzfilterstufe mit X2-Kondensator.
+        Diese Boards gehören <em>nicht</em> in denselben Akkukreis wie der 2000-W-Inverter.</p>
+        <ul class="facts">
+          <li>Zu schwach für 13S und 2000 W</li>
+          <li>Zwei Ladegeräte am selben Pack regeln gegeneinander</li>
+          <li>Als 230-V-Filterstufe oder Ersatzteil behalten</li>
+        </ul>
+      </article>
+
+      <article class="part">
+        <div class="part-tag">Bild 2 · Markierung</div>
+        <h3>„2“ und „7“ auf den Relais</h3>
+        <p>Handschriftliche Nummern auf der Relaisbestückung. Das ist eine <em>Reparaturmarkierung</em>,
+        keine Herstellerbeschriftung — sie sagt nichts über die Funktion.</p>
+        <ul class="facts">
+          <li>Vor dem Einbau Durchgang und Spulenwiderstand prüfen</li>
+          <li>Relais schalten hier die 230-V-Seite</li>
+          <li>Bei Zweifel: Relais ersetzen, Kosten sind gering</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="callout danger">
+      <strong>Der entscheidende Punkt:</strong> Dein Inverter lädt selbst mit 1500 W. Ein zweites
+      Ladegerät parallel würde gegen den Bordlader arbeiten — beide regeln auf dieselbe Spannung,
+      der Strom schaukelt sich auf. Nimm <em>entweder</em> den Bordlader <em>oder</em> ein externes
+      Ladegerät, nie beides gleichzeitig.
+    </div>
+  </section>
+
+  <!-- ═══════════ KONFIGURATOR ═══════════ -->
+  <section id="konfigurator" class="card" aria-labelledby="cfg-h">
+    <div class="card-head">
+      <h2 id="cfg-h">Konfigurator</h2>
+      <button id="reset" class="ghost" type="button">Zurücksetzen</button>
+    </div>
+    <p class="hint">Standardwerte = deine Teile. Ändere einen Wert, alles darunter rechnet sofort neu.</p>
+
+    <div class="cfg-grid">
+      <fieldset>
+        <legend>Akkupack</legend>
+
+        <label for="series">Zellkonfiguration</label>
+        <select id="series">
+          <option value="4">4S · 12,8 V</option>
+          <option value="8">8S · 25,6 V</option>
+          <option value="13" selected>13S · 41,6 V (48-V-Klasse)</option>
+          <option value="16">16S · 51,2 V</option>
+        </select>
+
+        <label for="chemistry">Zellchemie</label>
+        <select id="chemistry">
+          <option value="lifepo4" selected>LiFePO4 (3,2 V)</option>
+          <option value="nmc">NMC / Li-Ion (3,7 V)</option>
+        </select>
+
+        <label for="capacityAh">Kapazität je Zelle <output id="capacityAh-out"></output></label>
+        <input id="capacityAh" type="range" min="20" max="280" step="5" value="100" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Leistungsteil</legend>
+
+        <label for="acWatts">Inverterleistung <output id="acWatts-out"></output></label>
+        <input id="acWatts" type="range" min="300" max="3000" step="100" value="2000" />
+
+        <label for="efficiency">Wirkungsgrad <output id="efficiency-out"></output></label>
+        <input id="efficiency" type="range" min="0.75" max="0.96" step="0.01" value="0.9" />
+
+        <label for="bmsA">BMS-Dauerstrom <output id="bmsA-out"></output></label>
+        <input id="bmsA" type="range" min="40" max="250" step="10" value="100" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Verkabelung</legend>
+
+        <label for="lengthM">Kabellänge Akku → Inverter (einfach) <output id="lengthM-out"></output></label>
+        <input id="lengthM" type="range" min="0.3" max="3" step="0.1" value="1" />
+
+        <label for="dropPct">Zulässiger Spannungsfall <output id="dropPct-out"></output></label>
+        <input id="dropPct" type="range" min="1" max="5" step="0.5" value="3" />
+
+        <label for="ambient">Umgebungstemperatur <output id="ambient-out"></output></label>
+        <input id="ambient" type="range" min="20" max="60" step="5" value="30" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Nutzung</legend>
+
+        <label for="loadW">Typische AC-Last <output id="loadW-out"></output></label>
+        <input id="loadW" type="range" min="50" max="2500" step="50" value="500" />
+
+        <label for="chargeW">Ladeleistung <output id="chargeW-out"></output></label>
+        <input id="chargeW" type="range" min="200" max="2000" step="100" value="1500" />
+
+        <label for="motorLimitW">Größter Motor an 230 V (0 = keiner) <output id="motorLimitW-out"></output></label>
+        <input id="motorLimitW" type="range" min="0" max="2000" step="50" value="0" />
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- ═══════════ ERGEBNIS ═══════════ -->
+  <section id="ergebnis" class="card" aria-labelledby="res-h">
+    <div class="card-head">
+      <h2 id="res-h">Ergebnis</h2>
+      <button id="print" class="ghost" type="button">Drucken / PDF</button>
+    </div>
+
+    <div id="kpi" class="kpi-grid"></div>
+    <div id="issues" class="issues"></div>
+
+    <h3 class="sub">Verdrahtung für deine Werte</h3>
+    <div class="diagram-wrap"><div id="diagram"></div></div>
+
+    <details class="detail-box">
+      <summary>Detaillierter Systemschaltplan (Referenz, zum Ausdrucken)</summary>
+      <img src="assets/schaltplan.svg" alt="Systemschaltplan Powerpack 2 kW" class="schaltplan" />
+    </details>
+
+    <details class="detail-box">
+      <summary>Rechenweg und Formeln</summary>
+      <div id="math"></div>
+    </details>
+  </section>
+
+  <!-- ═══════════ STÜCKLISTE ═══════════ -->
+  <section id="teile" class="card" aria-labelledby="bom-h">
+    <div class="card-head">
+      <h2 id="bom-h">Stückliste</h2>
+      <div class="btn-row">
+        <button id="copy-bom" class="ghost" type="button">Als Text kopieren</button>
+        <button id="download-bom" class="ghost" type="button">CSV laden</button>
+      </div>
+    </div>
+    <p class="hint">
+      Preise sind grobe Marktrichtwerte (Stand 2025/26) und dienen der Größenordnung, nicht der Kalkulation.
+      Positionen mit <span class="mini warn">prüfen</span> hängen von deinen restlichen Teilen ab.
+    </p>
+    <div class="table-wrap"><table id="bom"></table></div>
+    <p id="bom-sum" class="sum"></p>
+  </section>
+
+  <!-- ═══════════ BAU ═══════════ -->
+  <section id="bau" class="card" aria-labelledby="bau-h">
+    <div class="card-head">
+      <h2 id="bau-h">Bauanleitung</h2>
+      <div class="progress-wrap">
+        <div class="progress"><div id="progress-bar"></div></div>
+        <span id="progress-text">0 / 0</span>
+      </div>
+    </div>
+    <p class="hint">Häkchen werden im Browser gespeichert. Reihenfolge nicht vertauschen — Schritt 7 ist der kritische.</p>
+    <ol id="steps" class="steps"></ol>
+    <div class="callout danger">
+      <strong>230 V sind lebensgefährlich.</strong> Netzspannungsseite nur spannungsfrei verdrahten,
+      FI 30 mA vorschalten, Metallgehäuse erden, Zugentlastung setzen. Wenn du dir bei einem Schritt
+      unsicher bist: von einer Elektrofachkraft prüfen lassen. Diese Anleitung ersetzt keine
+      Elektrofachkraft und keine Baumusterprüfung.
+    </div>
+  </section>
+
+  <!-- ═══════════ FOTOS ═══════════ -->
+  <section id="fotos" class="card" aria-labelledby="foto-h">
+    <h2 id="foto-h">Deine Fotos mit Einordnung</h2>
+    <div class="gal">
+      <figure>
+        <img src="assets/fotos/IMG_4984.jpg" alt="BMS-Platine mit Klemmen B+, P+, P−, B−" loading="lazy" />
+        <figcaption><strong>BMS.</strong> B+/P+ sind gebrückt, geschaltet wird P−. Also Plus-Sicherung
+          und Trennschalter in die Plusleitung, Minus läuft über das BMS.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/fotos/IMG_4981.jpg" alt="Bidirektionaler 2000-W-Inverter mit Typenschild" loading="lazy" />
+        <figcaption><strong>Inverter mit Typenschild.</strong> 36–50 V DC, 230 V AC, 2000 W,
+          Laden 1500 W. XT90-Stecker sind schon montiert.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/fotos/IMG_4983.jpg" alt="Inverter mit Lüfter und Kühlkörpern" loading="lazy" />
+        <figcaption><strong>Kühlung.</strong> Zwei Kühlkörper und ein 80-mm-Lüfter — im Gehäuse
+          braucht das Board Luftzufuhr unten und Abluft oben.</figcaption>
+      </figure>
+      <figure>
+        <img src="assets/fotos/IMG_4978.jpg" alt="500-W-Inverterboard mit Trafo ER42" loading="lazy" />
+        <figcaption><strong>500-W-Board.</strong> Trafo ER42, Aufdruck 230 V/500 W — deutlich zu klein
+          für diesen Akku. Als Reserve behalten.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>
+      Zahlen live berechnet im Browser. Auslegung nach Spannungsfall (2·ρ·L·I), Dauerstromtabellen
+      für Kupferleitungen und Sicherungsregel 1,25 × Betriebsstrom.
+      Keine Baumusterprüfung, keine Gewähr — Bau auf eigene Verantwortung.
+    </p>
+    <p class="tiny">Stand: <span id="stamp"></span></p>
+  </footer>
+</main>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

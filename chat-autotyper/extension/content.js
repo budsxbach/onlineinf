@@ -1004,28 +1004,6 @@
     return 'Ich muss sagen, dein Text hat mich gerade richtig neugierig gemacht und ich setzte mir direkt, mir alles genau durchzudenken! Daher lass uns direkt weiterschreiben. Was habt du denn jetzt als Nächstes in Planung?';
   }
 
-    if (lower.includes('termin') || lower.includes('besichtigung') || lower.includes('wann') || lower.includes('uhr')) {
-      return 'Vielen Dank für Ihre Nachricht! Wir können Ihnen dafür sehr gerne am Donnerstag um 14:30 Uhr oder am Freitag um 10:00 Uhr einen Termin anbieten. Welcher Zeitpunkt passt Ihnen besser?';
-    }
-    if (lower.includes('angebot') || lower.includes('preis') || lower.includes('kosten') || lower.includes('euro')) {
-      return 'Gerne stelle ich Ihnen ein passendes Angebot zusammen. Könnten Sie mir noch kurz die wichtigsten Eckdaten schicken, damit ich Ihnen heute noch eine genaue Kalkulation zusenden kann?';
-    }
-    if (lower.includes('lieferzeit') || lower.includes('versand') || lower.includes('bestellung') || lower.includes('paket')) {
-      return 'Ich habe den Status Ihrer Bestellung gerade überprüft: Alles ist bereits in Bearbeitung und geht planmäßig morgen in den Versand. Sie erhalten die Sendungsnummer direkt per E-Mail.';
-    }
-    if (lower.includes('problem') || lower.includes('fehler') || lower.includes('funktioniert nicht') || lower.includes('defekt')) {
-      return 'Vielen Dank für Ihren Hinweis! Ich habe das direkt an unser Technik-Team weitergegeben und wir kümmern uns umgehend darum. Tritt der Fehler bei Ihnen dauerhaft oder nur in einem bestimmten Schritt auf?';
-    }
-    if (lower.includes('hallo') || lower.includes('guten tag') || lower.includes('hi ') || lower.startsWith('hi')) {
-      return 'Hallo! Schön, dass Sie uns schreiben. Wie kann ich Ihnen bei Ihrem Anliegen am besten weiterhelfen?';
-    }
-    if (lower.includes('danke') || lower.includes('perfekt') || lower.includes('super') || lower.includes('passt')) {
-      return 'Sehr gerne, das freut mich! Falls Sie noch weitere Fragen haben, schreiben Sie mir jederzeit hier im Chat.';
-    }
-
-    return `Vielen Dank für Ihre Nachricht! Ich habe mir den aktuellen Stand gerade angesehen und bereite alles Weitere für Sie vor. Haben Sie dazu noch einen speziellen Änderungswunsch?`;
-  }
-
   // --------------------------------------------------------------------------
   // 7. Haupt-Workflow: Chatverlauf lesen -> Antwort erstellen -> Zeichenweise tippen
   // --------------------------------------------------------------------------

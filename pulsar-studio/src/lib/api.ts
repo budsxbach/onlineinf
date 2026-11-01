@@ -10,14 +10,37 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * A stalled request must never leave the UI spinning forever — every call gets
+ * a hard deadline and surfaces a readable error instead.
+ */
+const REQUEST_TIMEOUT = 20_000;
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers || {}),
-    },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+  let res: Response;
+  try {
+    res = await fetch(`/api${path}`, {
+      ...init,
+      signal: init?.signal ?? controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(init?.headers || {}),
+      },
+    });
+  } catch (err) {
+    clearTimeout(timer);
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new ApiError(
+        'Der Server antwortet nicht. Läuft Pulsar Studio noch?',
+        0,
+        'timeout'
+      );
+    }
+    throw new ApiError('Keine Verbindung zum Server.', 0, 'network');
+  }
+  clearTimeout(timer);
   const text = await res.text();
   let data: unknown = null;
   if (text) {

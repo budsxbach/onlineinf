@@ -36,6 +36,47 @@ If no key is configured — or the router is unreachable — the composer transp
 
 ---
 
+## Desktop shortcut (Ubuntu, double-click to start)
+
+If you do not want the studio running in the background, install the shortcut
+instead of the systemd service. It starts the server when you double-click and
+stops it again the moment you close the window.
+
+```bash
+cd ~/onlineinf/pulsar-studio
+bash scripts/install-desktop-shortcut.sh
+```
+
+What it does:
+
+- installs `Pulsar Studio` on the desktop **and** in the application menu
+- makes sure dependencies are installed and `dist/` is built
+- picks the nicest available mode:
+  - **App window** – a Chromium-based browser (Chrome, Chromium, Brave, Edge, Vivaldi)
+    opens the studio in a window without address bar using an isolated profile.
+    Closing that window stops the server.
+  - **Control window** – otherwise a terminal window shows the URL and the log.
+    Closing that window stops the server.
+- adds a right-click action **“Pulsar Studio beenden”** in case something is ever left over
+
+Flags:
+
+```bash
+bash scripts/install-desktop-shortcut.sh --app-window   # force a real app window
+bash scripts/install-desktop-shortcut.sh --terminal     # force the control window
+bash scripts/install-desktop-shortcut.sh --remove       # uninstall the shortcut
+npm run shortcut                                        # same as running it with no flags
+```
+
+Notes:
+
+- On Ubuntu 24.04 GNOME may ask once: right-click the desktop icon →
+  **Allow Launching** (`gio set … metadata::trusted true` is already applied by the installer).
+- The server log lives in `data/launch.log`.
+- Each launcher stops **its own** server. If an instance is already running,
+  double-clicking again just brings the studio back up instead of spawning a second one.
+- To stop a leftover instance by hand: `bash scripts/launch.sh --stop`.
+
 ## Control it from your iPhone (or any phone)
 
 Pulsar runs as a normal website, so the iPhone just needs the address of the machine that
@@ -187,6 +228,7 @@ All endpoints are under `/api` and speak JSON.
 | `npm start` / `npm run serve` | Start the server on `PORT` (default 4000) |
 | `npm run typecheck` | TypeScript project check |
 | `npm run link` | Print LAN URLs + QR code for your phone |
+| `npm run shortcut` | Install the desktop shortcut (start on double-click) |
 
 ## Data & backups
 

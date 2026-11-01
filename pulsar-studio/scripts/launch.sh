@@ -49,8 +49,20 @@ notify() { # notify <summary> <body> [icon]
 
 # --- server lifecycle ------------------------------------------------------
 is_up() {
-  command -v curl >/dev/null 2>&1 || return 1
-  curl -fsS --max-time 2 "$URL/api/health" >/dev/null 2>&1
+  # curl is not guaranteed on a fresh install — node always is.
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsS --max-time 2 "$URL/api/health" >/dev/null 2>&1
+    return $?
+  fi
+  node -e '
+    const http = require("http");
+    const req = http.get(process.argv[1] + "/api/health", { timeout: 2000 }, (res) => {
+      res.resume();
+      process.exit(res.statusCode === 200 ? 0 : 1);
+    });
+    req.on("error", () => process.exit(1));
+    req.on("timeout", () => { req.destroy(); process.exit(1); });
+  ' "$URL" >/dev/null 2>&1
 }
 
 port_pids() {
@@ -138,8 +150,16 @@ if [[ ! -d "$APP_DIR/node_modules" ]]; then
   ( cd "$APP_DIR" && npm ci --no-audit --no-fund ) || { warn "npm ci ist fehlgeschlagen."; notify "Pulsar konnte nicht starten" "npm ci fehlgeschlagen – Log ansehen: $LOG"; exit 1; }
 fi
 
+NEEDS_BUILD=0
 if [[ ! -f "$APP_DIR/dist/index.html" ]]; then
-  say "Baue die Oberfläche (einmalig) …"
+  NEEDS_BUILD=1
+elif [[ -n "$(find "$APP_DIR/src" "$APP_DIR/index.html" "$APP_DIR/tailwind.config.js" -newer "$APP_DIR/dist/index.html" -print -quit 2>/dev/null)" ]]; then
+  # Quellcode ist neuer als der Build (z. B. nach einem git pull) …
+  NEEDS_BUILD=1
+fi
+
+if [[ "$NEEDS_BUILD" == "1" ]]; then
+  say "Baue die Oberfläche …"
   ( cd "$APP_DIR" && npm run build ) || { warn "Build fehlgeschlagen."; notify "Pulsar konnte nicht starten" "npm run build fehlgeschlagen"; exit 1; }
 fi
 
@@ -170,10 +190,28 @@ if ! is_up; then
 fi
 
 # --- browser ---------------------------------------------------------------
+# Snap-packaged browsers are confined: they cannot use a custom profile inside
+# a hidden directory such as ~/.local/share, which is exactly what the app
+# window mode needs. Detect them and fall back to the control window instead
+# of leaving the user with a browser that never finishes starting.
+is_snapped() {
+  local bin="$1" resolved
+  resolved="$(command -v "$bin" 2>/dev/null || echo "$bin")"
+  case "$resolved" in
+    /snap/*) return 0 ;;
+  esac
+  [[ -n "${SNAP:-}" ]] && return 0
+  return 1
+}
+
 find_browser() {
   local candidate
   for candidate in google-chrome google-chrome-stable chromium chromium-browser brave-browser microsoft-edge vivaldi; do
     if command -v "$candidate" >/dev/null 2>&1; then
+      if is_snapped "$candidate"; then
+        dim "  ($candidate ist ein Snap-Paket – App-Fenster wird übersprungen)"
+        continue
+      fi
       echo "$candidate"
       return 0
     fi

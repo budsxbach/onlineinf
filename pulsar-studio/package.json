@@ -11,9 +11,11 @@
     "start": "NODE_ENV=production node server/index.mjs",
     "typecheck": "tsc --noEmit",
     "link": "node scripts/link.mjs",
-    "shortcut": "bash scripts/install-desktop-shortcut.sh"
+    "shortcut": "bash scripts/install-desktop-shortcut.sh",
+    "doctor": "bash scripts/doctor.sh"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.3.0",
     "@tanstack/react-query": "^5.104.5",
     "better-sqlite3": "^13.0.3",
     "clsx": "^2.1.1",

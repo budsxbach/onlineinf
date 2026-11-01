@@ -36,6 +36,31 @@ If no key is configured — or the router is unreachable — the composer transp
 
 ---
 
+## Troubleshooting a launch that hangs
+
+If the studio window stays blank or the browser seems stuck, run the built-in
+diagnosis — it checks every prerequisite and starts the server once on a spare port:
+
+```bash
+cd ~/onlineinf/pulsar-studio
+bash scripts/doctor.sh      # oder: npm run doctor
+```
+
+It reports the OS, Node/npm versions, whether `better-sqlite3` loads, whether
+`dist/` is built, database permissions, which process holds the port, and
+whether the server answers a real HTTP request. The test-start log is written to
+`/tmp/pulsar-doctor.log`.
+
+Common causes:
+
+| Symptom | Cause | Fix |
+| --- | --- | --- |
+| Blank dark page for 30 s, then it works | Older builds loaded Inter from Google Fonts, which blocks rendering until the request times out | `git pull && npm run build` — fonts are now bundled locally |
+| Blank page forever | `dist/` is from an older commit | `npm run build` (the launcher also rebuilds automatically when `src/` is newer) |
+| Browser shows an error page | Server is not running | check `data/launch.log` |
+| Nothing happens on double-click | GNOME does not trust the file yet | right-click the icon → **Allow Launching** |
+| App window never appears | Snap-packaged Chromium cannot use a custom profile in a hidden directory | the launcher now detects this and falls back to the control window |
+
 ## Desktop shortcut (Ubuntu, double-click to start)
 
 If you do not want the studio running in the background, install the shortcut
@@ -229,6 +254,7 @@ All endpoints are under `/api` and speak JSON.
 | `npm run typecheck` | TypeScript project check |
 | `npm run link` | Print LAN URLs + QR code for your phone |
 | `npm run shortcut` | Install the desktop shortcut (start on double-click) |
+| `npm run doctor` | Diagnose prerequisites and test-start the server |
 
 ## Data & backups
 

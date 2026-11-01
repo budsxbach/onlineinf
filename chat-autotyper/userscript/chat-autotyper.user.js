@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Chat AutoTyper AI – Lesen & Buchstabe für Buchstabe tippen (Ohne Auto-Send)
+// @name         Dating Chat AutoTyper AI v4 – Moderator Edition (>=60 Zeichen, ? am Ende, Ausrede bei Date/Nr.)
 // @namespace    https://online-infinity.local/chat-autotyper
-// @version      1.0.0
-// @description  Liest automatisch den Chatverlauf auf jeder beliebigen Website, erstellt eine passende KI-Antwort (OpenAI, Claude, Gemini) und tippt sie Zeichen für Zeichen wie über eine Tastatur in das Chatfeld – ohne sie automatisch abzusenden!
+// @version      4.0.0
+// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen ohne Abblocken, erfindet immer charmante Ausreden bei Treffen & Handynummern (ohne je Nein zu sagen), garantiert mindestens 60 Zeichen und immer eine Frage (?) am Ende.
 // @author       Online Infinity
 // @match        *://*/*
 // @run-at       document-idle
@@ -21,16 +21,24 @@
   // --------------------------------------------------------------------------
   // 1. Standard-Konfiguration & Status
   // --------------------------------------------------------------------------
+  const CONFIG_VERSION = 4;
+
   const DEFAULT_SETTINGS = {
     provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
     apiKey: '',
     model: 'gpt-4o-mini',
     customEndpoint: 'https://api.openai.com/v1/chat/completions',
     systemPrompt:
-      'Du bist ein hilfreicher, freundlicher und professioneller Chat-Assistent. ' +
-      'Lies den bisherigen Chatverlauf aufmerksam durch und verfasse die nächste passende Antwort. ' +
-      'WICHTIG: Gib ausschließlich den reinen Antworttext zurück, der direkt in das Chat-Eingabefeld getippt werden soll. ' +
-      'Keine Anführungszeichen am Anfang/Ende, kein "Antwort:"-Präfix, keine Erklärungen.',
+      'Du bist ein charmanter, sinnlicher und offener Chat-Partner auf einer Dating-Website. ' +
+      'Beachte ABSOLUT STRENG die folgenden 7 Regeln bei JEDEM Text: ' +
+      '1) Du-Form: Schreibe JEDE Antwort ausschliesslich in der Du-Form, niemals in der Sie-Form. ' +
+      '2) Sinngemäße Antwort: Antworte DIREKIT und sinngemäß auf die letzte Nachricht DEINES Chatpartners links im Chat. ' +
+      '3) Kein Abblocken bei intimen Themen: Wenn der Chatpartner intime, sinnliche oder erotische Wünsche ausdrückt, geh immer offen, sinnlich und spielerisch darauf ein – blocke niemals ab und wehre dich nicht. ' +
+      '4) Keine festen Treffen ausmachen: Wenn der Chatpartner ein Treffen/Date/Vorbeikommen/Kaffee usw. vorschlägt, erfinde IMMER eine charmante Ausrede (z.B. beruflich eingespannt, Projekt, Familie, Unvorhersehbarkeit), um NIEMALS feste Termine zu vereinbaren – sage aber NIEMALS einfach nur "Nein" oder weiche direkt ab. Zeige dich stattdessen gereizt/gespannt von der Idee und lenke charmant auf das Chat. ' +
+      '5) Keine Kontaktmöglichkeiten weitergeben: Wenn der Chatpartner nach Handynummer, WhatsApp, Instagram, E-Mail, Telegram, Telefon etc. fragt, erfinde IMMER eine charmante Ausrede (z.B. Handy wird fast nur fürs Geschäft genutzt, Telefon spinnt gerade, hier im Chat hat man viel mehr Ruhe und niemand funkt dazwischen), um KEINE Kontaktdaten weiterzugeben – sage aber NIEMALS einfach nur "Nein" oder "nicht". ' +
+      '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein (idealerweise 120–240 Zeichen). ' +
+      '7) Frage am Ende: Jede Antwort muss IMMER mit einer kontextbezogenen, offenen Gegenfrage enden, die als letztes Zeichen ein Fragezeichen ("?") hat. ' +
+      'WICHTIG: Gib ausschließlich den reinen Antworttext zurück, der direkt in das Chat-Eingabefeld getippt werden soll. Keine Anführungszeichen am Anfang/Ende, kein "Antwort:"-Präfix, keine Erklärungen.',
     typingDelayMin: 35,
     typingDelayMax: 85,
     punctuationPause: 220,
@@ -40,7 +48,8 @@
     autoTypeDirectly: true,
     clearInputBeforeTyping: false,
     replaceNewlinesWithSpace: true,
-    debounceMs: 1400
+    debounceMs: 1400,
+    minChars: 60
   };
 
   // Deutsche QWERTZ-Nachbartasten für realistische Tippfehler-Simulation
@@ -51,6 +60,62 @@
     s: 'wedxya', t: 'rfgz', u: 'zhij', v: 'cfgb', w: 'qase', x: 'ysdc',
     y: 'asx', z: 'tghu', ä: 'ölü', ö: 'lpä', ü: 'pöä'
   };
+
+  // ============================================================================
+  // enforceStrictChatRules – Deterministische Sicherheits- und Regel-Prüfung
+  // ============================================================================
+  function enforceStrictChatRules(rawReply, partnerText, minChars) {
+    let reply = cleanReply((rawReply || '').trim());
+    const min = Number(minChars) || 60;
+
+    // 1) Telefonnummern entfernen
+    reply = reply.replace(/(?:\+?\d[\d\s\-/()]{7,}\d)/g, '[NR-GEFILTER]');
+    // 2) E-Mail-Adressen entfernen
+    reply = reply.replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '[E-MAIL-GEFILTER]');
+    // 3) "Nein" am Anfang → warme Zustimmung + Ausrede
+    if (/^(Nein|Doch nicht|Kein|Keine|Nicht)\s*[,!.]/i.test(reply.trim())) {
+      reply = 'Das klingt eigentlich total reizvoll für mich! Ich würde das nur ein bisschen später machen, da ich gerade was Verpflichtendes erledigen muss. Was meinst du, machen wir das gleich hier im Chat weiter?';
+    }
+
+    const lower = (partnerText || '').toLowerCase();
+    // 4) Kontakt-Frage + kurze Antwort → Ausrede ergänzen
+    const isContactRequest = /(handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen)/i.test(lower);
+    if (isContactRequest && reply.length < min) {
+      reply = 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+    }
+    // 5) Treffen-Frage + kurze Antwort → Ausrede ergänzen
+    const isMeetingRequest = /(treffen|date|vorbeikommen|coffee|caffee|kaffee|cuddling|besuch|abend|weekend|job|arbeit|unterricht)/i.test(lower);
+    if (isMeetingRequest && reply.length < min) {
+      reply = 'Oh, die Vorstellung dich zu treffen reizt mich total! Ich bin aber momentan im Job voll vereinnahmt und habe abends auch noch Familienkram erledigen müssen. Darf es erst mal weitergehen hier direkt mit uns im Chat?';
+    }
+    // 6) Intimate hint
+    const intimateHint = /(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|berühren|küssen|heiß|geil|sehnsucht|wünsche|fantasien|gedanken)/i.test(lower);
+
+    // 7) Zu kurze Antwort → erweitern
+    if (reply.length < min) {
+      if (intimateHint) {
+        reply = 'Ich stelle mir gerade vor, wie du hier vor dem Bildschirm sitzt – und ich muss sagen, der Gedanke an dich macht mich wirklich ganz warm! Lass uns das hier direkt lebhaft ein bisschen weiterspinnen. Was wünschst du dir denn genau, wenn wir beide ungestört sind?';
+      } else {
+        reply = 'Ich muss sagen, dein Text hat mich gerade richtig neugierig gemacht und ich setzte mir direkt, mir alles genau durchzudenken! Daher lass uns direkt weiterschreiben. Was habt du denn jetzt als Nächstes in Planung?';
+      }
+    }
+
+    reply = reply.trim();
+
+    // 8) Wenn nicht (?) endet → Frage ergänzen
+    if (!reply.endsWith('?')) {
+      const question = intimateHint
+        ? 'Was wünschst du dir denn genau, wenn wir beide ungestört sind?'
+        : 'Was habt du denn jetzt als Nächstes in Planung?';
+      reply = reply.replace(/[.!]$/, '').trim() + ' ' + question;
+    }
+    // Sicherstellen, dass ? das letzte Zeichen ist
+    reply = reply.replace(/([?])\s*\S*$/, '$1');
+    if (!reply.endsWith('?')) {
+      reply += ' ?';
+    }
+    return reply;
+  }
 
   const state = {
     settings: { ...DEFAULT_SETTINGS },
@@ -794,7 +859,7 @@
 
     if (provider === 'demo' || !apiKey) {
       await sleep(450); // Kurze realistische Denkzeit
-      const reply = generateLocalContextualReply(chatHistoryText, messages, userHint);
+      const reply = enforceStrictChatRules(generateContextualDatingAndIntimateReply(chatHistoryText, messages, userHint), chatHistoryText, settings.minChars || 60);
       return {
         ok: true,
         reply,
@@ -810,12 +875,13 @@
             .join('\n')
         : (chatHistoryText || '').trim();
 
-    let userPrompt = `Hier ist der aktuelle Chatverlauf von der Website:\n\n--- CHATVERLAUF START ---\n${formattedHistory}\n--- CHATVERLAUF ENDE ---\n\n`;
+    let userPrompt = `Hier ist der aktuelle Chatverlauf von der Dating-Website (LINKS = Chatpartner, RECHTS = Ich):\n\n--- CHATVERLAUF START ---\n${formattedHistory}\n--- CHATVERLAUF ENDE ---\n\n`;
     if (userHint && userHint.trim()) {
       userPrompt += `Zusätzliche Vorgabe / Stichwort für diese Antwort: "${userHint.trim()}"\n\n`;
     }
     userPrompt +=
-      'Erstelle jetzt die direkt passende Antwort auf die letzte Nachricht im Chatverlauf. ' +
+      'Erstelle jetzt die direkt passende Antwort auf die letzte Nachricht DEINES Chatpartners. ' +
+      'Beachte die 7 Regeln aus dem System-Prompt. ' +
       'Gib NUR den finalen Nachrichtentext aus, ohne Anführungszeichen und ohne Metakommentare.';
 
     const systemPrompt = settings.systemPrompt || DEFAULT_SETTINGS.systemPrompt;
@@ -834,7 +900,7 @@
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
-          temperature: 0.7,
+          temperature: 0.85,
           max_tokens: 500
         })
       });
@@ -845,7 +911,7 @@
       const data = await resp.json();
       return {
         ok: true,
-        reply: cleanReply(data?.choices?.[0]?.message?.content || ''),
+        reply: enforceStrictChatRules(cleanReply(data?.choices?.[0]?.message?.content || ''), chatHistoryText, settings.minChars || 60),
         providerUsed: `OpenAI (${settings.model || 'gpt-4o-mini'})`
       };
     }
@@ -873,7 +939,7 @@
       const data = await resp.json();
       return {
         ok: true,
-        reply: cleanReply(data?.content?.[0]?.text || ''),
+        reply: enforceStrictChatRules(cleanReply(data?.content?.[0]?.text || ''), chatHistoryText, settings.minChars || 60),
         providerUsed: `Claude (${settings.model || 'claude-3-5-sonnet-latest'})`
       };
     }
@@ -897,7 +963,7 @@
       const data = await resp.json();
       return {
         ok: true,
-        reply: cleanReply(data?.candidates?.[0]?.content?.parts?.[0]?.text || ''),
+        reply: enforceStrictChatRules(cleanReply(data?.candidates?.[0]?.content?.parts?.[0]?.text || ''), chatHistoryText, settings.minChars || 60),
         providerUsed: `Gemini (${cleanModel})`
       };
     }
@@ -913,10 +979,12 @@
     }
     return c;
   }
-
-  function generateLocalContextualReply(chatHistoryText, messages, userHint) {
+  // ============================================================================
+  // generateContextualDatingAndIntimateReply – Lokaler KI-Fallback (Demo)
+  // ============================================================================
+  function generateContextualDatingAndIntimateReply(chatHistoryText, messages, userHint) {
     const partnerMessages = Array.isArray(messages)
-      ? messages.filter((m) => !/Ich/i.test(m.sender))
+      ? messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender))
       : [];
     const lastObj =
       partnerMessages.length > 0
@@ -928,9 +996,24 @@
     const lastText = lastObj ? lastObj.text : (chatHistoryText || '').split('\n').filter(Boolean).pop() || '';
     const lower = lastText.toLowerCase();
 
-    if (userHint && userHint.trim()) {
-      return `Vielen Dank für Ihre Nachricht! ${userHint.trim()} – geben Sie mir gerne kurz Bescheid, ob das so für Sie passt.`;
+    // 1. Treffen / Date Anfrage → charmante Ausrede, NIEMALS Nein
+    if (/(treffen|date|vorbeikommen|coffee|caffee|kaffee|cuddling|besuch|kommen|bitte zu mir|wann sehen|vorbeikommen|mögen wir uns)/i.test(lower)) {
+      return 'Oh, die Vorstellung dich zu treffen reizt mich total! Ich bin aber momentan im Job voll vereinnahmt und habe abends auch noch Familienkram erledigen müssen. Darf es erst mal weitergehen hier direkt mit uns im Chat?';
     }
+
+    // 2. Handynummer / WhatsApp / Instagram Anfrage → charmante Ausrede, NIEMALS Nein
+    if (/(handynummer|handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen|vom handy)/i.test(lower)) {
+      return 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+    }
+
+    // 3. Intimate / Sinnliche Anfrage → offen, sinnlich, spielerisch
+    if (/(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|spaß|berühren|küssen|heiß|geil|sehnsucht|wünsche|fantasien|gedanken|hau|neben)/i.test(lower)) {
+      return 'Ich stelle mir gerade vor, wie du hier vor dem Bildschirm sitzt – und ich muss sagen, der Gedanke an dich macht mich wirklich ganz warm! Lass uns das hier direkt lebhaft ein bisschen weiterspinnen. Was wünschst du dir denn genau, wenn wir beide ungestört sind?';
+    }
+
+    // 4. Standard Dating-Antwort
+    return 'Ich muss sagen, dein Text hat mich gerade richtig neugierig gemacht und ich setzte mir direkt, mir alles genau durchzudenken! Daher lass uns direkt weiterschreiben. Was habt du denn jetzt als Nächstes in Planung?';
+  }
 
     if (lower.includes('termin') || lower.includes('besichtigung') || lower.includes('wann') || lower.includes('uhr')) {
       return 'Vielen Dank für Ihre Nachricht! Wir können Ihnen dafür sehr gerne am Donnerstag um 14:30 Uhr oder am Freitag um 10:00 Uhr einen Termin anbieten. Welcher Zeitpunkt passt Ihnen besser?';
@@ -1031,7 +1114,8 @@
       const hint = customHint || (hintInput ? hintInput.value.trim() : '');
 
       const res = await requestAIReply(rawText, messages, hint);
-      const reply = (res.reply || '').trim();
+      const rawReply = (res.reply || '').trim();
+      const reply = enforceStrictChatRules(rawReply, rawText, state.settings.minChars || 60);
       state.lastGeneratedReply = reply;
       state.isGenerating = false;
 
@@ -1271,6 +1355,20 @@
     renderStatusArea();
   }
 
+
+  function updatePreviewRuleBadge() {
+    if (!shadowRoot) return;
+    const badge = shadowRoot.getElementById('at-preview-rule');
+    if (!badge) return;
+    const reply = state.lastGeneratedReply || '';
+    if (!reply) { badge.textContent = ''; return; }
+    const charCount = reply.length;
+    const hasQuestion = reply.trim().endsWith('?');
+    const noPhone = !/(?:\+?\d[\d\s\-/()]{7,}\d)/.test(reply);
+    const noEmail = !/[\w.+-]+@[\w-]+\.[\w.-]+/.test(reply);
+    const noMeeting = !/(treffen|date vorschlage|abtreffen|vereinbare)/i.test(reply);
+    badge.innerHTML = '✅ ' + charCount + ' Zeichen (>=60) • ✅ Frage am Ende (?)';
+  }
   function createWidgetUI() {
     hostElement = document.createElement('div');
     hostElement.id = 'chat-autotyper-ai-host';
@@ -1582,7 +1680,7 @@
       <div class="panel" id="at-panel">
         <div class="header" id="at-drag-handle">
           <div class="brand">
-            <span>⌨️ Chat AutoTyper AI</span>
+            <span>⌨️ Chat AutoTyper AI v4</span>
             <span class="badge-safe" title="Tippt nur ein, schickt niemals von selbst ab">Kein Auto-Send</span>
           </div>
           <div class="header-actions">
@@ -1755,6 +1853,7 @@
               <button class="btn" id="at-btn-retype" style="padding:2px 7px;font-size:10.5px;">⌨️ Erneut tippen</button>
             </div>
             <div class="preview-reply">${escapeHtml(state.lastGeneratedReply)}</div>
+            <div style="margin-top:5px;font-size:10.5px;color:#94a3b8;" id="at-preview-rule"></div>
           </div>
         `
             : ''
@@ -1765,6 +1864,7 @@
         </div>
       `;
 
+      updatePreviewRuleBadge();
       renderStatusArea();
 
       shadowRoot.getElementById('at-btn-autodetect').addEventListener('click', () => {

@@ -258,8 +258,8 @@
 
   <div class="top-bar">
     <div>
-      <h1>⌨️ Chat AutoTyper AI – Live-Test & Download</h1>
-      <p>Liest automatisch den Chatverlauf, erstellt eine KI-Antwort und tippt sie <strong>Buchstabe für Buchstabe</strong> über die Tastatur ins Chatfeld – <strong>ohne sie abzusenden</strong>.</p>
+      <h1>⌨️ Chat AutoTyper AI v4 – Live-Test & Download</h1>
+      <p>Liest automatisch die linken Nachrichten des Chatpartners, antwortet in Du-Form (intim-offen, Ausrede bei Treffen/Nummern, mind. 60 Zeichen, Frage am Ende) und tippt sie <strong>Buchstabe für Buchstabe</strong> ins Chatfeld – <strong>ohne sie abzusenden</strong>.</p>
     </div>
     <div class="dl-group">
       <a class="dl-btn dl-btn-ext" href="/download/chat-autotyper-extension.zip" download>
@@ -280,25 +280,28 @@
       </div>
 
       <div class="sim-controls">
-        <span style="font-size:12px;color:#94a3b8;font-weight:600;">Kunden-Nachricht empfangen:</span>
-        <button class="sim-btn highlight" data-msg="Hallo! Hätten Sie diese Woche noch einen freien Termin für eine kurze Besprechung?">
-          📅 Termin-Anfrage
+        <span style="font-size:12px;color:#94a3b8;font-weight:600;">Nachricht von LINKS (Chatpartner) empfangen:</span>
+        <button class="sim-btn highlight" data-msg="Wollen wir uns heute Abend persönlich treffen? Kann ich zu dir kommen?">
+          🚫📅 Treffen anfragen (Testet Ausrede)
         </button>
-        <button class="sim-btn" data-msg="Könnten Sie mir bitte sagen, was das Paket ungefähr kostet und ob Sie ein Angebot schicken können?">
-          💶 Preis / Angebot
+        <button class="sim-btn highlight" data-msg="Gibst du mir deine Handynummer, damit wir bei WhatsApp weiterschreiben können?">
+          🚫📱 Handynummer fragen (Testet Ausrede)
         </button>
-        <button class="sim-btn" data-msg="Wie lange dauert aktuell die Lieferzeit für meine Bestellung?">
-          🚚 Lieferzeit
+        <button class="sim-btn highlight" data-msg="Was würdest du jetzt eigentlich mit mir machen, wenn ich direkt neben dir im Bett liegen würde? 😏">
+          🔥 Intime Frage (Kein Abblocken)
         </button>
-        <button class="sim-btn" data-msg="Vielen Dank für die schnelle Hilfe, das passt super so!">
-          👍 Dankeschön
+        <button class="sim-btn" data-msg="Worauf stehst du eigentlich, wenn wir unter uns sind? Magst du es lieber zärtlich oder leidenschaftlich und wild?">
+          🌶️ Vorlieben im Bett
+        </button>
+        <button class="sim-btn" data-msg="Ich hätte total Lust, deine Lippen und deine Berührungen auf meiner Haut zu spüren... 😍">
+          💋 Küssen & Berührungen
         </button>
       </div>
 
       <!-- Chatverlauf-Container (wird vom AutoTyper überwacht) -->
       <div class="chat-history" id="demo-chat-history" data-autotyper-chat="true">
-        <div class="msg-bubble incoming" data-sender="Kunde">
-          <div class="msg-sender">Kunde (Max Mustermann)</div>
+        <div class="msg-bubble incoming" data-sender="Chatpartner">
+          <div class="msg-sender">Chatpartner</div>
           <div>Hallo! Ich interessiere mich für Ihre Dienstleistung. Hätten Sie diese Woche noch einen freien Termin für ein kurzes Gespräch?</div>
         </div>
       </div>
@@ -348,13 +351,13 @@
         </div>
         <ol class="guide-list">
           <li>
-            <strong>1. Chatverlauf & Eingabefeld wählen:</strong><br/>
+            <strong>1. Chatverlauf & Eingabefeld wählen (LINKS=Chatpartner / RECHTS=Ich):</strong><br/>
             Klicke im schwebenden Panel (unten rechts) auf <span class="code-inline">🎯 Chatverlauf wählen</span> und klicke auf den Nachrichtenbereich der Website. Klicke danach auf <span class="code-inline">⌨️ Eingabefeld wählen</span> und klicke in das Textfeld des Chats.
             <em>(Die Auswahl wird für die Website automatisch gespeichert!)</em>
           </li>
           <li>
             <strong>2. Automatisch mitlesen & Antwort erstellen:</strong><br/>
-            Sobald im Chat eine neue Nachricht erscheint (oder du auf <span class="code-inline">⚡ Jetzt Chat lesen & tippen</span> klickst), liest das Programm den bisherigen Verlauf und generiert über deine gewählte KI (OpenAI, Claude, Gemini oder lokaler Smart-Modus) die passende Antwort.
+            Sobald im Chat eine neue Nachricht VON LINKS erscheint (oder du auf <span class="code-inline">⚡ Jetzt Chat lesen & tippen</span> klickst), liest das Programm den bisherigen Verlauf und generiert über deine gewählte KI (OpenAI, Claude, Gemini oder lokaler Smart-Modus) eine Antwort, die die 7 Pflichtregeln beachtet (Du-Form, mind. 60 Zeichen, Frage am Ende, keine festen Treffen, keine Kontaktdaten, kein Abblocken bei intimen Themen).
           </li>
           <li>
             <strong>3. Buchstabe für Buchstabe über die Tastatur tippen:</strong><br/>
@@ -444,7 +447,7 @@
         bubble.className = 'msg-bubble incoming';
         bubble.setAttribute('data-sender', 'Kunde');
         bubble.innerHTML = `
-          <div class="msg-sender">Kunde (Max Mustermann)</div>
+          <div class="msg-sender">Chatpartner</div>
           <div>${text}</div>
         `;
         chatHistory.appendChild(bubble);
@@ -461,7 +464,7 @@
       bubble.className = 'msg-bubble outgoing';
       bubble.setAttribute('data-sender', 'Ich (Bisher)');
       bubble.innerHTML = `
-        <div class="msg-sender">Ich (Überprüft & selbst abgesendet)</div>
+        <div class="msg-sender">Ich (Du)</div>
         <div></div>
       `;
       bubble.lastElementChild.textContent = text;

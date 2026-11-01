@@ -1,9 +1,26 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const PORT = process.env.PORT || 3000;
 const BASE_DIR = path.resolve(__dirname, '..');
+
+// Auto-rebuild the extension ZIP on server startup so the download always matches source
+function ensureExtensionZip() {
+  const zipPath = path.join(BASE_DIR, 'downloads', 'chat-autotyper-extension.zip');
+  const extDir = path.join(BASE_DIR, 'extension');
+  if (!fs.existsSync(extDir)) return;
+  try {
+    fs.mkdirSync(path.dirname(zipPath), { recursive: true });
+    execSync(`rm -f "${zipPath}"`, { stdio: 'ignore' });
+    execSync(`cd "${extDir}" && zip -r -q "${zipPath}" .`, { stdio: 'ignore' });
+    const size = fs.statSync(zipPath).size;
+    console.log(`Extension ZIP auto-rebuilt: ${size} bytes`);
+  } catch (err) {
+    console.warn('Extension ZIP rebuild skipped:', err.message);
+  }
+}
 
 const server = http.createServer((req, res) => {
   const urlPath = req.url.split('?')[0];
@@ -50,5 +67,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '0.0.0.0', () => {
+  ensureExtensionZip();
   console.log(`Chat AutoTyper AI Live-Demo läuft auf http://0.0.0.0:${PORT}`);
 });

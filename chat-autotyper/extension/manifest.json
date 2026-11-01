@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Chat AutoTyper AI – Lesen & Buchstabe für Buchstabe tippen",
-  "version": "1.0.0",
-  "description": "Liest automatisch den Chatverlauf auf jeder Website, erstellt eine passende KI-Antwort und tippt sie Zeichen für Zeichen wie über eine echte Tastatur in das Chatfeld – ohne sie abzusenden.",
+  "name": "Chat AutoTyper AI v4 – Dating & Moderator Edition (>=60 Zeichen, ? am Ende, Ausreden)",
+  "version": "4.0.0",
+  "description": "Liest automatisch die linken Nachrichten deines Chatpartners, antwortet in Du-Form (intim-offen, Ausrede bei Treffen/Nummern, mind. 60 Zeichen, Frage am Ende) und tippt Zeichen für Zeichen ins Chatfeld.",
   "permissions": [
     "storage",
     "activeTab",

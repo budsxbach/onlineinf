@@ -1,8 +1,12 @@
 import {
+  AlertTriangle,
   ArrowUpRight,
   Bookmark,
   Check,
+  ChevronDown,
+  ChevronUp,
   Clock,
+  Copy,
   Cpu,
   Disc3,
   KeyRound,
@@ -34,6 +38,7 @@ import {
   cn,
 } from '../components/ui';
 import { timeAgo } from '../lib/format';
+import { toast } from '../store/toast';
 import {
   useDeleteIdea,
   useGenerateIdea,
@@ -66,6 +71,128 @@ function statusMeta(status: Idea['status']) {
     default:
       return { label: 'Draft', color: '#94a3b8' };
   }
+}
+
+
+function AiDiagnosticsPanel({ idea }: { idea: Idea }) {
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const detail = idea.error_detail;
+
+  // Nothing to explain when Arena did the work.
+  if (!idea.error || idea.engine === 'arena') return null;
+
+  const isFailure = idea.status === 'failed';
+  const tone = isFailure
+    ? 'border-rose-500/25 bg-rose-500/[0.06] text-rose-200/85'
+    : 'border-amber-400/25 bg-amber-400/[0.05] text-amber-200/85';
+
+  const attempts = detail?.attempts || [];
+
+  const diagnosticsText = [
+    `code: ${detail?.code ?? 'unknown'}`,
+    detail?.status ? `status: HTTP ${detail.status}` : null,
+    detail?.endpoint ? `endpoint: ${detail.endpoint}` : null,
+    detail?.modelAvailable === false ? 'modelAvailable: false' : null,
+    detail?.availableModels?.length ? `availableModels: ${detail.availableModels.join(', ')}` : null,
+    detail?.detail ? `upstream: ${detail.detail}` : null,
+    attempts.length
+      ? `attempts:\n${attempts.map((a) => `  - ${a.label} (${a.endpoint}) → ${a.status ?? 'no response'} ${a.detail || ''}`.trim()).join('\n')}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  return (
+    <div className={`mt-2.5 rounded-lg border px-3 py-2 text-[11px] leading-relaxed ${tone}`}>
+      <div className="flex items-start gap-2">
+        <AlertTriangle className="mt-[2px] h-3.5 w-3.5 shrink-0 opacity-80" />
+        <div className="min-w-0 flex-1">
+          <p>
+            {isFailure ? 'Composition failed' : 'Arena request failed — composed with the local engine'}
+          </p>
+          <p className="mt-0.5 font-mono text-[10px] opacity-70">{idea.error}</p>
+          {detail ? (
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="mt-1 flex items-center gap-1 text-[10px] font-medium underline decoration-dotted underline-offset-2 opacity-80 hover:opacity-100"
+            >
+              {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              {open ? 'Hide details' : 'Show details'}
+            </button>
+          ) : null}
+        </div>
+      </div>
+
+      {open && detail ? (
+        <div className="mt-2 space-y-2 border-t border-current/10 pt-2">
+          <dl className="grid grid-cols-[auto,1fr] gap-x-3 gap-y-1 font-mono text-[10px]">
+            <dt className="opacity-60">code</dt>
+            <dd className="break-words">{detail.code}</dd>
+            {detail.status ? (
+              <>
+                <dt className="opacity-60">status</dt>
+                <dd>HTTP {detail.status}</dd>
+              </>
+            ) : null}
+            {detail.endpoint ? (
+              <>
+                <dt className="opacity-60">endpoint</dt>
+                <dd className="break-all">{detail.endpoint}</dd>
+              </>
+            ) : null}
+            {detail.modelAvailable === false ? (
+              <>
+                <dt className="opacity-60">model</dt>
+                <dd className="text-rose-200">not offered by this endpoint</dd>
+              </>
+            ) : null}
+          </dl>
+
+          {detail.detail ? (
+            <p className="rounded bg-black/25 px-2 py-1.5 font-mono text-[10px] break-words">{detail.detail}</p>
+          ) : null}
+
+          {detail.availableModels?.length ? (
+            <p className="text-[10px] opacity-80">
+              Available models: <span className="font-mono">{detail.availableModels.join(', ')}</span>
+            </p>
+          ) : null}
+
+          {attempts.length ? (
+            <div className="space-y-1">
+              <p className="text-[10px] uppercase tracking-wider opacity-60">Attempts</p>
+              {attempts.map((attempt, index) => (
+                <div key={index} className="flex flex-wrap items-baseline gap-x-2 font-mono text-[10px]">
+                  <span className="opacity-60">{attempt.label}</span>
+                  <span className="opacity-40">{attempt.endpoint}</span>
+                  <span>→ {attempt.status ?? 'no response'}</span>
+                  {attempt.detail ? <span className="opacity-60">· {attempt.detail}</span> : null}
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          <Button
+            size="xs"
+            variant="ghost"
+            icon={copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            onClick={() => {
+              void navigator.clipboard.writeText(diagnosticsText).then(
+                () => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1600);
+                },
+                () => toast.error('Could not copy diagnostics')
+              );
+            }}
+          >
+            {copied ? 'Copied' : 'Copy diagnostics'}
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function IdeaCard({
@@ -153,11 +280,7 @@ function IdeaCard({
         </blockquote>
 
         {idea.summary && <p className="mt-2.5 text-[11px] leading-relaxed text-ink-500">{idea.summary}</p>}
-        {isFailed && idea.error && (
-          <p className="mt-2.5 rounded-lg border border-rose-500/20 bg-rose-500/[0.06] px-3 py-2 text-[11px] leading-relaxed text-rose-200/80">
-            {idea.error}
-          </p>
-        )}
+        <AiDiagnosticsPanel idea={idea} />
 
         {isGenerating ? (
           <div className="mt-3 flex items-center gap-2 rounded-lg border border-amber-400/20 bg-amber-400/[0.05] px-3 py-2">

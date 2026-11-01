@@ -21,7 +21,7 @@ import {
   defaultParams,
   makeBlankSteps,
 } from './music.mjs';
-import { AIError, aiConfigFromSettings, generateIdea, testArenaConnection } from './ai.mjs';
+import { AIError, aiConfigFromSettings, generateIdea, testArenaConnection, testComposerConnection } from './ai.mjs';
 import {
   computeProjectDuration,
   db,
@@ -928,8 +928,9 @@ app.post(
       projectId = persistIdeaProject(idea);
     }
     const status = projectId ? 'saved' : 'ready';
+    const errorColumn = result.diagnostics ? JSON.stringify(result.diagnostics) : null;
     db.prepare(
-      `UPDATE ideas SET title = ?, genre = ?, bpm = ?, key_root = ?, scale = ?, status = ?, engine = ?, model = ?, summary = ?, payload = ?, error = NULL, project_id = ?, updated_at = ?
+      `UPDATE ideas SET title = ?, genre = ?, bpm = ?, key_root = ?, scale = ?, status = ?, engine = ?, model = ?, summary = ?, payload = ?, error = ?, project_id = ?, updated_at = ?
        WHERE id = ?`
     ).run(
       idea.title,
@@ -942,12 +943,18 @@ app.post(
       result.model,
       summarizeIdea(idea, result),
       JSON.stringify(idea),
+      errorColumn,
       projectId,
       nowIso(),
       id
     );
     const saved = db.prepare('SELECT * FROM ideas WHERE id = ?').get(id);
-    res.status(201).json({ idea: hydrateIdea(saved), projectId, warning: result.warning });
+    res.status(201).json({
+      idea: hydrateIdea(saved),
+      projectId,
+      warning: result.warning,
+      diagnostics: result.diagnostics || null,
+    });
   })
 );
 
@@ -1000,8 +1007,9 @@ app.post(
     const idea = result.idea;
     let projectId = row.project_id;
     if (req.body?.createProject && !projectId) projectId = persistIdeaProject(idea);
+    const errorColumn = result.diagnostics ? JSON.stringify(result.diagnostics) : null;
     db.prepare(
-      `UPDATE ideas SET title = ?, genre = ?, bpm = ?, key_root = ?, scale = ?, status = ?, engine = ?, model = ?, summary = ?, payload = ?, error = NULL, project_id = ?, updated_at = ? WHERE id = ?`
+      `UPDATE ideas SET title = ?, genre = ?, bpm = ?, key_root = ?, scale = ?, status = ?, engine = ?, model = ?, summary = ?, payload = ?, error = ?, project_id = ?, updated_at = ? WHERE id = ?`
     ).run(
       idea.title,
       idea.genre,
@@ -1013,11 +1021,17 @@ app.post(
       result.model,
       summarizeIdea(idea, result),
       JSON.stringify(idea),
+      errorColumn,
       projectId || null,
       nowIso(),
       row.id
     );
-    res.json({ idea: hydrateIdea(db.prepare('SELECT * FROM ideas WHERE id = ?').get(row.id)), projectId, warning: result.warning });
+    res.json({
+      idea: hydrateIdea(db.prepare('SELECT * FROM ideas WHERE id = ?').get(row.id)),
+      projectId,
+      warning: result.warning,
+      diagnostics: result.diagnostics || null,
+    });
   })
 );
 
@@ -1217,6 +1231,47 @@ app.patch('/api/settings', (req, res, next) => {
   res.json(publicSettings());
 });
 
+/* ------------------------------------------------------------------ *
+ *  Composer connectivity check
+ *  /models only proves the key is listed. This proves it can actually
+ *  produce an arrangement, which is what the composer needs.
+ * ------------------------------------------------------------------ */
+
+app.post(
+  '/api/settings/test-composer',
+  asyncRoute(async (req, res) => {
+    const body = req.body || {};
+    const stored = aiConfigFromSettings(getSetting);
+    const config = {
+      baseUrl: (body.baseUrl ? String(body.baseUrl) : stored.baseUrl).replace(/\/+$/, ''),
+      model: body.model ? String(body.model) : stored.model,
+      apiKey: body.apiKey ? String(body.apiKey).trim() : stored.apiKey,
+    };
+    if (!config.apiKey) {
+      return res.status(400).json({ ok: false, error: 'No Arena API key configured yet.', code: 'missing_key' });
+    }
+    try {
+      const result = await testComposerConnection(config);
+      res.json({
+        ok: true,
+        endpoint: result.endpoint,
+        variant: result.variant,
+        sample: result.sample,
+        attempts: result.attempts,
+        model: config.model,
+        baseUrl: config.baseUrl,
+      });
+    } catch (err) {
+      const diagnostics = err instanceof AIError ? err.toDiagnostics() : { code: 'ai_error' };
+      res.status(502).json({
+        ok: false,
+        error: err.message || 'Composer test failed',
+        ...diagnostics,
+      });
+    }
+  })
+);
+
 app.post(
   '/api/settings/test-ai',
   asyncRoute(async (req, res) => {
@@ -1232,10 +1287,23 @@ app.post(
     }
     try {
       const result = await testArenaConnection(config);
-      res.json({ ok: true, models: result.models, modelCount: result.count, model: config.model, baseUrl: config.baseUrl });
+      res.json({
+        ok: true,
+        models: result.models,
+        modelCount: result.count,
+        model: result.model,
+        modelAvailable: result.modelAvailable,
+        baseUrl: config.baseUrl,
+      });
     } catch (err) {
       const message = err instanceof AIError ? err.message : `Connection failed: ${err.message}`;
-      res.status(502).json({ ok: false, error: message, code: err.code || 'network' });
+      res.status(502).json({
+        ok: false,
+        error: message,
+        code: err.code || 'network',
+        status: err.status || null,
+        detail: err.detail || null,
+      });
     }
   })
 );

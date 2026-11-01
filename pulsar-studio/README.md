@@ -36,6 +36,58 @@ If no key is configured — or the router is unreachable — the composer transp
 
 ---
 
+## The Arena composer: what to check when it falls back
+
+The composer and the “Test connection” button use **different endpoints**, so a
+green connection test does not prove that composing works:
+
+| Action | Endpoint | What it proves |
+| --- | --- | --- |
+| Test connection | `GET /models` | the key is valid and which models it may use |
+| Test composer | `POST /chat/completions` | the key may actually *generate* with the configured model |
+| Composer | same as above | the real arrangement request |
+
+Settings → **AI engine** has both buttons. Use **Test composer** when ideas keep
+arriving from the local engine.
+
+### The request ladder
+
+Preview routers differ in what they accept, so the composer walks a ladder and
+stops at the first shape that works:
+
+1. `standard` — `/chat/completions` with `temperature`, `max_tokens: 4096`, system + user messages
+2. `conservative` — no `temperature`, `max_tokens: 1024`, system prompt folded into the user message
+3. `minimal` — model + user message only
+4. `responses-api` — `/responses` with `input` + `max_output_tokens`
+
+Only `400 / 403 / 404 / 405 / 413 / 415 / 422` advance to the next step. A `401`
+(invalid key) and `429` (rate limit) stop immediately — retrying those wastes time.
+
+### Reading the diagnostics
+
+When every shape fails, the idea card shows a short summary such as
+`forbidden · HTTP 403 · model not available` with an expandable **Show details**
+panel containing the status code, the endpoint, the raw upstream message, the
+models the key may use, every attempt that was tried, and a **Copy diagnostics**
+button.
+
+The same information is printed by `npm run doctor`:
+
+```
+7. Arena-Composer
+✓ key listed, 3 models
+   model coding-router-preview => NOT available
+✗ composer request rejected
+   forbidden HTTP 403 :: ... is not available for this key.
+   · standard /chat/completions -> 403
+   · conservative /chat/completions -> 403
+   · minimal /chat/completions -> 403
+   · responses-api /responses -> 403
+```
+
+The fastest fix for “key fine, composing broken” is usually to pick a model that
+appears in the `/models` list under **Settings → AI engine**.
+
 ## Troubleshooting a launch that hangs
 
 If the studio window stays blank or the browser seems stuck, run the built-in

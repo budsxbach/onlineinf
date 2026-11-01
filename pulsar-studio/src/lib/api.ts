@@ -1,4 +1,16 @@
-import type { Bank, DeviceLink, Idea, Preset, Project, Sample, Settings, Stats, Track } from './types';
+import type {
+  Bank,
+  ComposerTestResult,
+  DeviceLink,
+  Idea,
+  IdeaResult,
+  Preset,
+  Project,
+  Sample,
+  Settings,
+  Stats,
+  Track,
+} from './types';
 
 export class ApiError extends Error {
   status: number;
@@ -33,12 +45,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     clearTimeout(timer);
     if (err instanceof DOMException && err.name === 'AbortError') {
       throw new ApiError(
-        'Der Server antwortet nicht. Läuft Pulsar Studio noch?',
+        'The server did not answer in time. Is Pulsar Studio still running?',
         0,
         'timeout'
       );
     }
-    throw new ApiError('Keine Verbindung zum Server.', 0, 'network');
+    throw new ApiError('Could not reach the server.', 0, 'network');
   }
   clearTimeout(timer);
   const text = await res.text();
@@ -135,14 +147,14 @@ export const api = {
       createProject?: boolean;
       preferLocal?: boolean;
     }) =>
-      request<{ idea: Idea; projectId: string | null; warning: string | null }>('/ideas', {
+      request<IdeaResult>('/ideas', {
         method: 'POST',
         body: JSON.stringify(input),
       }),
     update: (id: string, patch: Partial<Idea>) => request<Idea>(`/ideas/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
     remove: (id: string) => request<{ ok: boolean }>(`/ideas/${id}`, { method: 'DELETE' }),
     retry: (id: string, input: { preferLocal?: boolean; createProject?: boolean } = {}) =>
-      request<{ idea: Idea; projectId: string | null; warning: string | null }>(`/ideas/${id}/retry`, {
+      request<IdeaResult>(`/ideas/${id}/retry`, {
         method: 'POST',
         body: JSON.stringify(input),
       }),
@@ -154,10 +166,22 @@ export const api = {
 
   settings: {
     get: () => request<Settings>('/settings'),
+    testComposer: (input: { apiKey?: string; baseUrl?: string; model?: string } = {}) =>
+      request<ComposerTestResult>('/settings/test-composer', {
+        method: 'POST',
+        body: JSON.stringify(input),
+      }),
     update: (patch: Record<string, string | number | boolean | null>) =>
       request<Settings>('/settings', { method: 'PATCH', body: JSON.stringify(patch) }),
     testAi: (input: { apiKey?: string; baseUrl?: string; model?: string } = {}) =>
-      request<{ ok: boolean; models: string[]; modelCount: number; model: string; baseUrl: string }>('/settings/test-ai', {
+      request<{
+        ok: boolean;
+        models: string[];
+        modelCount: number;
+        model: string;
+        modelAvailable: boolean | null;
+        baseUrl: string;
+      }>('/settings/test-ai', {
         method: 'POST',
         body: JSON.stringify(input),
       }).catch((err) => {

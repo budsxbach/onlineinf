@@ -13,8 +13,29 @@ APP_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 PORT="${PORT:-4000}"
 TEST_PORT="${DOCTOR_PORT:-4711}"
 
+# Pick a free port so the probe can never talk to somebody else's server.
+port_free() {
+  if command -v ss >/dev/null 2>&1; then
+    [[ -z "$(ss -lptnH "sport = :$1" 2>/dev/null)" ]]
+  else
+    ! (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
+  fi
+}
+
+if ! port_free "$TEST_PORT"; then
+  BASE_PORT="$TEST_PORT"
+  while ! port_free "$TEST_PORT"; do
+    TEST_PORT=$((TEST_PORT + 1))
+    if (( TEST_PORT > BASE_PORT + 50 )); then
+      TEST_PORT="$BASE_PORT"
+      break
+    fi
+  done
+fi
+
 FAIL=0
 WARN=0
+ARENA_FAILED=0
 
 ok()   { printf '\033[32m✓\033[0m %s\n' "$*"; }
 bad()  { printf '\033[31m✗\033[0m %s\n' "$*"; FAIL=$((FAIL+1)); }
@@ -68,7 +89,7 @@ fi
 
 # --- Datenbank ------------------------------------------------------------
 head_ "3. Datenbank"
-DATA_DIR="$APP_DIR/data"
+DATA_DIR="${PULSAR_DATA_DIR:-$APP_DIR/data}"
 if [[ -d "$DATA_DIR" ]]; then
   if [[ -w "$DATA_DIR" ]]; then ok "Verzeichnis $DATA_DIR beschreibbar"; else bad "$DATA_DIR nicht beschreibbar → sudo chown -R \$USER:\$USER $APP_DIR"; fi
   DB="$DATA_DIR/pulsar.db"
@@ -114,7 +135,7 @@ done
 
 # --- Teststart ------------------------------------------------------------
 head_ "5. Teststart auf Port $TEST_PORT"
-if ( cd "$APP_DIR" && PORT="$TEST_PORT" node server/index.mjs >/tmp/pulsar-doctor.log 2>&1 & echo $! >/tmp/pulsar-doctor.pid ); then
+if ( cd "$APP_DIR" && PORT="$TEST_PORT" exec node server/index.mjs >/tmp/pulsar-doctor.log 2>&1 & echo $! >/tmp/pulsar-doctor.pid ); then
   TEST_PID="$(cat /tmp/pulsar-doctor.pid)"
   READY=0
   for _ in $(seq 1 80); do
@@ -137,9 +158,7 @@ if ( cd "$APP_DIR" && PORT="$TEST_PORT" node server/index.mjs >/tmp/pulsar-docto
     bad "Server startet nicht — Details:"
     tail -n 12 /tmp/pulsar-doctor.log | sed 's/^/   /'
   fi
-  kill "$TEST_PID" 2>/dev/null
-  sleep 0.3
-  kill -9 "$TEST_PID" 2>/dev/null
+  # Der Testserver bleibt bis nach der Arena-Prüfung am Leben (Abschnitt 7).
 else
   bad "Teststart konnte nicht ausgeführt werden"
 fi
@@ -160,6 +179,73 @@ for b in google-chrome google-chrome-stable chromium chromium-browser brave-brow
 done
 [[ "$FOUND_BROWSER" == "1" ]] || warn "kein bekannter Browser gefunden — Standardbrowser wird über xdg-open genutzt"
 
+# --- Arena / Composer -----------------------------------------------------
+head_ "7. Arena-Composer"
+COMPOSER_OUT="$(node -e '
+  const base = "http://localhost:" + process.argv[1];
+  const post = async (path, body) => {
+    const res = await fetch(base + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    const text = await res.text();
+    let json = null;
+    try { json = JSON.parse(text); } catch { json = null; }
+    return { status: res.status, json };
+  };
+  (async () => {
+    const settings = await (await fetch(base + "/api/settings")).json();
+    const hasKey = !!settings["ai.hasKey"] || !!settings["ai.envKey"];
+    if (!hasKey) {
+      console.log("SKIP|No Arena key configured — the local composer works, the router path is untested.");
+      return;
+    }
+    const models = await post("/api/settings/test-ai", {});
+    if (!models.json || !models.json.ok) {
+      console.log("FAIL|/models rejected the key|" + (models.json && models.json.error ? models.json.error : "HTTP " + models.status));
+      return;
+    }
+    const avail = models.json.modelAvailable;
+    console.log("INFO|key listed, " + models.json.modelCount + " models|model " + models.json.model + " => " + (avail === false ? "NOT available" : avail === true ? "available" : "unknown"));
+
+    const composer = await post("/api/settings/test-composer", {});
+    if (composer.json && composer.json.ok) {
+      console.log("OK|composer answered via " + composer.json.endpoint + " (" + composer.json.variant + ")|");
+      return;
+    }
+    const d = composer.json || {};
+    const detail = (d.code || "error") + (d.status ? " HTTP " + d.status : "");
+    console.log("FAIL|composer request rejected|" + detail + " :: " + (d.error || "no message"));
+    if (Array.isArray(d.attempts)) {
+      for (const a of d.attempts) {
+        console.log("ATTEMPT|" + a.label + " " + a.endpoint + " -> " + (a.status === null ? "no response" : a.status) + "|" + (a.detail || ""));
+      }
+    }
+  })().catch((e) => console.log("FAIL|probe crashed|" + e.message));
+' "$TEST_PORT" 2>&1)"
+
+if [[ -z "$COMPOSER_OUT" ]]; then
+  warn "Composer-Prüfung lieferte keine Ausgabe"
+else
+  while IFS='|' read -r tag text extra; do
+    case "$tag" in
+      SKIP)    warn "$text" ;;
+      INFO)    ok "$text"; [[ -n "$extra" ]] && printf '   \033[2m%s\033[0m\n' "$extra" ;;
+      OK)      ok "$text" ;;
+      FAIL)    bad "$text"; ARENA_FAILED=1; [[ -n "$extra" ]] && printf '   \033[2m%s\033[0m\n' "$extra" ;;
+      ATTEMPT) printf '   \033[2m· %s\033[0m\n' "$text" ;;
+      *)       printf '   %s\n' "$text" ;;
+    esac
+  done <<< "$COMPOSER_OUT"
+fi
+
+if [[ -n "${TEST_PID:-}" ]]; then
+  kill "$TEST_PID" 2>/dev/null
+  sleep 0.3
+  kill -9 "$TEST_PID" 2>/dev/null
+fi
+
 # --- Ergebnis -------------------------------------------------------------
 printf '\n'
 if [[ "$FAIL" -eq 0 && "$WARN" -eq 0 ]]; then
@@ -168,6 +254,12 @@ elif [[ "$FAIL" -eq 0 ]]; then
   printf '\033[33m%1i Hinweis(e), aber keine blockierenden Fehler.\033[0m\n' "$WARN"
 else
   printf '\033[31m%1i Fehler, %1i Hinweis(e).\033[0m\n' "$FAIL" "$WARN"
-  printf 'Häufigste Lösung:  cd %s && rm -rf node_modules && npm ci && npm run build\n' "$APP_DIR"
+  if [[ "$ARENA_FAILED" == "1" ]]; then
+    printf 'Der lokale Betrieb funktioniert — nur die Arena-Komposition scheitert.\n'
+    printf 'Setze unter Settings → AI engine ein Modell, das der Key nutzen darf (siehe Liste oben),\n'
+    printf 'oder lass den Composer mit der lokalen Engine arbeiten.\n'
+  else
+    printf 'Häufigste Lösung:  cd %s && rm -rf node_modules && npm ci && npm run build\n' "$APP_DIR"
+  fi
 fi
 printf '\033[2mLog des Teststarts: /tmp/pulsar-doctor.log\033[0m\n'

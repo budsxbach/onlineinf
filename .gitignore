@@ -12,7 +12,6 @@ __pycache__/
 # Build outputs
 dist/
 build/
-chat-autotyper/downloads/
 auronorigin-studio/outputs/
 
 # Firebase

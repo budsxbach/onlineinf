@@ -168,9 +168,11 @@ function enforceStrictChatRules(rawReply, partnerText, minChars) {
     reply = 'Oh, die Vorstellung dich zu treffen reizt mich total! Ich bin aber momentan im Job voll vereinnahmt und habe abends auch noch Familienkram erledigen müssen. Darf es erst mal weitergehen hier direkt mit uns im Chat?';
   }
 
-  // 7) Falls die Antwort zu kurz ist → in kontextpassende, sinnliche Antwort erweitern
+  // 7) Intimate hint (VOR dem if-Block definieren, damit es überall verfügbar ist!)
+  const intimateHint = /(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|spaß)/i.test(lower);
+
+  // 8) Falls die Antwort zu kurz ist → in kontextpassende, sinnliche Antwort erweitern
   if (reply.length < min) {
-    const intimateHint = /(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|spaß)/i.test(lower);
     if (intimateHint) {
       reply = 'Ich stelle mir gerade vor, wie du hier vor dem Bildschirm sitzt – und ich muss sagen, der Gedanke an dich macht mich wirklich ganz warm! Lass uns das hier direkt lebhaft ein bisschen weiterspinnen. Was wünschst du dir denn genau, wenn wir beide ungestört sind?';
     } else {

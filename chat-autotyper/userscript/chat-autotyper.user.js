@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dating Chat AutoTyper AI v4 – Moderator Edition (>=60 Zeichen, ? am Ende, Ausrede bei Date/Nr.)
 // @namespace    https://online-infinity.local/chat-autotyper
-// @version      4.0.0
+// @version      4.0.1
 // @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen ohne Abblocken, erfindet immer charmante Ausreden bei Treffen & Handynummern (ohne je Nein zu sagen), garantiert mindestens 60 Zeichen und immer eine Frage (?) am Ende.
 // @author       Online Infinity
 // @match        *://*/*

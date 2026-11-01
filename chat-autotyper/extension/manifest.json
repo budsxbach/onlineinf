@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Chat AutoTyper AI v4 – Dating & Moderator Edition (>=60 Zeichen, ? am Ende, Ausreden)",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Liest automatisch die linken Nachrichten deines Chatpartners, antwortet in Du-Form (intim-offen, Ausrede bei Treffen/Nummern, mind. 60 Zeichen, Frage am Ende) und tippt Zeichen für Zeichen ins Chatfeld.",
   "permissions": [
     "storage",

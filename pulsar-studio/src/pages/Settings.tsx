@@ -12,6 +12,8 @@ import {
   RefreshCw,
   ShieldCheck,
   Smartphone,
+  Wand2,
+  AlertTriangle,
   Sparkles,
   User,
   XCircle,
@@ -22,7 +24,7 @@ import { Page, PageHeader } from '../components/layout/Page';
 import { PageLoader } from '../components/ui';
 import { Badge, Button, Field, IconButton, Input, SectionHeader, Switch, cn } from '../components/ui';
 import { api } from '../lib/api';
-import { useDeviceLink, useSettings, useStats, useTestAi, useUpdateSettings } from '../lib/hooks';
+import { useDeviceLink, useSettings, useStats, useTestAi, useTestComposer, useUpdateSettings } from '../lib/hooks';
 import { timeAgo } from '../lib/format';
 import { toast } from '../store/toast';
 
@@ -31,6 +33,7 @@ export default function Settings() {
   const { data: stats } = useStats();
   const update = useUpdateSettings();
   const test = useTestAi();
+  const composerTest = useTestComposer();
   const { data: link } = useDeviceLink();
 
   const [displayName, setDisplayName] = useState('');
@@ -40,7 +43,21 @@ export default function Settings() {
   const [model, setModel] = useState('coding-router-preview');
   const [keyInput, setKeyInput] = useState('');
   const [showKey, setShowKey] = useState(false);
-  const [testResult, setTestResult] = useState<{ ok: boolean; message: string; models?: string[] } | null>(null);
+  const [testResult, setTestResult] = useState<{
+    ok: boolean;
+    message: string;
+    models?: string[];
+    modelAvailable?: boolean | null;
+  } | null>(null);
+  const [composerResult, setComposerResult] = useState<{
+    ok: boolean;
+    message: string;
+    variant?: string;
+    endpoint?: string;
+    code?: string;
+    status?: number | null;
+    attempts?: { label: string; endpoint: string; status: number | null; detail: string }[];
+  } | null>(null);
   const [backingUp, setBackingUp] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
@@ -98,19 +115,46 @@ export default function Settings() {
 
   const runTest = () => {
     setTestResult(null);
+    setComposerResult(null);
     test.mutate(
       { apiKey: keyInput.trim() || undefined, baseUrl: baseUrl.trim(), model: model.trim() },
       {
         onSuccess: (result) => {
+          const missing = result.modelAvailable === false;
           setTestResult({
             ok: true,
-            message: `Connected to ${new URL(result.baseUrl).host} · ${result.modelCount} models available.`,
+            modelAvailable: result.modelAvailable,
+            message: missing
+              ? `Connected to ${new URL(result.baseUrl).host}, but “${result.model}” is not in the list this key may use.`
+              : `Connected to ${new URL(result.baseUrl).host} · ${result.modelCount} models available · “${result.model}” is unlocked.`,
             models: result.models,
           });
         },
         onError: (err) => {
           setTestResult({ ok: false, message: err instanceof Error ? err.message : 'Connection failed.' });
         },
+      }
+    );
+  };
+
+  const runComposerTest = () => {
+    setComposerResult(null);
+    setTestResult(null);
+    composerTest.mutate(
+      { apiKey: keyInput.trim() || undefined, baseUrl: baseUrl.trim(), model: model.trim() },
+      {
+        onSuccess: (result) =>
+          setComposerResult({
+            ok: true,
+            variant: result.variant,
+            endpoint: result.endpoint,
+            message: `Composer works — ${result.endpoint} answered using the “${result.variant}” request shape.`,
+          }),
+        onError: (err) =>
+          setComposerResult({
+            ok: false,
+            message: err instanceof Error ? err.message : 'Composer test failed.',
+          }),
       }
     );
   };
@@ -285,6 +329,15 @@ export default function Settings() {
               >
                 Test connection
               </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                icon={composerTest.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Wand2 className="h-3.5 w-3.5" />}
+                onClick={runComposerTest}
+                loading={composerTest.isPending}
+              >
+                Test composer
+              </Button>
               {hasKey && !envKey && (
                 <Button size="sm" variant="ghost" onClick={removeKey}>
                   Remove key
@@ -328,6 +381,40 @@ export default function Settings() {
                           </span>
                         ))}
                       </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {composerTest.isPending && (
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-ink-700/60 bg-ink-800/40 px-3 py-2.5 text-[11px] text-ink-400">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" /> Sending a real composition request — this is the call that the composer makes.
+              </div>
+            )}
+            {composerResult && (
+              <div
+                className={cn(
+                  'mt-3 rounded-xl border px-3 py-2.5',
+                  composerResult.ok ? 'border-acid-300/25 bg-acid-300/[0.05]' : 'border-amber-400/25 bg-amber-400/[0.05]'
+                )}
+              >
+                <div className="flex items-start gap-2">
+                  {composerResult.ok ? (
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-acid-300" />
+                  ) : (
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className={cn('text-[11px] leading-relaxed', composerResult.ok ? 'text-acid-100' : 'text-amber-100')}>
+                      {composerResult.message}
+                    </p>
+                    {!composerResult.ok && (
+                      <p className="mt-1.5 text-[10px] leading-relaxed text-ink-400">
+                        Key listing works but composition does not — the composer will fall back to the local engine. Common causes:
+                        the model is not enabled for this key, the router rejects the request shape, or the preview endpoint has
+                        no composer route.
+                      </p>
                     )}
                   </div>
                 </div>
@@ -418,7 +505,22 @@ export default function Settings() {
                 { label: 'API key stored', ok: hasKey || envKey, hint: hasKey ? String(settings?.['ai.keyHint'] || '') : envKey ? 'from environment' : 'add a key above' },
                 { label: 'Router URL', ok: !!baseUrl, hint: baseUrl.replace(/^https?:\/\//, '') },
                 { label: 'Model selected', ok: !!model, hint: model },
-                { label: 'Connection test', ok: !!testResult?.ok, hint: testResult ? (testResult.ok ? 'passed' : 'failed') : 'not run yet' },
+                {
+                  label: 'Model available to this key',
+                  ok: testResult?.modelAvailable !== false,
+                  hint:
+                    testResult?.modelAvailable === false
+                      ? `${model} is not in /models`
+                      : testResult?.modelAvailable === true
+                        ? `${model} is unlocked`
+                        : 'run “Test connection”',
+                },
+                { label: 'Connection test (/models)', ok: !!testResult?.ok, hint: testResult ? (testResult.ok ? 'passed' : 'failed') : 'not run yet' },
+                {
+                  label: 'Composer test (real request)',
+                  ok: !!composerResult?.ok,
+                  hint: composerResult ? (composerResult.ok ? `passed · ${composerResult.variant}` : 'failed') : 'not run yet',
+                },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-2.5">
                   {item.ok ? (

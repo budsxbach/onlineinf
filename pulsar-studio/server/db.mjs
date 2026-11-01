@@ -653,12 +653,29 @@ export function hydratePreset(row) {
   return { ...row, favorite: !!row.favorite, params: safeJson(row.params, {}) };
 }
 
+/**
+ * `ideas.error` holds either a legacy plain-text message or a JSON blob with
+ * the upstream diagnostics (status, endpoint, every attempt that was tried).
+ * Expose both: a short summary for the badge and the full object for the
+ * details panel.
+ */
 export function hydrateIdea(row) {
   if (!row) return null;
-  return {
+  const idea = {
     ...row,
     payload: row.payload ? safeJson(row.payload, null) : null,
   };
+  if (row.error) {
+    const parsed = safeJson(row.error, null);
+    if (parsed && typeof parsed === 'object') {
+      const parts = [parsed.code || 'arena_error'];
+      if (parsed.status) parts.push(`HTTP ${parsed.status}`);
+      if (parsed.modelAvailable === false) parts.push('model not available');
+      idea.error = parts.join(' · ');
+      idea.error_detail = parsed;
+    }
+  }
+  return idea;
 }
 
 export function safeJson(value, fallback) {

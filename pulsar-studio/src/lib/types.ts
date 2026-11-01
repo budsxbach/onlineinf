@@ -151,6 +151,7 @@ export interface Idea {
   model: string | null;
   summary: string | null;
   error: string | null;
+  error_detail?: AiDiagnostics | null;
   project_id: string | null;
   payload?: IdeaPayload | null;
   created_at: string;
@@ -219,4 +220,39 @@ export interface DeviceLink {
   hosts: DeviceLinkHost[];
   secure: boolean;
   qrSvg: string | null;
+}
+
+export interface AiAttempt {
+  label: string;
+  endpoint: string;
+  status: number | null;
+  detail: string;
+}
+
+/** Everything the server learned while trying to reach the Arena router. */
+export interface AiDiagnostics {
+  code: string;
+  status?: number | null;
+  detail?: string | null;
+  endpoint?: string | null;
+  attempts?: AiAttempt[];
+  modelAvailable?: boolean | null;
+  availableModels?: string[] | null;
+}
+
+export interface IdeaResult {
+  idea: Idea;
+  projectId: string | null;
+  warning: string | null;
+  diagnostics?: AiDiagnostics | null;
+}
+
+export interface ComposerTestResult {
+  ok: boolean;
+  endpoint: string;
+  variant: string;
+  sample: string;
+  attempts: AiAttempt[];
+  model: string;
+  baseUrl: string;
 }

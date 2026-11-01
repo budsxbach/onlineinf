@@ -285,7 +285,10 @@ export function useGenerateIdea() {
       void qc.invalidateQueries({ queryKey: ['ideas'] });
       void qc.invalidateQueries({ queryKey: ['stats'] });
       void qc.invalidateQueries({ queryKey: ['projects'] });
-      if (result.warning) toast.info('Composed with the local engine', result.warning);
+      if (result.warning) {
+        const code = result.diagnostics?.code;
+        toast.info('Composed with the local engine', code ? `${code} — ${result.warning}` : result.warning);
+      }
       else if (result.idea.engine === 'arena') toast.success('Arena composed a new idea', `${result.idea.title} is ready to open in the studio.`);
       else toast.success('Idea composed', `${result.idea.title} is ready to open in the studio.`);
     },
@@ -306,7 +309,10 @@ export function useRetryIdea() {
     onSuccess: (result) => {
       void qc.invalidateQueries({ queryKey: ['ideas'] });
       void qc.invalidateQueries({ queryKey: ['stats'] });
-      if (result.warning) toast.info('Retried with the local engine', result.warning);
+      if (result.warning) {
+        const code = result.diagnostics?.code;
+        toast.info('Retried with the local engine', code ? `${code} — ${result.warning}` : result.warning);
+      }
       else toast.success('Idea regenerated');
     },
     onError: (err) => {
@@ -415,5 +421,11 @@ export function useDeviceLink() {
     queryFn: () => api.link(),
     staleTime: 60_000,
     retry: false,
+  });
+}
+
+export function useTestComposer() {
+  return useMutation({
+    mutationFn: (input: { apiKey?: string; baseUrl?: string; model?: string }) => api.settings.testComposer(input),
   });
 }

@@ -10,7 +10,8 @@
     "build": "vite build",
     "start": "NODE_ENV=production node server/index.mjs",
     "typecheck": "tsc --noEmit",
-    "link": "node scripts/link.mjs"
+    "link": "node scripts/link.mjs",
+    "shortcut": "bash scripts/install-desktop-shortcut.sh"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.5",

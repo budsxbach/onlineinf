@@ -242,6 +242,49 @@ im Abzug mit Funkenfreiheit, Vorlage kühlen, Gasmenge klein halten.
 und Aceton. Für präparative Zwecke genügt die Wäsche mit Chromschwefelsäure und
 Natronlauge; für spektroskopische Zwecke wird über Molekularsieb getrocknet.
 
+#vorschrift("D.3.4", [Phenylacetylen aus 1,2-Dibrom-1-phenylethan])[
+  #reaktion(
+    $ "C" _6"H" _5"CHBrCH" _2"Br" $,
+    [#text(size: 6.5pt)[KOH, Ethanol, Rückfluß]],
+    $ "C" _6"H" _5"C" equiv "CH" + 2 "HBr" $,
+  )
+
+  #ansatz[
+    132 g (0,50 mol) 1,2-Dibrom-1-phenylethan, 112 g (2,0 mol) Kaliumhydroxid,
+    400 mL Ethanol (96 %).
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Rückflußkühler und Tropftrichter werden
+  Kaliumhydroxid und Ethanol vorgelegt und auf 60 °C erwärmt. Man tropft das
+  Dibromid zu und erhitzt anschließend 4 h unter Rückfluß.
+
+  Nach dem Abkühlen gießt man auf 1 L Eiswasser, trennt die organische Phase ab
+  und extrahiert die wäßrige Phase zweimal mit je 100 mL Ether. Die vereinigten
+  organischen Phasen werden mit Wasser gewaschen und über Kaliumcarbonat
+  getrocknet.
+
+  Man destilliert das Lösungsmittel ab und fraktioniert den Rückstand im Vakuum;
+  Phenylacetylen geht bei 60–62 °C (30 hPa) über und wird in brauner Flasche
+  aufbewahrt.
+
+  #ausbeute[38 g (74 % d. Th.) farblose, aromatisch riechende Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 142 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5490 #h(2em)
+    $rho_20$ = 0,930 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Phenylacetylen ist entzündbar, gesundheitsschädlich und polymerisiert
+  bei Erwärmung oder unter Lichteinfluß. Kaliumhydroxid in Ethanol ist stark
+  ätzend. Ether ist extrem entzündbar; keine Zündquellen, Destillation im
+  Wasserbad.]
+
+*Prüfung auf terminale Alkine.* Silbernitrat in ethanolischer Ammoniaklösung
+gibt mit terminalen Alkinen einen weißen Niederschlag (Silberacetylid), Kupfer(I)
+einen roten (Kupferacetylid). Beide Acetylide sind in trockenem Zustand
+schlagempfindlich und dürfen nicht isoliert aufbewahrt werden.
+
 === Eliminierung als Reinigungsschritt
 
 Gelegentlich ist die Eliminierung kein Ziel, sondern ein Mittel: Ein Alkohol, der

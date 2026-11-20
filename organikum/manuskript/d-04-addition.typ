@@ -287,6 +287,81 @@ gelöst: Maleinsäureanhydrid hydrolysiert schnell zu Maleinsäure (Schmp. 130 �
 Bernsteinsäureanhydrid langsam. Der Schmelzpunkt des Rohprodukts zeigt, ob
 Ausgangsmaterial zurückgeblieben ist.
 
+#vorschrift("D.4.4", [2-Brompropan aus Propen])[
+  #reaktion(
+    $ "CH" _3"CH=CH" _2 + "HBr" $,
+    [#text(size: 6.5pt)[25 °C, ohne Peroxid]],
+    $ "CH" _3"CHBrCH" _3 $,
+  )
+
+  #ansatz[
+    42 g (1,0 mol) Propen, 89 g (1,1 mol) Bromwasserstoff (getrocknet),
+    200 mL Dichlormethan.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Gaseinleitungsrohr und
+  Trockeneiskühler werden 200 mL Dichlormethan vorgelegt und auf −10 °C gekühlt.
+  Man leitet Propen bis zur Sättigung ein und anschließend trockenen
+  Bromwasserstoff so langsam, daß die Temperatur 0 °C nicht übersteigt.
+
+  Nach beendeter Gaszugabe rührt man 30 min bei 0 °C und läßt auf Raumtemperatur
+  kommen. Man wäscht mit Wasser, mit Natriumhydrogencarbonatlösung und trocknet
+  über Calciumchlorid.
+
+  Die Destillation über eine Vigreux-Kolonne liefert bei 59–60 °C reines
+  2-Brompropan.
+
+  #ausbeute[98 g (80 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 59 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4251 #h(2em)
+    $rho_20$ = 1,310 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Propen ist extrem entzündbar und bildet mit Luft explosive Gemische.
+  Bromwasserstoff ist ätzend und giftig; nur im Abzug, Abgas durch Natronlauge
+  leiten. 2-Brompropan ist leicht entzündbar und reizt die Atemwege.]
+
+#vorschrift("D.4.5", [Octan-1-ol aus 1-Octen durch Hydroborierung])[
+  #reaktion(
+    $ "CH" _3("CH" _2")" _5"CH=CH" _2 $,
+    [#text(size: 6.5pt)[1. BH#sub[3]·THF, 2. H#sub[2]O#sub[2]/NaOH]],
+    $ "CH" _3("CH" _2")" _6"CH" _2"OH" $,
+  )
+
+  #ansatz[
+    112 g (1,0 mol) 1-Octen, 170 mL Boran-THF-Addukt (1 M; 0,17 mol BH#sub[3]),
+    100 mL 3 M Natriumhydroxidlösung, 100 mL Wasserstoffperoxid (30 %).
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Thermometer und Tropftrichter werden
+  170 mL Boran-THF-Lösung vorgelegt und auf 0 °C gekühlt. Man tropft das 1-Octen
+  so zu, daß die Temperatur 10 °C nicht übersteigt, und rührt anschließend 2 h
+  bei Raumtemperatur.
+
+  Man kühlt wieder auf 0 °C und tropft gleichzeitig Natronlauge und
+  Wasserstoffperoxid so zu, daß die Temperatur 30 °C nicht übersteigt (stark
+  exotherm). Danach rührt man 1 h bei 50 °C.
+
+  Nach dem Abkühlen trennt man die organische Phase ab, wäscht mit Wasser und
+  gesättigter Kochsalzlösung, trocknet über Magnesiumsulfat und fraktioniert im
+  Vakuum.
+
+  #ausbeute[105 g (81 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 195 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4290 #h(2em)
+    $rho_20$ = 0,827 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Boran-THF ist selbstentzündlich an Luft, reagiert mit Wasser unter
+  Wasserstoffentwicklung und ist giftig. Nur mit Spritze und Kanüle unter Argon
+  handhaben, niemals mit Wasser in Berührung bringen. Wasserstoffperoxid ist
+  stark oxidierend und ätzend; mit organischen Stoffen Explosionsgefahr.
+  1-Octen ist entzündbar.]
+
 === Aufgaben
 
 - Warum addiert HBr an 3,3,3-Trifluorpropen gegen die Markownikoff-Regel?

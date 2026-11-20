@@ -141,6 +141,89 @@ Nachweis, nicht der Darstellung.
     eignen sich zur Identifizierung, die Siedepunkte zur Reinheitskontrolle.],
 ) <tab:aromaten-kenndaten>
 
+#vorschrift("D.5.4", [p-Nitrotoluol aus Toluol])[
+  #reaktion(
+    $ "C" _6"H" _5"CH" _3 + "HNO" _3 $,
+    [#text(size: 6.5pt)[H#sub[2]SO#sub[4], 40 °C]],
+    $ "p-CH" _3"C" _6"H" _4"NO" _2 + "H" _2"O" $,
+  )
+
+  #ansatz[
+    92 g (106 mL; 1,0 mol) Toluol, 90 g (1,4 mol) Salpetersäure (65 %),
+    140 g (76 mL) konzentrierte Schwefelsäure.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Thermometer und Tropftrichter wird das
+  Nitriergemisch aus Schwefelsäure und Salpetersäure bei 20 °C bereitet. Man
+  tropft Toluol so zu, daß die Temperatur 35 °C nicht übersteigt, und rührt
+  anschließend 2 h bei 40 °C.
+
+  Man gießt auf 500 g Eis, trennt die organische Phase ab, wäscht mit Wasser und
+  Natriumhydrogencarbonatlösung und trocknet über Calciumchlorid.
+
+  Das Rohprodukt (Gemisch aus ortho und para) wird durch fraktionierte
+  Kristallisation getrennt: p-Nitrotoluol kristallisiert aus Ethanol bei
+  −10 °C, o-Nitrotoluol bleibt in der Mutterlauge. Zur Reinigung wird zweimal
+  aus Ethanol umkristallisiert.
+
+  #ausbeute[52 g (38 % d. Th.) blaßgelbe Nadeln; daneben 30 % ortho-Isomer.]
+
+  #kenndaten[
+    Schmp. 52 °C #h(2em) Sdp. 238 °C #h(2em) $rho_20$ = 1,286 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Nitriergemisch ist stark ätzend und stark oxidierend; es kann organische
+  Stoffe entzünden. Toluol ist gesundheitsschädlich und reproduktionstoxisch,
+  Nitrotoluole sind giftig und werden über die Haut aufgenommen. Ausschließlich
+  im Abzug arbeiten, Mengen unter 1 mol halten.]
+
+*Isomerentrennung.* Die Nitrierung von Toluol liefert etwa 58 % ortho, 37 % para
+und 5 % meta. Da sich die Siedepunkte kaum unterscheiden, wird über die
+Schmelzpunkte getrennt: p-Nitrotoluol (52 °C) kristallisiert aus, o-Nitrotoluol
+(−4 °C) bleibt flüssig. Wer die Ausbeute maximieren will, arbeitet mit
+Lösungsmittelkristallisation statt mit Destillation.
+
+#vorschrift("D.5.5", [Benzoesäure aus Brombenzol über das Grignard-Reagenz])[
+  #reaktion(
+    $ "C" _6"H" _5"Br" + "Mg" + "CO" _2 $,
+    [#text(size: 6.5pt)[Ether, dann H#sub[3]O⁺]],
+    $ "C" _6"H" _5"COOH" $,
+  )
+
+  #ansatz[
+    157 g (105 mL; 1,0 mol) Brombenzol, 27 g (1,1 mol) Magnesiumspäne,
+    500 mL absoluter Ether, Trockeneis (Überschuß).
+  ]
+
+  In einem 2-l-Dreihalskolben mit Rührer, Rückflußkühler, Tropftrichter und
+  Calciumchloridrohr werden Magnesiumspäne und 50 mL Ether vorgelegt; man
+  versetzt mit einer Spatelspitze Iod und tropft 10 mL Brombenzol zu, bis die
+  Reaktion anspringt. Dann wird der Rest des Brombenzols in 200 mL Ether so
+  zugetropft, daß der Ether gelinde siedet.
+
+  Nach beendeter Zugabe erhitzt man 30 min unter Rückfluß, kühlt auf 0 °C und
+  gießt die Lösung auf einen Überschuß gepulverter Trockeneis. Nach dem
+  Auftauen wird mit 300 mL Eiswasser und anschließend mit verdünnter Salzsäure
+  bis pH 2 versetzt.
+
+  Man trennt die etherische Phase ab, extrahiert die wäßrige Phase zweimal mit
+  Ether und engt die vereinigten Extrakte ein. Der Rückstand wird aus Wasser
+  umkristallisiert.
+
+  #ausbeute[98 g (80 % d. Th.) farblose Blättchen.]
+
+  #kenndaten[
+    Schmp. 122 °C #h(2em) Sdp. 249 °C
+  ]
+]
+
+#gefahr[Ether ist extrem entzündbar und bildet mit Luft explosive Gemische sowie
+  explosive Peroxide. Magnesiumspäne und Grignard-Lösungen entzünden sich an
+  Luft und zersetzen sich mit Wasser unter Feuererscheinung;
+  Trockeneis-Einsatz ohne Wasser, Schutzbrille und Gesichtsschutz tragen.
+  Salzsäure ist ätzend.]
+
 === Nucleophile aromatische Substitution
 
 Ein Nucleophil greift einen Aromaten nur an, wenn die Elektronendichte niedrig

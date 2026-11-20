@@ -190,11 +190,17 @@
 
 // -------------------------------------------------------- Bausteine (Vorschrift)
 // Reaktionsgleichung:  links -> (Bedingungen) rechts
+// Bedingungen stehen als kleine Zeile unter dem Pfeil: bei langen Angaben
+// (Lösungsmittel, Temperatur, Katalysator) sonst Kollision mit den Formeln.
 #let reaktion(links, bedingungen, rechts) = block(
   width: 100%,
-  above: 5pt,
-  below: 6pt,
-  align(center, math.equation(block: false, $#links ->^(#bedingungen) #rechts$)),
+  above: 6pt,
+  below: 7pt,
+  align(center)[
+    #math.equation(block: false, $#links -> #rechts$)
+    #v(1pt)
+    #text(size: 6.8pt, fill: luma(45))[#bedingungen]
+  ],
 )
 
 // Reaktionspfeil mit Bedingungen über/unter dem Pfeil

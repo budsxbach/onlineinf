@@ -82,3 +82,6 @@
 
 #include "/manuskript/d-01-radikalische-substitution.typ"
 #include "/manuskript/d-02-nukleophile-substitution.typ"
+#include "/manuskript/d-03-eliminierung.typ"
+#include "/manuskript/d-04-addition.typ"
+#include "/manuskript/d-05-aromaten.typ"

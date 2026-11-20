@@ -1,14 +1,230 @@
 {
-  "butan-1-ol": { "smiles": "CCCCO" },
-  "1-brombutan": { "smiles": "CCCCBr" },
-  "phenol": { "smiles": "Oc1ccccc1" },
-  "nitrobenzol": { "smiles": "O=[N+]([O-])c1ccccc1" },
-  "anilin": { "smiles": "Nc1ccccc1" },
-  "benzaldehyd": { "smiles": "O=Cc1ccccc1" },
-  "benzoesaeure": { "smiles": "OC(=O)c1ccccc1" },
-  "cyclohexen": { "smiles": "C1=CCCCC1" },
-  "essigsaeureethylester": { "smiles": "CCOC(C)=O" },
-  "acetanilid": { "smiles": "CC(=O)Nc1ccccc1" },
-  "2-naphthol": { "smiles": "Oc1ccc2ccccc2c1" },
-  "benzilsaeure": { "smiles": "OC(=O)C(O)(c1ccccc1)c1ccccc1" }
+  "butan-1-ol": {
+    "smiles": "CCCCO"
+  },
+  "1-brombutan": {
+    "smiles": "CCCCBr"
+  },
+  "phenol": {
+    "smiles": "Oc1ccccc1"
+  },
+  "nitrobenzol": {
+    "smiles": "O=[N+]([O-])c1ccccc1"
+  },
+  "anilin": {
+    "smiles": "Nc1ccccc1"
+  },
+  "benzaldehyd": {
+    "smiles": "O=Cc1ccccc1"
+  },
+  "benzoesaeure": {
+    "smiles": "OC(=O)c1ccccc1"
+  },
+  "cyclohexen": {
+    "smiles": "C1=CCCCC1"
+  },
+  "essigsaeureethylester": {
+    "smiles": "CCOC(C)=O"
+  },
+  "acetanilid": {
+    "smiles": "CC(=O)Nc1ccccc1"
+  },
+  "2-naphthol": {
+    "smiles": "Oc1ccc2ccccc2c1"
+  },
+  "benzilsaeure": {
+    "smiles": "OC(=O)C(O)(c1ccccc1)c1ccccc1"
+  },
+  "cyclohexanol": {
+    "smiles": "OC1CCCCC1"
+  },
+  "2-methylpropan-1-ol": {
+    "smiles": "CC(C)CO"
+  },
+  "2-methyl-1-chlorpropan": {
+    "smiles": "CC(C)CCl"
+  },
+  "1-chlorbutan": {
+    "smiles": "CCCCCl"
+  },
+  "1-iodbutan": {
+    "smiles": "CCCCI"
+  },
+  "2-methylpropen": {
+    "smiles": "CC(C)=C"
+  },
+  "2-methylbut-2-en": {
+    "smiles": "CC=C(C)C"
+  },
+  "3-methylbut-1-en": {
+    "smiles": "C=CC(C)C"
+  },
+  "stilben-e": {
+    "smiles": "c1ccccc1/C=C/c1ccccc1"
+  },
+  "stilben-z": {
+    "smiles": "c1ccccc1/C=C\\c1ccccc1"
+  },
+  "ethylbenzol": {
+    "smiles": "CCc1ccccc1"
+  },
+  "styrol": {
+    "smiles": "C=Cc1ccccc1"
+  },
+  "benzylchlorid": {
+    "smiles": "ClCc1ccccc1"
+  },
+  "toluol": {
+    "smiles": "Cc1ccccc1"
+  },
+  "acetophenon": {
+    "smiles": "CC(=O)c1ccccc1"
+  },
+  "diphenylmethanol": {
+    "smiles": "OC(c1ccccc1)c1ccccc1"
+  },
+  "anthracen": {
+    "smiles": "c1ccc2cc3ccccc3cc2c1"
+  },
+  "9-anthracencarbonsaeure": {
+    "smiles": "OC(=O)c1c2ccccc2cc2ccccc12"
+  },
+  "diethylmalonat": {
+    "smiles": "CCOC(=O)CC(=O)OCC"
+  },
+  "barbitursaeure": {
+    "smiles": "O=C1CC(=O)NC(=O)N1"
+  },
+  "harnstoff": {
+    "smiles": "NC(N)=O"
+  },
+  "thioharnstoff": {
+    "smiles": "NC(N)=S"
+  },
+  "bernsteinsaeure": {
+    "smiles": "OC(=O)CCC(O)=O"
+  },
+  "bernsteinsaeureanhydrid": {
+    "smiles": "O=C1CCC(=O)O1"
+  },
+  "phthalsaeureanhydrid": {
+    "smiles": "O=C1OC(=O)c2ccccc12"
+  },
+  "fluorescein": {
+    "smiles": "O=C1OC2(c3ccc(O)cc3Oc3cc(O)ccc23)c2ccccc12"
+  },
+  "zimtsaeure": {
+    "smiles": "OC(=O)/C=C/c1ccccc1"
+  },
+  "benzylidenaceton": {
+    "smiles": "CC(=O)/C=C/c1ccccc1"
+  },
+  "dibenzalaceton": {
+    "smiles": "O=C(/C=C/c1ccccc1)/C=C/c1ccccc1"
+  },
+  "nitrosobenzol": {
+    "smiles": "O=Nc1ccccc1"
+  },
+  "azobenzol": {
+    "smiles": "c1ccccc1/N=N/c1ccccc1"
+  },
+  "hydrazobenzol": {
+    "smiles": "c1ccccc1NNc1ccccc1"
+  },
+  "benzidin": {
+    "smiles": "Nc1ccc(-c2ccc(N)cc2)cc1"
+  },
+  "bromcyclohexan": {
+    "smiles": "BrC1CCCCC1"
+  },
+  "cyclohexan": {
+    "smiles": "C1CCCCC1"
+  },
+  "adipinsaeure": {
+    "smiles": "OC(=O)CCCCC(O)=O"
+  },
+  "cyclohexanon": {
+    "smiles": "O=C1CCCCC1"
+  },
+  "brombenzol": {
+    "smiles": "Brc1ccccc1"
+  },
+  "chlorbenzol": {
+    "smiles": "Clc1ccccc1"
+  },
+  "m-dinitrobenzol": {
+    "smiles": "O=[N+]([O-])c1cccc([N+](=O)[O-])c1"
+  },
+  "benzolsulfonsaeure": {
+    "smiles": "OS(=O)(=O)c1ccccc1"
+  },
+  "naphthalin": {
+    "smiles": "c1ccc2ccccc2c1"
+  },
+  "naphthalin-2-sulfonsaeure": {
+    "smiles": "OS(=O)(=O)c1ccc2ccccc2c1"
+  },
+  "anthrachinon": {
+    "smiles": "O=C1c2ccccc2C(=O)c2ccccc12"
+  },
+  "hydrochinon": {
+    "smiles": "Oc1ccc(O)cc1"
+  },
+  "benzochinon": {
+    "smiles": "O=C1C=CC(=O)C=C1"
+  },
+  "phthalsaeure": {
+    "smiles": "OC(=O)c1ccccc1C(O)=O"
+  },
+  "p-nitroacetanilid": {
+    "smiles": "CC(=O)Nc1ccc([N+](=O)[O-])cc1"
+  },
+  "p-nitroanilin": {
+    "smiles": "Nc1ccc([N+](=O)[O-])cc1"
+  },
+  "o-nitrotoluol": {
+    "smiles": "Cc1ccccc1[N+](=O)[O-]"
+  },
+  "p-nitrotoluol": {
+    "smiles": "Cc1ccc([N+](=O)[O-])cc1"
+  },
+  "2,4-dinitrotoluol": {
+    "smiles": "Cc1ccc([N+](=O)[O-])cc1[N+](=O)[O-]"
+  },
+  "trinitrotoluol": {
+    "smiles": "Cc1c([N+](=O)[O-])cc([N+](=O)[O-])cc1[N+](=O)[O-]"
+  },
+  "benzoin": {
+    "smiles": "OC(c1ccccc1)C(=O)c1ccccc1"
+  },
+  "benzil": {
+    "smiles": "O=C(c1ccccc1)C(=O)c1ccccc1"
+  },
+  "benzilsaeure-umlagerung": {
+    "smiles": "OC(=O)C(O)(c1ccccc1)c1ccccc1"
+  },
+  "dibenzylketon": {
+    "smiles": "O=C(Cc1ccccc1)Cc1ccccc1"
+  },
+  "zimtaldehyd": {
+    "smiles": "O=C/C=C/c1ccccc1"
+  },
+  "hydrozimtsaeure": {
+    "smiles": "OC(=O)CCc1ccccc1"
+  },
+  "malonsaeure": {
+    "smiles": "OC(=O)CC(O)=O"
+  },
+  "acetessigsaeureethylester": {
+    "smiles": "CCOC(=O)CC(C)=O"
+  },
+  "acetylsalicylsaeure": {
+    "smiles": "CC(=O)Oc1ccccc1C(O)=O"
+  },
+  "salicylsaeure": {
+    "smiles": "OC(=O)c1ccccc1O"
+  },
+  "methylsalicylat": {
+    "smiles": "COC(=O)c1ccccc1O"
+  }
 }

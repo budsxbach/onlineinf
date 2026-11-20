@@ -265,9 +265,50 @@ und durch Wärme beschleunigt.
 
 $ n "CH" _2"=CHPh" ->^("AIBN") "[–CH" _2"–CHPh–]" _n $
 
-#gefahr[Styrol ist gesundheitsschädlich, entzündbar und polymerisiert bei
-  Erwärmung ohne Inhibitor spontan unter Wärmeentwicklung. Nie in geschlossenen
-  Gefäßen erhitzen; Inhibitor (4-tert-Butylbrenzcatechin) prüfen.]
+Die Kettenlänge hängt von der Initiatorkonzentration ab: viel Initiator gibt
+kurze Ketten (spröde, niedrigviskos), wenig Initiator lange Ketten (zäh,
+mechanisch belastbar). Für die Präparative gilt: Der Inhibitor muß entfernt
+werden, sonst dauert die Reaktion stundenlang unter Induktionszeit — die
+üblichen Handelsqualitäten enthalten 10–50 ppm 4-*tert*-Butylbrenzcatechin.
+
+#vorschrift("D.1.4", [Polystyrol aus Styrol])[
+  #reaktion(
+    $ n "CH" _2"=CHC" _6"H" _5 $,
+    [#text(size: 6.5pt)[AIBN, 65 °C]],
+    $ "[–CH" _2"–CH(C" _6"H" _5")–]" _n $,
+  )
+
+  #ansatz[
+    20 g (21 mL; 0,19 mol) Styrol, 0,1 g (0,5 mmol) Azobis(isobutyronitril).
+  ]
+
+  Das Styrol wird zweimal mit 10 %iger Natronlauge ausgeschüttelt (Inhibitor
+  entfernen), zweimal mit Wasser gewaschen und über Natriumsulfat getrocknet;
+  die klare Flüssigkeit wird über ein Wattebausch in ein Reagenzglas
+  umgefüllt.
+
+  Man löst das AIBN im Styrol, verschließt das Glas nur locker (Watte oder
+  loses Stopfendeckel — kein Druckgefäß!) und stellt es 2 h in ein Wasserbad
+  von 65 °C, danach 1 h auf 80 °C. Dabei steigt die Viskosität sichtbar.
+
+  Man kühlt langsam auf Raumtemperatur ab. Das Glas enthält einen klaren,
+  glasigen Stab, der sich aus der Form heben läßt, wenn man das Glas kurz in
+  heißes Wasser taucht.
+
+  #ausbeute[18–19 g (90–95 % d. Th.) farbloses Polystyrol in Stabform.]
+
+  #kenndaten[
+    Glasübergangspunkt $T_g$ ≈ 100 °C #h(2em) löslich in Toluol, THF,
+    Chloroform #h(2em) Dichte 1,05 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Styrol ist gesundheitsschädlich, entzündbar und reizt die Augen; es
+  polymerisiert bei Erwärmung ohne Inhibitor spontan unter Wärmeentwicklung —
+  nie in geschlossenen Gefäßen erhitzen. AIBN ist gesundheitsschädlich und
+  zersetzt sich oberhalb von 100 °C heftig; nur in kleinen Mengen abwiegen
+  und nicht überhitzen. Das Polymerisationsglas wird locker verschlossen: Der
+  Druck des Stickstoffs aus dem Initiator muß entweichen können.]
 
 === Autoxidation und Peroxide
 
@@ -290,3 +331,9 @@ Explosion möglich ist.
   ein anderes Produkt als die Belichtung ohne Katalysator?
 - Erklären Sie, weshalb NBS für die Bromierung von Allylpositionen geeignet ist,
   elementares Brom aber nicht.
+- Warum muß der Inhibitor des Styrols vor der Polymerisation entfernt werden,
+  obwohl er die Reaktion nur verzögert?
+- Ein Ansatz mit viel AIBN liefert ein sprödes Polymer, einer mit wenig AIBN
+  ein zähes. Erklären Sie den Zusammenhang.
+- Das Reagenzglas wird bei der Polymerisation nur locker verschlossen. Was
+  passierte bei einem festen Verschluß?

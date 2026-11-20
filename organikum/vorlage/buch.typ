@@ -85,3 +85,7 @@
 #include "/manuskript/d-03-eliminierung.typ"
 #include "/manuskript/d-04-addition.typ"
 #include "/manuskript/d-05-aromaten.typ"
+#include "/manuskript/d-06-oxidation.typ"
+#include "/manuskript/d-07-carbonyle.typ"
+#include "/manuskript/d-08-heteroanaloga.typ"
+#include "/manuskript/d-09-umlagerungen.typ"

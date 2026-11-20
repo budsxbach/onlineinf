@@ -194,6 +194,8 @@
 // (Lösungsmittel, Temperatur, Katalysator) sonst Kollision mit den Formeln.
 #let reaktion(links, bedingungen, rechts) = block(
   width: 100%,
+  breakable: false,
+  sticky: true,
   above: 6pt,
   below: 7pt,
   align(center)[

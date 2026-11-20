@@ -98,6 +98,43 @@ drei Bereiche entscheidend:
 3400 cm⁻¹); ein Film auf NaCl zeigt Wasser nicht. Für die Identifizierung wird
 deshalb immer unter gleichen Bedingungen gemessen wie die Referenz.
 
+*Valenzschwingungen als Nachweistabelle.* Die folgende Übersicht faßt
+die Banden zusammen, die bei der Strukturaufklärung am häufigsten
+gebraucht werden. Die Lage der Valenzschwingungen hängt von Bindungskraft
+und reduzierter Masse ab; Konjugation und Wasserstoffbrücken verschieben
+die Banden um 10–40 cm#super[−1] nach kleineren Wellenzahlen.
+
+#figure(
+  table(
+    columns: (1.1fr, 0.9fr, 1.4fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gruppe*], [*ν (cm#super[−1])*], [*Anmerkung*]),
+    [O–H (Alkohol, frei)], [3610–3640], [scharf; H-Brücken: 3200–3550, breit],
+    [O–H (Carbonsäure)], [2500–3300], [sehr breit, oft überlagert],
+    [N–H (Amin)], [3300–3500], [Primäramin zwei Banden, sekundär eine],
+    [C–H (sp#super[3])], [2850–2960], [Valenz; bei 1380 zusätzlich δ(CH#sub[3])],
+    [C–H (sp#super[2])], [3010–3100], [Vinyl, Aromat],
+    [C–H (sp)], [≈ 3300], [terminaler Alkin, scharf],
+    [C=O (Keton)], [1705–1725], [konjugiert: 1680–1700],
+    [C=O (Aldehyd)], [1720–1740], [plus Fermi-Resonanz bei 2700/2800],
+    [C=O (Ester)], [1735–1750], [konjugiert: 1715–1730],
+    [C=O (Carbonsäure)], [1700–1725], [breite OH-Bande überlagert],
+    [C=O (Amid)], [1630–1690], [Amid-I-Bande; II-Bande bei 1550–1640],
+    [C=C (Alken)], [1620–1680], [schwach; Aromat: 1450–1600, mehrere],
+    [C≡N], [2220–2260], [scharf; konjugiert: 2220–2240],
+    [C≡C], [2100–2260], [nur bei asymmetrischer Substitution sichtbar],
+    [NO#sub[2] (arom.)], [1500–1550 / 1330–1370], [zwei starke Banden],
+    [C–O (Alkohol, Ester)], [1000–1260], [Fingerprint-Bereich],
+    [C–Cl], [600–800], [für Halogenverbindungen charakteristisch],
+    [Aromat oop-δ(C–H)], [675–900], [Substitutionsmuster: 1, 2, 3, 4 H],
+  ),
+  caption: [Charakteristische Valenzschwingungen im IR. Der
+    Fingerprint-Bereich (unter 1500 cm#super[−1]) dient dem
+    Substanzvergleich mit Reinsubstanzen.],
+) <tab:ir-banden>
+
 === NMR-Spektroskopie
 
 Die Kernresonanzspektroskopie (#super[1]H-NMR) liefert drei Informationen auf einmal: chemische
@@ -134,6 +171,37 @@ Referenzspektren.
 *#super[13]C-NMR.* Die Zahl der Signale zeigt die Zahl der nicht äquivalenten
 Kohlenstoffatome, die chemische Verschiebung die Hybridisierung: sp³ bei
 10–60 ppm, sp² bei 100–160 ppm, Carbonyl bei 165–210 ppm.
+
+*Die chemische Verschiebung als Hilfstabelle.* Kernresonanzfrequenzen
+geben Auskunft über die elektronische Umgebung der Wasserstoffatome. Die
+folgende Tabelle faßt die typischen Bereiche zusammen; Kopplungskonstanten
+kommen hinzu (Vinyl: 5–18 Hz, Aromat: 7–10 Hz, Alkin: 2–3 Hz).
+
+#figure(
+  table(
+    columns: (1.2fr, 0.8fr, 1.4fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Signal*], [*δ (ppm)*], [*Anmerkung*]),
+    [TMS], [0,0], [Referenz, definiert],
+    [R–CH#sub[3]], [0,8–1,0], [Trippett bei 0,9 in Propylketten],
+    [R–CH#sub[2]–R], [1,2–1,4], [Multiplett],
+    [R#sub[3]C–H], [1,4–1,7], [tertiär],
+    [C=C–CH#sub[3]], [1,6–1,9], [allylisch, entschirmt],
+    [R–CO–CH#sub[3]], [2,0–2,2], [Keton, Ester, Amid],
+    [R–O–CH#sub[3]], [3,2–3,8], [Methoxy, entschirmt],
+    [R–CH#sub[2]–X], [3,0–4,5], [X = Hal, O, N],
+    [C=C–H (Vinyl)], [4,5–6,5], [Kopplungsmuster zeigt Substitution],
+    [Ar–H], [6,5–8,5], [Aromatenringstrom entschirmt],
+    [R–CHO], [9,0–10,0], [Aldehyd, singulett],
+    [R–COOH], [10–12], [breit; lösungsmittelabhängig],
+    [R–OH, R–NH#sub[2]], [variabel], [austauschbar; mit D#sub[2]O verschwindet Signal],
+  ),
+  caption: [Typische Bereiche der chemischen Verschiebung im
+    #super[1]H-NMR (CDCl#sub[3], 300 MHz). Die chemische Verschiebung δ
+    wird gegen Tetramethylsilan angegeben.],
+) <tab:nmr-verschiebung>
 
 === Massenspektrometrie
 
@@ -188,6 +256,38 @@ Zweifelsfall zuerst geprüft werden.
   caption: [Charakteristische Massenverluste und ihre Zuordnung. Mehrere passende
     Verluste zusammen sind aussagekräftiger als einer allein.],
 ) <tab:ms-verluste>
+
+*Fragmentierung im Überblick.* Das Massenspektrum gibt die Molmasse
+(M#super[+·]) und durch die Fragmente Auskunft über die Struktur. Die
+folgende Tabelle nennt die häufigsten Abspaltungen; die
+McLafferty-Umlagerung (γ-Wasserstoff, sechsgliedriger
+Übergangszustand) liefert bei Ketonen, Aldehyden und Estern mit
+γ-Position charakteristische Peaks.
+
+#figure(
+  table(
+    columns: (auto, 1.1fr, 1.3fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (right, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*m/z*], [*Fragment*], [*Hinweis*]),
+    [15], [CH#sub[3]#super[+]], [Methylgruppe],
+    [29], [C#sub[2]H#sub[5]#super[+], CHO#super[+]], [Ethyl oder Aldehyd],
+    [43], [C#sub[3]H#sub[7]#super[+], CH#sub[3]CO#super[+]], [Propyl oder Acetyl — Basispeak bei Ketonen],
+    [57], [C#sub[4]H#sub[9]#super[+]], [Butyl; t-Butyl bei 57 scharf],
+    [77], [C#sub[6]H#sub[5]#super[+]], [Phenyl — Beweis für den Aromaten],
+    [91], [C#sub[7]H#sub[7]#super[+]], [Tropylium — Benzyl-Verbindungen],
+    [105], [C#sub[6]H#sub[5]CO#super[+]], [Benzoyl — Acetophenon-Reihe],
+    [M–15], [– CH#sub[3]], [Verzweigung am α-C],
+    [M–18], [– H#sub[2]O], [Alkohole, Cyclodimere],
+    [M–28], [– CO, – C#sub[2]H#sub[4]], [Aldehyde, Ethoxy-Gruppen],
+    [M–31], [– OCH#sub[3]], [Methylester],
+    [M–45], [– OC#sub[2]H#sub[5]], [Ethylester],
+  ),
+  caption: [Häufige Fragmentionen der Elektronenstoß-Massenspektrometrie.
+    Die Fragmentierung folgt der Stabilität der Kationen: t-Butyl >
+    Allyl > sekundär > primär.],
+) <tab:ms-fragmente>
 
 === UV-Spektren und optische Drehung
 
@@ -252,3 +352,8 @@ Verbindung Acetophenon: Carbonyl + Methylketon + Phenyl + Molmasse 120.
 - Ein Derivat schmilzt bei 162–163 °C, der Literaturwert für das vermutete
   Semicarbazon liegt bei 163 °C, die Mischprobe schmilzt bei 148–156 °C. Was
   folgen Sie daraus, und wie gehen Sie weiter vor?
+- Bestimmen Sie anhand der Tabellen die wahrscheinliche Struktur einer
+  Verbindung mit Banden bei 1720 und 2720/2820 cm#super[−1] und einem
+  #super[1]H-Signal bei δ 9,8 (Singulett).
+- Ein Massenspektrum zeigt Basispeak m/z = 43 und M#super[+·] bei 86.
+  Nennen Sie zwei plausible Verbindungen und wie man sie unterscheidet.

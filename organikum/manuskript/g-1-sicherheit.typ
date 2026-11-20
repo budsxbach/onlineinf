@@ -168,6 +168,40 @@ Stäuben und bei Arbeiten außerhalb des Abzugs.
     dauerhaft; Durchbruchzeiten beachten.],
 ) <tab:handschuhe>
 
+*Durchbruchzeiten.* Kein Handschuhmaterial schützt unbegrenzt; die
+Durchbruchzeit ist die Zeit, bis ein Stoff an der Innenseite nachweisbar ist.
+Sie wird nach ISO 374-1 in Klassen von 1 (> 10 min) bis 6 (> 480 min)
+eingeteilt — maßgeblich sind immer die Angaben des Herstellers für die
+konkrete Charge.
+
+#figure(
+  table(
+    columns: (1.5fr, 1.4fr, auto, 1.4fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Kombination*], [*Stoff*], [*Klasse*], [*Praxis*]),
+    [Nitril], [Wasser, Natronlauge 10 %], [6], [einsetzbar],
+    [Nitril], [Aceton, Ethylacetat], [1], [nur kurz, häufig wechseln],
+    [Nitril], [Dichlormethan], [1], [ungeeignet, sofort wechseln],
+    [Butyl], [Aceton, Ester, Säuren], [5–6], [einsetzbar],
+    [Viton], [Benzol, Toluol], [4–6], [einsetzbar],
+    [Neopren], [Säuren, Laugen, Alkohole], [5–6], [einsetzbar],
+  ),
+  caption: [Durchbruchzeiten gebräuchlicher Handschuh-Lösungsmittel-Paare
+    (Größenordnungen nach ISO 374-1). Ein durchgesickerter Handschuh wird
+    sofort gewechselt — nicht abgewischt und weitergetragen.],
+) <tab:durchbruch>
+
+*Atemschutz.* Filter werden nach Schadstoffgruppe gewählt: A für organische
+Gase und Dämpfe, B für anorganische, E für Säuregase, K für Ammoniak; die
+Klasse P1–P3 kennzeichnet Partikelfilter. Ein Kombinationsfilter A2P3 deckt
+die meisten Laborfälle ab. Wichtig: Atemschutzfilter arbeiten nur mit
+Umgebungsluft und versagen bei Sauerstoffmangel und bei unbekannter oder zu
+hoher Schadstoffkonzentration — hier ist nur ein umgebungsluftunabhängiges
+Gerät (Druckluft, Umluft) zulässig. Staubmasken ohne Filterklasse sind
+kein Atemschutz im Sinne der Vorschrift.
+
 === Lagergruppen
 
 Chemikalien werden nach Lagergruppen getrennt; die Zuordnung folgt der
@@ -311,3 +345,8 @@ Einleiten von Schwermetallsalzen in den Abfluß.
 - Ein Kühlwasserschlauch reißt während einer Rückflußreaktion mit Ether. Skizzieren Sie die ersten drei Handgriffe.
 - Warum wird Brom nicht mit Wasser weggespült, sondern mit Thiosulfatlösung behandelt?
 - Nach einem Quecksilberaustritt riecht der Raum nach nichts. Warum ist trotzdem Handlungsbedarf gegeben?
+- Warum sind Nitrilhandschuhe bei der Arbeit mit Dichlormethan ungeeignet,
+  obwohl sie bei Alkoholen gut schützen?
+- Ein Kollege trägt bei einer Bromoperation Latexhandschuhe. Nennen Sie drei
+  Punkte, die Sie beanstanden.
+- Wann ist ein Atemschutzfilter der Klasse A2P3 unzulässig?

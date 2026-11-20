@@ -309,6 +309,47 @@ Salz hergestellt wurde. Aus heutiger Sicht ist die Reaktion eine
 nucleophile Addition des Ammoniaks an die Cyanatsäure; das Zwischenprodukt ist
 ein Carbaminsäureamid, das zum Harnstoff tautomerisiert.
 
+*Thio-Analoga.* Aus Ammoniumthiocyanat entsteht beim Erhitzen der Schmelze
+Thioharnstoff — die Schwefel-Analoge der Wöhler-Synthese. Thiourea ist der
+Ausgangsstoff für Sulfonamide, für Schwermetall-Nachweise und als
+Schwefelquelle in der präparativen Chemie; die Carbonyl-Sauerstoffe werden
+dabei formal gegen Schwefel ausgetauscht.
+
+#vorschrift("D.8.5", [Thioharnstoff aus Ammoniumthiocyanat])[
+  #reaktion(
+    $ "NH" _4"SCN" $,
+    [#text(size: 6.5pt)[170 °C, Schmelze]],
+    $ "H" _2"N–CS–NH" _2 $,
+  )
+
+  #ansatz[
+    76 g (1,0 mol) Ammoniumthiocyanat.
+  ]
+
+  In einem 250-mL-Rundkolben mit Thermometer wird das Ammoniumthiocyanat im
+  Ölbad vorsichtig zum Schmelzen gebracht; bei etwa 150 °C schmilzt es, und
+  oberhalb von 160 °C beginnt die Umlagerung. Man hält die Schmelze 30 min auf
+  170 °C — dabei tritt Ammoniakgeruch auf, und die anfangs klare Schmelze
+  wird zähflüssig.
+
+  Die noch warme Schmelze wird in 100 mL heißes Wasser gegossen und gelöst.
+  Beim Abkühlen kristallisiert der Thioharnstoff in farblosen Blättchen; man
+  saugt ab, wäscht mit wenig kaltem Wasser und trocknet im Exsikkator.
+
+  #ausbeute[61 g (80 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 182 °C (unter Zersetzung) #h(2em) löslich in heißem Wasser,
+    schwer löslich in kaltem #h(2em) $M$ = 76,12 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Ammoniumthiocyanat zersetzt sich oberhalb von 170 °C unter Bildung von
+  Blausäure und Schwefelwasserstoff — nur im Abzug arbeiten, die Temperatur
+  genau kontrollieren und nie überhitzen. Beim Lösen der Schmelze tritt
+  Ammoniak frei. Thiourea ist krebserzeugend verdächtig und wird nur mit
+  Handschuhen gehandhabt; die Mutterlaugen werden gesammelt entsorgt.]
+
 *Isocyanate und Carbamate.* Isocyanate entstehen aus Aminen und Phosgen oder aus
 Acylaziden (Curtius, D.9). Mit Alkoholen geben sie Carbamate (Urethane), mit
 Aminen Harnstoffe, mit Wasser instabile Carbaminsäuren, die zu Amin und CO#sub[2]
@@ -330,3 +371,8 @@ der Boc-Schutzgruppe, die als *tert*-Butylcarbamat des Amins vorliegt.
   Carbonsäureestern gegenüber Nucleophilen.
 - Ein Amin soll mit einer Boc-Gruppe geschützt werden. Welches Reagenz wählen
   Sie, und wie wird die Gruppe wieder entfernt?
+- Formulieren Sie den Unterschied zwischen der Wöhler-Synthese (D.8.4) und der
+  Umlagerung des Ammoniumthiocyanats. Worin stimmen die Mechanismen überein?
+- Warum darf die Schmelze beim Thioharnstoff nicht über 180 °C erhitzt werden?
+- Ein Thiourea-Derivat soll als Schwermetall-Reagenz eingesetzt werden. Welche
+  Strukturmerkmale sind dafür entscheidend?

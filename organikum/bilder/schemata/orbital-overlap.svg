@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="78mm" height="42mm" viewBox="0 0 78 42">
+<path d="M 8 20 q 5.5 -7.5 11 0 q -5.5 7.5 -11 0 Z" fill="#ededed" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 19 20 q 5.5 -7.5 11 0 q -5.5 7.5 -11 0 Z" fill="#ffffff" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="19.00" y="7.00" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">σ-Bindung</text>
+<text x="19.00" y="33.20" font-family="DejaVu Sans, sans-serif" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000">Überlappung auf der Achse</text>
+<path d="M 44.00 20.00 L 70.00 20.00" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="1.0 0.9"/>
+<path d="M 44.80 19.4 q 3.2 -6.4 6.4 0 q -3.2 6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 44.80 20.6 q 3.2 6.4 6.4 0 q -3.2 -6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="48.00" cy="20.00" r="0.80" fill="#000" stroke="#000" stroke-width="0.5"/>
+<path d="M 52.80 19.4 q 3.2 -6.4 6.4 0 q -3.2 6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 52.80 20.6 q 3.2 6.4 6.4 0 q -3.2 -6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="56.00" cy="20.00" r="0.80" fill="#000" stroke="#000" stroke-width="0.5"/>
+<path d="M 60.80 19.4 q 3.2 -6.4 6.4 0 q -3.2 6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 60.80 20.6 q 3.2 6.4 6.4 0 q -3.2 -6.4 -6.4 0 Z" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="64.00" cy="20.00" r="0.80" fill="#000" stroke="#000" stroke-width="0.5"/>
+<text x="56.00" y="7.00" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">π-System (p-Orbitale)</text>
+<text x="56.00" y="33.20" font-family="DejaVu Sans, sans-serif" font-size="2.2" text-anchor="middle" font-weight="normal" fill="#000">ober- und unterhalb der Achse</text>
+</svg>

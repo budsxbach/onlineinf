@@ -179,15 +179,19 @@ node tools/stats.mjs            # Kennzahlen
 | --- | --- | --- |
 | 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
 | 1 Gerüst | **fertig** | Teile A–D angelegt, Inhaltsverzeichnis |
-| 2 Teil A | **in Arbeit (ca. 75 %)** | A.1 Hilfsmittel, A.2 Trennverfahren, A.3 Mikromaßstab/Konstanten, A.4 Lagerung/Entsorgung |
-| 3 Teile B, C | offen | — |
+| 2 Teil A | **Grundfassung fertig (ca. 75 %)** | A.1 Hilfsmittel, A.2 Trennverfahren, A.3 Mikromaßstab, A.4 Physikalische Eigenschaften, A.5 Lagerung/Entsorgung |
+| 3 Teile B, C | **Grundfassung fertig** | B.1–B.8 (Literatur, Nomenklatur, Recherche, Protokoll), C.1–C.9 (Reaktionstypen, Energetik, Kinetik, Säure-Base, Substituenten, MO, Stereochemie, Syntheseplanung) |
 | 4 Teil D | Musterkapitel D.1, D.2 gesetzt | 4 Vorschriften |
 | 5 Teile E–G | offen | — |
 | 6 Feinsatz | offen | — |
 
-Aktuell gesetzt: **24 Seiten** Buchformat (168 × 240 mm), 6.000 Wörter, 17 Apparate-
-Abbildungen, 17 Tabellen, 4 Vorschriften. Kolumnentitel, Teilezählung, Abbildungs-
-und Tabellennumerierung je Teil, Fußnoten, Registervorbereitung laufen.
+Aktuell gesetzt: **42 Seiten** Buchformat (168 × 240 mm), 11.100 Wörter, 24 Abbildungen,
+31 Tabellen, 4 Vorschriften. Kolumnentitel, Teilezählung, Abbildungs- und
+Tabellennumerierung je Teil, Fußnoten und Registervorbereitung laufen.
+
+Offen in B/C vor dem Feinsatz: Ausbau auf das Seitenbudget (B 16 → ca. 16 S. erreicht,
+C 46 → ca. 14 S. gesetzt). Für C fehlen noch Beispiele zu Mehrstufen-Synthesen,
+Übungsaufgaben am Kapitelende und die Vertiefung der Kinetik.
 
 ## 4. Arbeitsschritte und Aufwand
 

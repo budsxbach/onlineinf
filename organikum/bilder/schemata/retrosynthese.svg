@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="108mm" height="48mm" viewBox="0 0 108 48">
+<text x="54.00" y="6.40" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" font-weight="normal" fill="#000">Retrosynthese: Zerlegung in verfügbare Bausteine</text>
+<text x="54.00" y="15.00" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="middle" font-weight="normal" fill="#000">Zielmolekül</text>
+<path d="M 54.00 17.00 L 54.00 24.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 53.38 22.53 L 54.00 24.00 L 54.62 22.53" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="56.40" y="21.00" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">Dissoziation</text>
+<path d="M 54.00 24.00 L 30.00 30.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 54.00 24.00 L 78.00 30.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="30.00" y="33.40" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Baustein 1</text>
+<text x="78.00" y="33.40" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Baustein 2</text>
+<path d="M 30.00 35.40 L 30.00 41.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 29.38 39.53 L 30.00 41.00 L 30.62 39.53" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 78.00 35.40 L 78.00 41.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 77.38 39.53 L 78.00 41.00 L 78.62 39.53" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="30.00" y="45.00" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Edukt A</text>
+<text x="78.00" y="45.00" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Edukt B</text>
+</svg>

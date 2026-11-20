@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="70mm" height="52mm" viewBox="0 0 70 52">
+<path d="M 20.00 40.00 L 62.00 40.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 60.53 40.62 L 62.00 40.00 L 60.53 39.38" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 28.00 46.00 L 28.00 8.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 28.62 9.47 L 28.00 8.00 L 27.38 9.47" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="42.00" y="44.60" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" font-weight="normal" fill="#000">σ</text>
+<text x="28.60" y="7.40" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="start" font-weight="normal" fill="#000">log k/k₀</text>
+<path d="M 31.00 15.00 L 56.00 34.00" fill="none" stroke="#000" stroke-width="0.6" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="34.50" cy="17.60" r="0.70" fill="#000" stroke="#000" stroke-width="0.5"/>
+<text x="36.90" y="16.20" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">NO₂</text>
+<circle cx="41.00" cy="22.40" r="0.70" fill="#000" stroke="#000" stroke-width="0.5"/>
+<text x="43.40" y="21.00" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">Cl</text>
+<circle cx="46.50" cy="26.60" r="0.70" fill="#000" stroke="#000" stroke-width="0.5"/>
+<text x="48.90" y="25.20" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">H</text>
+<circle cx="52.50" cy="31.00" r="0.70" fill="#000" stroke="#000" stroke-width="0.5"/>
+<text x="54.90" y="29.60" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">OCH₃</text>
+<text x="52.00" y="10.40" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="start" font-weight="normal" fill="#000">ρ &lt; 0</text>
+</svg>

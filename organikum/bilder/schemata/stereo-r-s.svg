@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="112mm" height="48mm" viewBox="0 0 112 48">
+<circle cx="26.00" cy="24.00" r="8.20" fill="none" stroke="#000" stroke-width="0.5"/>
+<text x="26.00" y="25.40" font-family="DejaVu Sans, sans-serif" font-size="3.6" text-anchor="middle" font-weight="bold" fill="#000">C</text>
+<path d="M 24.50 15.8 L 27.50 15.8 L 26.00 8.6 Z" fill="#000" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="26.00" y="6.60" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="middle" font-weight="normal" fill="#000">OH</text>
+<path d="M 24.80 24.8 L 20.40 31.6 L 27.20 24.8 Z" fill="#000" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="19.00" y="34.00" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="end" font-weight="normal" fill="#000">H</text>
+<path d="M 17.80 24.40 L 12.60 24.40" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="11.40" y="22.40" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="end" font-weight="normal" fill="#000">CH₃</text>
+<path d="M 34.20 24.40 L 39.40 24.40" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="40.60" y="22.40" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="start" font-weight="normal" fill="#000">C₂H₅</text>
+<text x="26.00" y="45.00" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" font-weight="normal" fill="#000">(R)-2-Butanol</text>
+<circle cx="80.00" cy="24.00" r="8.20" fill="none" stroke="#000" stroke-width="0.5"/>
+<text x="80.00" y="25.40" font-family="DejaVu Sans, sans-serif" font-size="3.6" text-anchor="middle" font-weight="bold" fill="#000">C</text>
+<path d="M 78.50 15.8 L 81.50 15.8 L 80.00 8.6 Z" fill="#000" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="80.00" y="6.60" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="middle" font-weight="normal" fill="#000">OH</text>
+<path d="M 78.80 24.8 L 74.40 31.6 L 81.20 24.8 Z" fill="#000" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="73.00" y="34.00" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="end" font-weight="normal" fill="#000">H</text>
+<path d="M 71.80 24.40 L 66.60 24.40" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="65.40" y="22.40" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="end" font-weight="normal" fill="#000">C₂H₅</text>
+<path d="M 88.20 24.40 L 93.40 24.40" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="94.60" y="22.40" font-family="DejaVu Sans, sans-serif" font-size="2.8" text-anchor="start" font-weight="normal" fill="#000">CH₃</text>
+<text x="80.00" y="45.00" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" font-weight="normal" fill="#000">(S)-2-Butanol</text>
+</svg>

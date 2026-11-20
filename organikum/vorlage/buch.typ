@@ -70,7 +70,15 @@
 #include "/manuskript/a-2-trennverfahren.typ"
 #include "/manuskript/a-3-mikro-und-konstanten.typ"
 
-#teil("B", [Organisch-präparativer Teil])
+#teil("B", [Organisch-chemische Literatur und Protokollführung])
+
+#include "/manuskript/b-1-literatur.typ"
+
+#teil("C", [Einige allgemeine Grundlagen])
+
+#include "/manuskript/c-1-grundlagen.typ"
+
+#teil("D", [Präparativer Teil])
 
 #include "/manuskript/d-01-radikalische-substitution.typ"
 #include "/manuskript/d-02-nukleophile-substitution.typ"

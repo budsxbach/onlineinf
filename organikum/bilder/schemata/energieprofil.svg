@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96mm" height="58mm" viewBox="0 0 96 58">
+<path d="M 14.00 46.00 L 82.00 46.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 80.53 46.62 L 82.00 46.00 L 80.53 45.38" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 14.00 46.00 L 14.00 9.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 14.62 10.47 L 14.00 9.00 L 13.38 10.47" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="48.00" y="51.40" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" font-weight="normal" fill="#000">Reaktionskoordinate</text>
+<text x="10.40" y="9.60" font-family="DejaVu Sans, sans-serif" font-size="3.0" text-anchor="end" font-weight="normal" fill="#000">E</text>
+<path d="M 14 36 L 27 36 Q 33 36 37 17 Q 41 36 47 36 L 80 36" fill="none" stroke="#000" stroke-width="0.6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 14 36 L 27 36 Q 31.5 36 34 27 Q 36.5 36 41 36 L 80 36" fill="none" stroke="#000" stroke-width="0.6" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="1.7 1.2"/>
+<path d="M 37.00 17.00 L 37.00 36.00" fill="none" stroke="#000" stroke-width="0.22" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="0.9 0.8"/>
+<path d="M 34.00 27.00 L 34.00 36.00" fill="none" stroke="#000" stroke-width="0.22" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="0.9 0.8"/>
+<text x="37.00" y="13.00" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Übergangszustand A</text>
+<text x="23.00" y="32.60" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Edukte</text>
+<text x="64.00" y="32.60" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="middle" font-weight="normal" fill="#000">Produkte</text>
+<text x="39.40" y="22.60" font-family="DejaVu Sans, sans-serif" font-size="2.6" text-anchor="start" font-weight="normal" fill="#000">EA</text>
+<text x="30.40" y="24.40" font-family="DejaVu Sans, sans-serif" font-size="2.7" text-anchor="end" font-weight="normal" fill="#000">B</text>
+<path d="M 52.00 20.60 L 58.00 20.60" fill="none" stroke="#000" stroke-width="0.55" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="59.40" y="21.60" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">Weg A: langsam</text>
+<path d="M 52.00 24.20 L 58.00 24.20" fill="none" stroke="#000" stroke-width="0.55" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="1.7 1.2"/>
+<text x="59.40" y="25.20" font-family="DejaVu Sans, sans-serif" font-size="2.4" text-anchor="start" font-weight="normal" fill="#000">Weg B: schnell</text>
+</svg>

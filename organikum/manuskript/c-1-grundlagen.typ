@@ -398,6 +398,39 @@ Dimethylsulfoxid oder in einem Wasser-Dioxan-Gemisch und rechnet um. Für die
 Praxis genügt die Ordnung der Größen; die vierte Dezimalstelle interessiert
 niemanden.
 
+*Puffer und Henderson-Hasselbalch.* Ein Puffer besteht aus einer schwachen
+Säure und ihrer konjugierten Base; sein pH-Wert folgt der
+Henderson-Hasselbalch-Gleichung:
+
+$ "pH" = "pK" _a + log (["A"^(-)] \/ ["HA"]) $
+
+*Beispiel:* 0,10 mol Essigsäure und 0,06 mol Natriumacetat in 1 L ergeben
+pH = 4,76 + log (0,06/0,10) = 4,54. Nach Zusatz von 0,01 mol Natronlauge
+verschiebt sich das Verhältnis auf 0,07 : 0,09, der pH-Wert nur auf 4,65 —
+die Verschiebung um 0,11 Einheiten zeigt die Pufferwirkung. Ohne Puffer hätte
+dieselbe Base den pH um mehrere Einheiten springen lassen.
+
+Wirksam ist ein Puffer im Bereich pH = pK#sub[a] ± 1, am leistungsfähigsten bei
+pH = pK#sub[a]. Bei der halbneutralisierten Titration (S. vorher) liegt genau
+dieser Punkt vor — deshalb ist der dort gemessene pH-Wert der pK#sub[a]-Wert.
+
+#figure(
+  table(
+    columns: (1.5fr, auto, 2.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Puffersystem*], [*pK#sub[a]*], [*Einsatz in der präparativen Chemie*]),
+    [Essigsäure/Acetat], [4,76], [saures Milieu, Abstoppen von Verseifungen],
+    [Dihydrogenphosphat/Phosphat], [7,20], [wäßrige Aufarbeitung, Oxidationen],
+    [Tris/HCl], [8,06], [enzymatische Reaktionen, wäßrige Systeme],
+    [Hydrogencarbonat/Carbonat], [10,3], [basisches Waschen, CO#sub[2]-Entwicklung beachten],
+  ),
+  caption: [Gebräuchliche Puffersysteme. Die Wahl richtet sich nach dem
+    gewünschten pH-Bereich und nach der Verträglichkeit der Komponenten mit
+    den Reaktanten.],
+) <tab:puffer>
+
 *Lewis-Säuren.* Neben dem Proton gibt es Elektronenpaarakzeptoren, die ebenfalls
 Säuren sind: BF₃, AlCl₃, ZnCl₂, FeBr₃, TiCl₄. Sie werden in der organischen
 Chemie vor allem für zwei Zwecke gebraucht:

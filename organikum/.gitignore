@@ -1,0 +1,5 @@
+node_modules/
+entwurf/*.pdf
+entwurf/*.png
+ausgabe/*.pdf
+__pycache__/

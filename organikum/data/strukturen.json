@@ -1,0 +1,14 @@
+{
+  "butan-1-ol": { "smiles": "CCCCO" },
+  "1-brombutan": { "smiles": "CCCCBr" },
+  "phenol": { "smiles": "Oc1ccccc1" },
+  "nitrobenzol": { "smiles": "O=[N+]([O-])c1ccccc1" },
+  "anilin": { "smiles": "Nc1ccccc1" },
+  "benzaldehyd": { "smiles": "O=Cc1ccccc1" },
+  "benzoesaeure": { "smiles": "OC(=O)c1ccccc1" },
+  "cyclohexen": { "smiles": "C1=CCCCC1" },
+  "essigsaeureethylester": { "smiles": "CCOC(C)=O" },
+  "acetanilid": { "smiles": "CC(=O)Nc1ccccc1" },
+  "2-naphthol": { "smiles": "Oc1ccc2ccccc2c1" },
+  "benzilsaeure": { "smiles": "OC(=O)C(O)(c1ccccc1)c1ccccc1" }
+}

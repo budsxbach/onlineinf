@@ -362,6 +362,96 @@ Ausgangsmaterial zurückgeblieben ist.
   stark oxidierend und ätzend; mit organischen Stoffen Explosionsgefahr.
   1-Octen ist entzündbar.]
 
+=== Addition an Alkine
+
+Die Dreifachbindung ist nucleophiler als die Doppelbindung; sie addiert
+Elektrophile daher leichter. Zwei Unterschiede zur Alken-Addition sind
+präparativ wichtig.
+
+*Erstens die Regiochemie.* Bei der Addition von HX an ein terminales Alkin
+entsteht nach der ersten Addition ein Vinylhalogenid, das nur bei
+Markownikoff-Orientierung ein carbeniumionartiges Zwischenprodukt mit
+Halogen am selben Kohlenstoff hätte — das ist instabil. Die Addition verläuft
+deshalb überwiegend *anti*-Markownikoff, wenn auch weniger ausgeprägt als beim
+Alken; bei radikalischer Addition mit Peroxid gilt das umgekehrt.
+
+$ "HC≡CH" + "HBr" ->^("Hg"^"2+" "/ H"^"+") "CH" _2"=CHBr" -> "CH" _3"CHBr" _2 $
+
+*Zweitens die Stereochemie.* Die Addition an Alkine führt über ein
+*trans*-Alken als Zwischenstufe, weil das Vinylkation linear ist und der
+Angriff von beiden Seiten gleich schnell erfolgt. Will man ein *cis*-Alken,
+hydriert man mit Lindlar-Katalysator; will man ein *trans*-Alken, reduziert man
+mit Natrium in flüssigem Ammoniak (Birch-Bedingungen).
+
+#figure(
+  table(
+    columns: (1.5fr, 1.6fr, 1.3fr, 1.3fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Reagenz*], [*Produkt aus Alkin*], [*Stereochemie*], [*Bemerkung*]),
+    [H#sub[2] / Lindlar], [*cis*-Alken], [cis], [selektiv, mild],
+    [Na / NH#sub[3] (fl.)], [*trans*-Alken], [trans], [radikalisch],
+    [Br#sub[2]], [Tetrahalogenid], [—], [2 Äquivalente],
+    [HX], [Vinylhalogenid], [—], [1 Äquivalent],
+    [H#sub[2]O / Hg#sub[2]+], [Keton], [—], [Kucherov],
+    [R#sub[2]BH], [Enol → Aldehyd], [anti-Markownikoff], [Hydroborierung],
+  ),
+  caption: [Reaktionen terminaler Alkine. Die Wahl des Reduktionsmittels
+    entscheidet über die Konfiguration der Doppelbindung.],
+) <tab:alkin-addition>
+
+*Kucherov-Reaktion.* Wasser addiert an Alkine in Gegenwart von Quecksilber(II)-
+salzen; das zunächst entstehende Enol tautomerisiert zum Keton. Acetylen gibt
+Acetaldehyd, substituierte Alkine geben Ketone — die Reaktion ist der klassische
+Zugang zu Methylketonen aus terminalen Alkinen.
+
+$ "R–C≡CH" + "H" _2"O" ->^("Hg"^"2+" ", H"^"+" ) "R–CO–CH" _3 $
+
+*Prüfung auf terminale Alkine.* Silber- oder Kupfer(I)-salze fallen mit
+terminalen Alkinen aus (Silberacetylid, Kupferacetylid); die Fällung ist der
+klassische Nachweis und zugleich ein Reinigungsschritt — interne Alkine fallen
+nicht aus.
+
+#vorschrift("D.4.6", [1,1,2,2-Tetrabromethan aus Acetylen])[
+  #reaktion(
+    $ "HC≡CH" + 2 "Br" _2 $,
+    [#text(size: 6.5pt)[CCl#sub[4], 0–10 °C]],
+    $ "CHBr" _2"–CHBr" _2 $,
+  )
+
+  #ansatz[
+    26 g (1,0 mol) Acetylen, 350 g (110 mL; 2,2 mol) Brom, 300 mL Tetrachlormethan.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Gaseinleitungsrohr, Thermometer und
+  Rückflußkühler werden 250 mL Tetrachlormethan vorgelegt und im Eisbad auf
+  5 °C gekühlt. Man leitet Acetylen langsam ein und tropft gleichzeitig das Brom
+  so zu, daß die Entfärbung Schritt hält und die Temperatur 10 °C nicht
+  übersteigt.
+
+  Nach beendeter Zugabe rührt man 1 h bei Raumtemperatur, bis die Lösung farblos
+  bleibt. Man wäscht mit verdünnter Natriumthiosulfatlösung, dann mit Wasser,
+  trocknet über Calciumchlorid und entfernt das Lösungsmittel am Rotations-
+  verdampfer.
+
+  Das Rohprodukt wird aus Ethanol umkristallisiert (1 g in 4 mL).
+
+  #ausbeute[280 g (81 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 119 °C #h(2em) Sdp. 189 °C (Zers.) #h(2em)
+    $rho_20$ = 2,96 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Acetylen bildet mit Luft explosive Gemische (2,3–80,3 Vol.-%) und kann
+  sich bei Druck über 1,5 bar explosionsartig zersetzen; nur im Abzug und ohne
+  Druck arbeiten. Brom ist stark ätzend und verursacht schwere Hautschäden;
+  bei Kontakt sofort mit viel Wasser spülen. Tetrachlormethan ist
+  krebserzeugend und ozonschädigend — wenn möglich durch Dichlormethan ersetzen.
+  Das Produkt ist gesundheitsschädlich.]
+
 === Aufgaben
 
 - Warum addiert HBr an 3,3,3-Trifluorpropen gegen die Markownikoff-Regel?
@@ -370,3 +460,11 @@ Ausgangsmaterial zurückgeblieben ist.
   dagegen *trans*-Alkene liefert.
 - Formulieren Sie die Produkte der Diels-Alder-Reaktion von Cyclopentadien mit
   Maleinsäureanhydrid und mit Acrolein; geben Sie die Stereochemie an.
+- Warum addiert Acetylen zwei Äquivalente Brom, aber nur ein Äquivalent HBr?
+- Ein unbekanntes Alkin gibt mit ammoniakalischer Silbernitratlösung einen
+  Niederschlag. Was folgt daraus für die Struktur?
+- Geben Sie für die Hydrierung von 2-Butin mit Lindlar-Katalysator und mit
+  Natrium in flüssigem Ammoniak jeweils das Produkt mit Konfiguration an.
+- Erklären Sie, warum die Hydroborierung eines terminalen Alkens zum
+  anti-Markownikoff-Alkohol führt, die Addition von Wasser dagegen zum
+  Markownikoff-Produkt.

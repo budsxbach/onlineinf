@@ -413,6 +413,118 @@ Schwefelsäure oder Pyridin — die klassische Vorschrift für Acetylsalicylsäu
 teilweise hydrolysiert ist; der Gehalt wird durch Titration mit Natronlauge
 bestimmt. Ein Gehalt unter 99 % zeigt, daß beim Trocknen zu hoch erhitzt wurde.
 
+*Drei klassische Kondensationen.* Die folgenden Vorschriften zeigen
+Reaktionen, die seit dem 19. Jahrhundert in keiner präparativen Sammlung
+fehlen: die Perkin-Reaktion, die Claisen-Esterkondensation und die
+Schotten-Baumann-Acylierung.
+
+#vorschrift("D.7.6", [Zimtsäure aus Benzaldehyd])[
+  #reaktion(
+    $ "C" _6"H" _5"CHO" + ("CH"_3"CO")_2"O" $,
+    [#text(size: 6.5pt)[NaOAc, 175 °C, 3 h]],
+    $ "C" _6"H" _5"CH=CHCOOH" + "CH"_3"COOH" $,
+  )
+
+  #ansatz[
+    26 g (25 mL; 0,25 mol) Benzaldehyd, 51 g (47 mL; 0,50 mol)
+    Acetanhydrid, 25 g (0,25 mol) wasserfreies Natriumacetat.
+  ]
+
+  In einem 250-mL-Rundkolben mit Thermometer und aufsteigendem Kühler
+  vermischt man Benzaldehyd, Acetanhydrid und Natriumacetat und erhitzt
+  3 h auf 170–180 °C (Ölbad). Nach dem Abkühlen gießt man die braune
+  Reaktionsmischung in 300 mL Wasser und destilliert den unverbrauchten
+  Benzaldehyd mit Wasserdampf ab.
+
+  Den Rückstand löst man in 10 %iger Natriumcarbonat-Lösung, filtriert
+  ungelöste Harze ab und fällt die Zimtsäure durch Ansäuern mit
+  Salzsäure. Der Niederschlag wird abgesaugt, mit Wasser gewaschen und aus
+  Wasser umkristallisiert.
+
+  #ausbeute[20 g (54 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 133 °C (trans-Form) #h(2em) löslich in Ethanol, heißem Wasser
+    #h(2em) $M$ = 148,2 g·mol#super[−1] #h(2em)
+    Das Produkt ist das Edukt der selektiven Hydrierung in D.4.3.
+  ]
+]
+
+#gefahr[Benzaldehyd reizt die Atemwege, Acetanhydrid ist ätzend und
+  rauchend. Bei 180 °C muß der Kühler sitzen; kein offenes Feuer.
+  Natriumacetat wasserfrei einwiegen. Zimtsäure reizt die Schleimhäute.]
+
+#vorschrift("D.7.7", [Ethylacetoacetat aus Ethylacetat])[
+  #reaktion(
+    $ 2 "CH"_3"COOC"_2"H"_5 $,
+    [#text(size: 6.5pt)[Na, 78 °C]],
+    $ "CH"_3"COCH"_2"COOC"_2"H"_5 + "C"_2"H"_5"OH" $,
+  )
+
+  #ansatz[
+    8 g (0,35 mol) Natriumdraht, 100 g (110 mL; 1,2 mol) Ethylacetat
+    (wasserfrei).
+  ]
+
+  In einem 250-mL-Rundkolben mit Rückflußkühler und Calciumchlorid-Rohr
+  wird das wasserfreie Ethylacetat vorgelegt und portionsweise
+  Natriumdraht zugegeben; die Reaktion setzt spontan ein. Man erwärmt
+  vorsichtig auf 78 °C, bis das Natrium weitgehend gelöst ist (ca. 2 h).
+
+  Nach dem Abkühlen zerstört man den Rest des Natriums vorsichtig mit
+  10 mL Eisessig, wobei die Mischung schwach sauer reagiert. Man gibt
+  50 mL gesättigte Natriumchlorid-Lösung zu, trennt die obere Phase ab
+  und trocknet über Natriumsulfat. Die Reinigung erfolgt durch
+  Vakuumdestillation.
+
+  #ausbeute[26 g (57 % d. Th., ber. auf Na) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 181 °C (1013 hPa, Zersetzung) #h(2em) $n_D^20$ = 1,4194
+    #h(2em) $rho_20$ = 1,03 g·cm#super[−3] #h(2em)
+    $M$ = 130,2 g·mol#super[−1] #h(2em)
+    Keto-Enol-Gleichgewicht: ca. 8 % Enol in reiner Substanz.
+  ]
+]
+
+#gefahr[Natriumdraht ist hochreaktiv und entzündlich; nur mit trockenen
+  Händen und Zange handhaben, Rückstände niemals in den Abfall geben,
+  sondern vorsichtig mit Ethanol zerstören. Ethylacetat ist leicht
+  entzündbar, Acetaldehyd-Verunreinigungen können Peroxide bilden.
+  Der Ansatz steht hinter dem Schutzschild.]
+
+#vorschrift("D.7.8", [Acetanilid aus Anilin])[
+  #reaktion(
+    $ "C" _6"H" _5"NH"_2 + "CH"_3"COCl" $,
+    [#text(size: 6.5pt)[NaOH, H#sub[2]O, 0 °C]],
+    $ "C" _6"H" _5"NHCOCH"_3 + "HCl" $,
+  )
+
+  #ansatz[
+    23 g (0,25 mol) Anilin, 22 g (20 mL; 0,28 mol) Acetylchlorid,
+    30 g Natriumhydroxid, 100 mL Wasser.
+  ]
+
+  In einem 250-mL-Becherglas rührt man Anilin und Natriumhydroxid in
+  100 mL Wasser und kühlt auf 0 °C. Das Acetylchlorid wird tropfenweise
+  zugegeben, wobei das Acetanilid sofort als weißer Feststoff ausfällt.
+  Man rührt 30 min nach, saugt ab und wäscht mit kaltem Wasser.
+
+  Zur Reinigung wird aus Wasser umkristallisiert.
+
+  #ausbeute[27 g (80 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 114 °C #h(2em) löslich in Ethanol, heißem Wasser
+    #h(2em) $M$ = 135,2 g·mol#super[−1] #h(2em)
+    Typisches Derivat für die Identifizierung von Primärarminen (E.2).
+  ]
+]
+
+#gefahr[Anilin ist giftig (Methämoglobinbildung); Handschuhe und Brille
+  tragen, Hautkontakt sofort vermeiden. Acetylchlorid ist ätzend und raucht
+  an feuchter Luft — nur im Abzug dosieren. Die Natronlauge ätzt.]
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber
@@ -427,3 +539,9 @@ bestimmt. Ein Gehalt unter 99 % zeigt, daß beim Trocknen zu hoch erhitzt wurde.
   Ester eine säureempfindliche Gruppe trägt?
 - Ordnen Sie die vier Derivate Acetylchlorid, Acetamid, Ethylacetat und
   Essigsäureanhydrid nach ihrer Hydrolysegeschwindigkeit in Wasser.
+- Erklären Sie den Mechanismus der Perkin-Reaktion und begründen Sie, warum
+  nur das trans-Isomer entsteht.
+- Warum muß bei der Schotten-Baumann-Acylierung die Base im Überschuß
+  vorliegen?
+- Berechnen Sie die Atomökonomie der Claisen-Esterkondensation und
+  vergleichen Sie mit der Veresterung.

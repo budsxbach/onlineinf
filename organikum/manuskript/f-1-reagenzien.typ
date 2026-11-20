@@ -80,6 +80,36 @@ Wasser ist der häufigste Störfaktor. Für die Trocknung gibt es vier Wege:
     Empfindlichkeit des Produkts, nicht nach dem erreichbaren Minimum.],
 ) <tab:trockenmittel>
 
+*Kapazität und Praxis.* Die theoretische Aufnahmefähigkeit entscheidet, wieviel
+Trockenmittel man braucht; die Gleichgewichtsfeuchte entscheidet, wie trocken es
+am Ende wird.
+
+#figure(
+  table(
+    columns: (1.5fr, auto, auto, 1.4fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Trockenmittel*], [*Kapazität*], [*Geschwindigkeit*], [*Hydrat*]),
+    [Natriumsulfat], [127], [schnell], [Na#sub[2]SO#sub[4]·10 H#sub[2]O],
+    [Magnesiumsulfat], [105], [schnell], [MgSO#sub[4]·7 H#sub[2]O],
+    [Calciumchlorid], [97], [mittel], [CaCl#sub[2]·6 H#sub[2]O],
+    [Kaliumcarbonat], [20], [langsam], [K#sub[2]CO#sub[3]·1,5 H#sub[2]O],
+    [Phosphorpentoxid], [76], [schnell], [4 H#sub[3]PO#sub[4]],
+    [Molekularsieb 4 Å], [20], [mittel], [Adsorption],
+  ),
+  caption: [Theoretische Wasseraufnahme in g H#sub[2]O je 100 g Trockenmittel
+    (nach der Hydratformel). In der Praxis rechnet man mit der Hälfte.],
+) <tab:trockenmittel-kapazitaet>
+
+*Wie man trocknet.* Man gibt soviel Trockenmittel zu, daß eine dünne Schicht des
+pulvrigen Rests am Gefäßboden liegenbleibt (etwa 5–10 % der Extraktmasse bei
+Magnesiumsulfat), schüttelt gut und läßt 10–15 min stehen. Klumpenbildung zeigt
+Wasser; dann nachdosieren. Vor dem Abdestillieren oder Einengen wird das
+Trockenmittel abfiltriert oder abdekantiert — mitgerissenes Pulver kann beim
+Erhitzen stören. Die Wirksamkeit prüft man mit wasserfreiem Kupfersulfat
+(bleibt weiß) oder durch den Brechungsindex der klaren Lösung.
+
 === Peroxide und ihre Entfernung
 
 Ether, THF, Dioxan und Isopropanol bilden bei Lagerung an Luft Peroxide. Diese
@@ -104,8 +134,35 @@ Absolutierung erfolgt durch
 - *Lagerung über Molekularsieb* (Methanol, Acetonitril),
 - *käufliche Absolutlösungsmittel* (AcroSeal, SureSeal) für kleine Mengen.
 
-Die Wasserbestimmung erfolgt nach Karl Fischer oder, im Praktikum, über die
-Trübung beim Versetzen mit Toluol (azeotrope Destillation).
+Die Wasserbestimmung erfolgt nach Karl Fischer (volumetrisch bis 0,1 %,
+koulometrisch bis 1 ppm) oder, im Praktikum, über die azeotrope Destillation
+mit Toluol und Messung des abgeschiedenen Wassers.
+
+#figure(
+  table(
+    columns: (1.3fr, 1.7fr, 1.3fr, auto),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Lösungsmittel*], [*Methode*], [*Achtung*], [*Sdp./°C*]),
+    [Diethylether], [Na/Benzophenon], [Peroxide prüfen], [35],
+    [THF], [Na/Benzophenon], [Peroxide prüfen], [66],
+    [Toluol], [Natrium], [—], [111],
+    [Dichlormethan], [CaH#sub[2], Dest.], [stabil], [40],
+    [Chloroform], [CaCl#sub[2], Dest.], [Ethanol-Stabilisator], [61],
+    [Methanol], [Mg/I#sub[2]], [nicht über Metall], [65],
+    [Acetonitril], [K#sub[2]CO#sub[3], dann CaH#sub[2]], [—], [82],
+    [DMF], [Molekularsieb 4 Å], [Amin-Geruch, giftig], [153],
+    [DMSO], [CaH#sub[2], Vakuumdest.], [erstarrt kalt], [189],
+    [Pyridin], [KOH, Dest.], [stark riechend], [115],
+  ),
+  caption: [Reinigung gebräuchlicher Lösungsmittel für wasserempfindliche
+    Reaktionen. Alle Destillationen unter Rückschluß und mit Siedestein.],
+) <tab:loesungsmittel-reinigung>
+
+*Reihenfolge der Absolutierung.* Peroxidprüfung vor jeder Destillation von
+Ether, THF und Dioxan — die Reihenfolge ist nicht verhandelbar. Erst trocknen,
+dann destillieren, dann über Molekularsieb lagern; wer spart, trocknet zweimal.
 
 === Rückgewinnung und Entsorgung
 
@@ -221,3 +278,11 @@ Suspension eingesetzt.
 - Sie brauchen absoluten Ether für eine Grignard-Reaktion. Beschreiben Sie die
   Absolutierung und die Prüfung auf Wasserfreiheit.
 - Ein Ethervorrat ist fünf Jahre alt. Was prüfen Sie, bevor Sie ihn verwenden?
+- Warum trocknet man einen Ethylacetat-Extrakt mit Magnesiumsulfat und nicht
+  mit Calciumchlorid?
+- Ein Ether soll für eine Grignard-Reaktion absolutiert werden. Schreiben Sie
+  die Reihenfolge der einzelnen Schritte auf und begründen Sie sie.
+- Wieviel Phosphorpentoxid (theoretisch) braucht man, um 50 mL Benzol mit
+  0,1 % Wasser zu trocknen?
+- Ein Lösungsmittel zeigt nach der Lagerung eine positive Peroxidprobe. Darf
+  man es über Natrium/Benzophenon destillieren?

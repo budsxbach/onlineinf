@@ -131,6 +131,46 @@ primär > methyl).
     Gruppe bestimmt das Produkt.],
 ) <tab:baeyer-villiger>
 
+#vorschrift("D.6.3", [Benzaldehyd aus Benzylalkohol mit PCC])[
+  #reaktion(
+    $ "C" _6"H" _5"CH" _2"OH" $,
+    [#text(size: 6.5pt)[PCC, CH#sub[2]Cl#sub[2], 25 °C]],
+    $ "C" _6"H" _5"CHO" $,
+  )
+
+  #ansatz[
+    108 g (103 mL; 1,0 mol) Benzylalkohol, 237 g (1,1 mol)
+    Pyridiniumchlorochromat, 1 L Dichlormethan.
+  ]
+
+  In einem 2-l-Dreihalskolben mit Rührer und Thermometer legt man 600 mL
+  Dichlormethan vor und trägt das PCC in Anteilen ein; es entsteht eine
+  braunschwarze Suspension. Man tropft den Benzylalkohol in 100 mL
+  Dichlormethan so zu, daß die Temperatur 30 °C nicht übersteigt.
+
+  Nach beendeter Zugabe rührt man 3 h bei Raumtemperatur, bis die
+  Dünnschichtchromatographie keinen Alkohol mehr zeigt. Man versetzt mit 500 mL
+  Ether, filtriert über Kieselgel und wäscht den Rückstand mit Ether
+  nach.
+
+  Die vereinigten Filtrate werden mit Natriumhydroxidlösung gewaschen, über
+  Magnesiumsulfat getrocknet und fraktioniert. Benzaldehyd geht bei 178–180 °C
+  über; die Ausbeute wird durch Destillation unter Stickstoff verbessert.
+
+  #ausbeute[85 g (80 % d. Th.) farblose, bittermandelartig riechende
+  Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 179 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5450 #h(2em)
+    $rho_20$ = 1,045 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Pyridiniumchlorochromat ist gesundheitsschädlich, stark oxidierend und
+  steht im Verdacht, krebserzeugend zu sein; es ist mit brennbaren Stoffen
+  explosionsgefährlich. Dichlormethan ist gesundheitsschädlich und narkotisierend;
+  nur im Abzug arbeiten. Benzaldehyd ist entzündbar und kann Allergien auslösen.]
+
 === Dehydrierung
 
 Die Dehydrierung entfernt Wasserstoff ohne Sauerstoff. Sie ist die Umkehr der

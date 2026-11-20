@@ -245,6 +245,74 @@ die Synthese von Peptiden braucht man Kupplungsreagenzien (DCC, EDC, HATU).
   Flamme, Rückflußkühler mit Wasser betreiben. Beim Waschen mit Carbonat entsteht
   Kohlendioxid — Kolben nicht verschließen.]
 
+#vorschrift("D.7.3", [Benzoin aus Benzaldehyd])[
+  #reaktion(
+    $ "2 C" _6"H" _5"CHO" $,
+    [#text(size: 6.5pt)[KCN/EtOH, Rückfluß]],
+    $ "C" _6"H" _5"CH(OH)COC" _6"H" _5 $,
+  )
+
+  #ansatz[
+    106 g (101 mL; 1,0 mol) Benzaldehyd, 10 g (0,15 mol) Kaliumcyanid,
+    300 mL Ethanol (96 %).
+  ]
+
+  In einem 1-l-Rundkolben mit Rückflußkühler werden Benzaldehyd und Ethanol
+  vorgelegt; man gibt die Lösung von Kaliumcyanid in 50 mL Wasser zu und erhitzt
+  2 h unter Rückfluß. Die Mischung färbt sich gelb, beim Abkühlen kristallisiert
+  das Benzoin aus.
+
+  Man kühlt auf 5 °C, saugt ab und wäscht mit wenig eiskaltem Ethanol. Das
+  Rohprodukt wird aus Ethanol umkristallisiert.
+
+  #ausbeute[93 g (88 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 137 °C #h(2em) Reinheit > 98 %
+  ]
+]
+
+#gefahr[Kaliumcyanid ist sehr giftig und setzt mit Säuren Blausäure frei; niemals
+  mit Säuren in Berührung bringen, Abfälle getrennt sammeln und mit
+  Natriumhypochlorit oxidieren. Benzaldehyd ist gesundheitsschädlich und
+  entzündbar, Ethanol leicht entzündbar.]
+
+*Benzoin-Kondensation.* Das Cyanid-Ion ist hier kein Nucleophil am Kohlenstoff,
+sondern eine Base: Es deprotoniert den Aldehyd, das entstehende Acyloin-Anion
+greift ein zweites Aldehydmolekül an. Das Produkt ist ein α-Hydroxyketon, das
+als Edukt für die Benzilsäure-Umlagerung und für die Synthese von
+Diphenylketonen dient.
+
+#vorschrift("D.7.4", [Benzilsäure aus Benzil])[
+  #reaktion(
+    $ "C" _6"H" _5"COCOC" _6"H" _5 $,
+    [#text(size: 6.5pt)[KOH/EtOH, Rückfluß]],
+    $ "C"_6"H"_5"COH(C"_6"H"_5")COOH" $,
+  )
+
+  #ansatz[
+    105 g (0,50 mol) Benzil, 80 g (1,4 mol) Kaliumhydroxid, 500 mL Ethanol.
+  ]
+
+  In einem 1-l-Rundkolben mit Rückflußkühler werden Benzil und Ethanol
+  vorgelegt, dann die Lösung von Kaliumhydroxid in 100 mL Wasser zugegeben. Man
+  erhitzt 3 h unter Rückfluß; die Lösung färbt sich dunkel, beim Abkühlen fällt
+  das Kaliumsalz der Benzilsäure aus.
+
+  Man verdünnt mit 1 L Wasser, saugt ab und löst das Salz in 500 mL heißem
+  Wasser. Beim Ansäuern mit Salzsäure fällt die freie Säure aus; sie wird aus
+  Ethanol/Wasser umkristallisiert.
+
+  #ausbeute[96 g (84 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 150 °C (Zersetzung)
+  ]
+]
+
+#gefahr[Kaliumhydroxid ist stark ätzend, besonders in ethanolischer Lösung.
+  Salzsäure ist ätzend. Benzilsäure reizt Augen und Atemwege.]
+
 === Oxime, Hydrazone und ihre Analytik
 
 Carbonylverbindungen reagieren mit Hydroxylamin zu Oximen und mit

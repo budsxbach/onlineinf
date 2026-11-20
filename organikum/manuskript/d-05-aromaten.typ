@@ -184,46 +184,6 @@ Schmelzpunkte getrennt: p-Nitrotoluol (52 °C) kristallisiert aus, o-Nitrotoluol
 (−4 °C) bleibt flüssig. Wer die Ausbeute maximieren will, arbeitet mit
 Lösungsmittelkristallisation statt mit Destillation.
 
-#vorschrift("D.5.5", [Benzoesäure aus Brombenzol über das Grignard-Reagenz])[
-  #reaktion(
-    $ "C" _6"H" _5"Br" + "Mg" + "CO" _2 $,
-    [#text(size: 6.5pt)[Ether, dann H#sub[3]O⁺]],
-    $ "C" _6"H" _5"COOH" $,
-  )
-
-  #ansatz[
-    157 g (105 mL; 1,0 mol) Brombenzol, 27 g (1,1 mol) Magnesiumspäne,
-    500 mL absoluter Ether, Trockeneis (Überschuß).
-  ]
-
-  In einem 2-l-Dreihalskolben mit Rührer, Rückflußkühler, Tropftrichter und
-  Calciumchloridrohr werden Magnesiumspäne und 50 mL Ether vorgelegt; man
-  versetzt mit einer Spatelspitze Iod und tropft 10 mL Brombenzol zu, bis die
-  Reaktion anspringt. Dann wird der Rest des Brombenzols in 200 mL Ether so
-  zugetropft, daß der Ether gelinde siedet.
-
-  Nach beendeter Zugabe erhitzt man 30 min unter Rückfluß, kühlt auf 0 °C und
-  gießt die Lösung auf einen Überschuß gepulverter Trockeneis. Nach dem
-  Auftauen wird mit 300 mL Eiswasser und anschließend mit verdünnter Salzsäure
-  bis pH 2 versetzt.
-
-  Man trennt die etherische Phase ab, extrahiert die wäßrige Phase zweimal mit
-  Ether und engt die vereinigten Extrakte ein. Der Rückstand wird aus Wasser
-  umkristallisiert.
-
-  #ausbeute[98 g (80 % d. Th.) farblose Blättchen.]
-
-  #kenndaten[
-    Schmp. 122 °C #h(2em) Sdp. 249 °C
-  ]
-]
-
-#gefahr[Ether ist extrem entzündbar und bildet mit Luft explosive Gemische sowie
-  explosive Peroxide. Magnesiumspäne und Grignard-Lösungen entzünden sich an
-  Luft und zersetzen sich mit Wasser unter Feuererscheinung;
-  Trockeneis-Einsatz ohne Wasser, Schutzbrille und Gesichtsschutz tragen.
-  Salzsäure ist ätzend.]
-
 === Nucleophile aromatische Substitution
 
 Ein Nucleophil greift einen Aromaten nur an, wenn die Elektronendichte niedrig
@@ -393,6 +353,61 @@ elektronenarm und reagiert nur unter drastischen Bedingungen (bevorzugt in
 deshalb mit Acetylnitrat bei tiefer Temperatur. Pyridin wird mit
 Kaliumpermanganat zu Pyridin-2,3-dicarbonsäure oxidiert, mit Natriumamid am
 2-C-Stellungswechsel metalliert.
+
+=== Weitere Funktionalisierungen am Ring
+
+Nicht jede Einführung einer funktionellen Gruppe am Aromaten ist eine
+elektrophile Substitution. Zwei präparativ wichtige Wege laufen über
+Organometallverbindungen und ergänzen das Spektrum:
+
+- *Metallierung*: Brombenzol + Magnesium → Phenylmagnesiumbromid; Umsetzung mit
+  Elektrophilen (CO#sub[2], DMF, Oxiran, Halogen) führt zu Carbonsäuren,
+  Aldehyden, Alkoholen und Halogeniden.
+- *Lithiierung*: Mit n-Butyllithium entsteht aus Brombenzol bei −78 °C
+  Phenyllithium; die Reaktion ist schneller und erlaubt tiefere Temperaturen.
+
+$ "Ph–Br" ->^("Mg, Et"_2"O") "Ph–MgBr" ->^("CO"_2", dann H"_3"O"^+) "Ph–COOH" $
+
+#vorschrift("D.5.5", [Benzoesäure aus Brombenzol über das Grignard-Reagenz])[
+  #reaktion(
+    $ "C" _6"H" _5"Br" + "Mg" + "CO" _2 $,
+    [#text(size: 6.5pt)[Ether, dann H#sub[3]O⁺]],
+    $ "C" _6"H" _5"COOH" $,
+  )
+
+  #ansatz[
+    157 g (105 mL; 1,0 mol) Brombenzol, 27 g (1,1 mol) Magnesiumspäne,
+    500 mL absoluter Ether, Trockeneis (Überschuß).
+  ]
+
+  In einem 2-l-Dreihalskolben mit Rührer, Rückflußkühler, Tropftrichter und
+  Calciumchloridrohr werden Magnesiumspäne und 50 mL Ether vorgelegt; man
+  versetzt mit einer Spatelspitze Iod und tropft 10 mL Brombenzol zu, bis die
+  Reaktion anspringt. Dann wird der Rest des Brombenzols in 200 mL Ether so
+  zugetropft, daß der Ether gelinde siedet.
+
+  Nach beendeter Zugabe erhitzt man 30 min unter Rückfluß, kühlt auf 0 °C und
+  gießt die Lösung auf einen Überschuß gepulverter Trockeneis. Nach dem
+  Auftauen wird mit 300 mL Eiswasser und anschließend mit verdünnter Salzsäure
+  bis pH 2 versetzt.
+
+  Man trennt die etherische Phase ab, extrahiert die wäßrige Phase zweimal mit
+  Ether und engt die vereinigten Extrakte ein. Der Rückstand wird aus Wasser
+  umkristallisiert.
+
+  #ausbeute[98 g (80 % d. Th.) farblose Blättchen.]
+
+  #kenndaten[
+    Schmp. 122 °C #h(2em) Sdp. 249 °C
+  ]
+]
+
+#gefahr[Ether ist extrem entzündbar und bildet mit Luft explosive Gemische sowie
+  explosive Peroxide. Magnesiumspäne und Grignard-Lösungen entzünden sich an
+  Luft und zersetzen sich mit Wasser unter Feuererscheinung;
+  Trockeneis-Einsatz ohne Wasser, Schutzbrille und Gesichtsschutz tragen.
+  Salzsäure ist ätzend.]
+
 
 === Aufgaben
 

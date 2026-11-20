@@ -49,6 +49,50 @@ Für die Auswahl gelten drei Regeln:
 - *Unpolare Lösungsmittel trennen schlecht.* Salze bleiben ungelöst, die
   Reaktion findet an der Phasengrenze statt — ein Fall für Phasentransfer.
 
+*Lösungsmittel im Überblick.* Die Lösungsmittelauswahl bestimmt
+Kristallisation, Extraktion und Chromatographie. Die folgende Tabelle nennt
+die wichtigsten Daten; die Reinigungsvorschriften stehen im folgenden
+Abschnitt.
+
+#figure(
+  table(
+    columns: (1.15fr, auto, auto, auto, auto),
+    inset: (x: 5pt, y: 3.0pt),
+    align: (left, right, right, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Lösungsmittel*], [*Sdp. °C*], [*Flammpunkt °C*], [*ρ*], [*$n_D^20$*]),
+    [Wasser], [100], [—], [1,00], [1,3330],
+    [Methanol], [64,7], [11], [0,79], [1,3284],
+    [Ethanol], [78,3], [12], [0,79], [1,3611],
+    [2-Propanol], [82,4], [12], [0,79], [1,3772],
+    [Aceton], [56,1], [−18], [0,79], [1,3588],
+    [Acetonitril], [81,6], [2], [0,78], [1,3441],
+    [Essigester], [77,1], [−4], [0,90], [1,3724],
+    [Essigsäure], [118,1], [39], [1,05], [1,3716],
+    [Diethylether], [34,6], [−45], [0,71], [1,3526],
+    [THF], [66,0], [−14], [0,89], [1,4050],
+    [1,4-Dioxan], [101,1], [12], [1,03], [1,4224],
+    [Dichlormethan], [39,8], [—], [1,33], [1,4242],
+    [Chloroform], [61,2], [—], [1,49], [1,4459],
+    [Tetrachlormethan], [76,7], [—], [1,59], [1,4601],
+    [Pentan], [36,1], [−40], [0,63], [1,3575],
+    [Hexan], [68,7], [−23], [0,66], [1,3749],
+    [Heptan], [98,4], [−4], [0,68], [1,3877],
+    [Petrolether (30–60)], [30–60], [−45], [0,65], [≈ 1,37],
+    [Cyclohexan], [80,7], [−17], [0,78], [1,4262],
+    [Benzol], [80,1], [−11], [0,88], [1,5011],
+    [Toluol], [110,6], [4], [0,87], [1,4961],
+    [Xylol (Isomerengem.)], [138–144], [25], [0,87], [≈ 1,50],
+    [Pyridin], [115,3], [20], [0,98], [1,5093],
+    [DMF], [153,0], [58], [0,95], [1,4305],
+    [DMSO], [189,0], [89], [1,10], [1,4793],
+    [Kohlenstoffdisulfid], [46,2], [−30], [1,26], [1,6319],
+  ),
+  caption: [Physikalische Daten gebräuchlicher Lösungsmittel (1013 hPa).
+    ρ in g·cm#super[−3]. Benzol und Tetrachlormethan sind krebserzeugend —
+    wo möglich durch Toluol bzw. Dichlormethan ersetzen.],
+) <tab:loesungsmittel>
+
 === Trocknung
 
 Wasser ist der häufigste Störfaktor. Für die Trocknung gibt es vier Wege:
@@ -109,6 +153,31 @@ Wasser; dann nachdosieren. Vor dem Abdestillieren oder Einengen wird das
 Trockenmittel abfiltriert oder abdekantiert — mitgerissenes Pulver kann beim
 Erhitzen stören. Die Wirksamkeit prüft man mit wasserfreiem Kupfersulfat
 (bleibt weiß) oder durch den Brechungsindex der klaren Lösung.
+
+*Trocknungsmittel und ihre Eignung.* Volumen, Tempo und chemische
+Verträglichkeit entscheiden. „Verträglich" meint: kein Adduktbildner, keine
+Protonenaustausch-Reaktion mit dem gelösten Produkt.
+
+#figure(
+  table(
+    columns: (1fr, 0.9fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Trocknungsmittel*], [*Geeignet für*], [*Nicht geeignet für*]),
+    [Natriumsulfat], [die meisten organischen Phasen], [— (neutral, langsam, hohe Kapazität)],
+    [Magnesiumsulfat], [Ester, Ketone, Ether], [alkalische Produkte (leicht sauer)],
+    [Calciumchlorid], [Alkane, Halogenkohlenwasserstoffe], [Alkohole, Amine, Ketone (Addukte!)],
+    [Kaliumcarbonat], [Amine, basische Lösungen], [säureempfindliche Produkte],
+    [Phosphorpentoxid], [Alkane, Ether, Halogenkohlenwasserstoffe], [Alkohole, Amine, Basen],
+    [Molsieb 3 Å / 4 Å], [fast alle Lösungsmittel, auch wasserarm], [— (stark, schnell, regenerierbar)],
+    [Natriumdraht], [Ether, Alkane (nach Peroxidtest)], [Alkohole, alles Protische],
+    [Baryumoxid], [Amine, Pyridin], [Ester, Säurechloride],
+  ),
+  caption: [Trocknungsmittel im Labor. Die Kapazität von Natriumsulfat ist
+    hoch, das Tempo gering; Magnesiumsulfat trocknet schnell, aber weniger
+    vollständig. Molsieb ist die Wahl für wasserempfindliche Ansätze.],
+) <tab:trocknungsmittel>
 
 === Peroxide und ihre Entfernung
 
@@ -286,3 +355,9 @@ Suspension eingesetzt.
   0,1 % Wasser zu trocknen?
 - Ein Lösungsmittel zeigt nach der Lagerung eine positive Peroxidprobe. Darf
   man es über Natrium/Benzophenon destillieren?
+- Welches Lösungsmittel wählen Sie für die Umkristallisation eines
+  Stoffes, der in heißem Wasser löslich, in kaltem unlöslich ist?
+- Warum darf Calciumchlorid nicht zur Trocknung einer Amin-Lösung
+  verwendet werden?
+- Ein Ether ist über Natrium getrocknet worden. Welche Prüfung muß vorher
+  durchgeführt werden, und warum?

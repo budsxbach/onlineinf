@@ -178,20 +178,21 @@ node tools/stats.mjs            # Kennzahlen
 | Teil | Stand | Umfang im PDF |
 | --- | --- | --- |
 | 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
-| 1 Gerüst | **fertig** | Teile A–H angelegt, Inhaltsverzeichnis |
-| 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 75 %)** | A.1–A.5, 36 S. |
-| 3 B Literatur/Protokoll | **Grundfassung fertig** | B.1–B.8, 5 S. |
-| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 55 %)** | C.1–C.9, 13 S. |
-| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 10 %)** | D.1–D.9, 30 S., 17 Vorschriften |
-| 6 E Identifizierung | **Grundfassung fertig (ca. 30 %)** | E.1–E.2, 6 S. |
-| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 30 %)** | F.1–F.2, 6 S. |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 30 %)** | G.1–G.3, 5 S. |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, 4 S. |
+| 1 Gerüst | **fertig** | Teile A–H angelegt, Inhaltsverzeichnis, Register |
+| 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 45 %)** | 5 S. Titelei + A.1–A.5, S. 5–28 |
+| 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.9, S. 23–28 |
+| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 29–44 |
+| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 45–87, 42 Vorschriften |
+| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 88–94 |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 95–99 |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 100–105 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 106–111, Register 122 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **90 Seiten** Buchformat (168 × 240 mm), 26 400 Wörter,
-26 Abbildungen, 46 Tabellen, 17 Vorschriften. Kolumnentitel, Teilezählung,
-Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen.
+Aktuell gesetzt: **111 Seiten** Buchformat (168 × 240 mm), 36 300 Wörter,
+24 Abbildungen, 79 Tabellen, 42 Vorschriften. Kolumnentitel, Teilezählung,
+Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
+`python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF.
 
 **Nächste Schritte, in dieser Reihenfolge:**
 

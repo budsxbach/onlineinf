@@ -283,6 +283,12 @@ Reaktion bereitwillig ab.
 
 $ "ArH" + 2 "Na" + 2 "EtOH" -> "Cyclohexadien" + 2 "NaOEt" $
 
+*Nitrogruppen zu Aminen.* Die Reduktion der Nitrogruppe ist die wichtigste
+Stufe am Aromaten: metallisch (Zinn oder Eisen in Salzsäure) oder katalytisch
+(Wasserstoff an Palladium). Die Metallreduktion läuft über Nitroso- und
+Hydroxylamin-Zwischenstufen; in Säure fällt das Anilin als Aniliniumchlorid
+an und wird erst bei der Aufarbeitung freigesetzt.
+
 *Oxidation von Phenolen und Aminen.* Phenole oxidieren leicht zu Chinonen, Amine
 zu Nitroso- und Nitroverbindungen. Beide Reaktionen sind präparativ nutzbar, aber
 auch die Ursache für Verfärbungen bei der Lagerung; deshalb werden Phenole unter
@@ -323,6 +329,49 @@ Stickstoff und im Dunkeln aufbewahrt.
 brennbaren Stoffen (Papier, Alkohol, Glycerin) in Berührung kommen — sonst
 Selbstentzündung. Toluol ist gesundheitsschädlich, entzündbar und
 reproduktionstoxisch; im Abzug arbeiten. Salzsäure ist ätzend.]
+
+#vorschrift("D.5.5", [Anilin aus Nitrobenzol])[
+  #reaktion(
+    $ "C" _6"H" _5"NO" _2 + 3 "Sn" + 7 "HCl" $,
+    [#text(size: 6.5pt)[Rückfluß, dann NaOH]],
+    $ "C" _6"H" _5"NH" _2 + 3 "SnCl" _2 + 2 "H" _2"O" $,
+  )
+
+  #ansatz[
+    25 g (21 mL; 0,2 mol) Nitrobenzol, 72 g (0,6 mol) Zinn granuliert,
+    100 mL konzentrierte Salzsäure, 40-prozentige Natronlauge.
+  ]
+
+  In einem 500-mL-Rundkolben mit Rückflußkühler werden das Zinn und 50 mL
+  Salzsäure vorgelegt. Unter Rühren tropft man das Nitrobenzol zu; die
+  Reaktion läuft von selbst warm bis zum Sieden. Nach beendeter Zugabe
+  erhitzt man 30 min zum mäßigen Rückfluß, bis keine Öltröpfchen mehr zu
+  sehen sind und die Lösung klar geworden ist.
+
+  Man verdünnt mit 150 mL Wasser, filtriert unverbrauchtes Zinn ab und stellt
+  das Filtrat in ein Eisbad. Unter Rühren wird soviel 40-prozentige
+  Natronlauge zugesetzt, bis die Lösung stark alkalisch reagiert — die
+  Zugabe ist stark exotherm und erfolgt tropfenweise.
+
+  Das freie Anilin wird mit Wasserdampf übergetrieben; das Destillat wird mit
+  Natriumchlorid gesättigt, die obere wäßrige Phase abgetrennt und die
+  organische Phase über Kaliumhydroxid getrocknet. Man destilliert; die bei
+  182–185 °C übergehende Fraktion ist reines Anilin.
+
+  #ausbeute[14 g (75 % d. Th.) gelblich ölige Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 184 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5863 #h(2em)
+    $rho_20$ = 1,022 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Nitrobenzol und Anilin sind hochgiftig: Beide bilden im Körper
+  Methämoglobin und führen zu Sauerstoffmangel — Gift geht auch über die Haut!
+  Nur im Abzug mit Handschuhen und Schutzbrille arbeiten, Spritzer sofort
+  abwaschen. Salzsäure und Natronlauge sind stark ätzend; die Alkalizugabe
+  erfolgt unter Eisbadkühlung. Anilinhaltige Abfälle werden getrennt
+  gesammelt und nicht in den Abfluß gegeben.]
 
 === Aromaten mit Heteroatomen
 
@@ -368,7 +417,7 @@ Organometallverbindungen und ergänzen das Spektrum:
 
 $ "Ph–Br" ->^("Mg, Et"_2"O") "Ph–MgBr" ->^("CO"_2", dann H"_3"O"^+) "Ph–COOH" $
 
-#vorschrift("D.5.5", [Benzoesäure aus Brombenzol über das Grignard-Reagenz])[
+#vorschrift("D.5.6", [Benzoesäure aus Brombenzol über das Grignard-Reagenz])[
   #reaktion(
     $ "C" _6"H" _5"Br" + "Mg" + "CO" _2 $,
     [#text(size: 6.5pt)[Ether, dann H#sub[3]O⁺]],
@@ -417,3 +466,10 @@ $ "Ph–Br" ->^("Mg, Et"_2"O") "Ph–MgBr" ->^("CO"_2", dann H"_3"O"^+) "Ph–CO
   *meta*-Produkt, in schwach saurer dagegen *para*-Produkt?
 - Formulieren Sie die Synthese von 4-Bromanilin aus Anilin in zwei Stufen und
   begründen Sie die Reihenfolge.
+- Warum fällt das Anilin bei der Reduktion nicht sofort aus, sondern erst
+  nach der Zugabe von Natronlauge?
+- Vergleichen Sie die Reduktion mit Zinn/Salzsäure und mit Wasserstoff an
+  Palladium: Welche Vor- und Nachteile hat jedes Verfahren?
+- p-Nitrotoluol soll zu p-Toluidin reduziert werden. Übertragen Sie den
+  Ansatz von D.5.5 und berechnen Sie die Mengen für 0,2 mol.
+- Warum wird das Ende der Reduktion an verschwundenen Öltröpfchen erkannt?

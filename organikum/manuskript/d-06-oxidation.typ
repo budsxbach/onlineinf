@@ -206,6 +206,55 @@ die zuverlässigste Methode zur Lagebestimmung einer Doppelbindung.
 
 $ "RCH=CHR'" ->[(1) "O" _3, (2) "Zn/H"^"+"] "RCHO" + "R'CHO" $
 
+*Milde Hydroxylierung.* Verdünntes Kaliumpermanganat oxydiert Alkene bei
+niedriger Temperatur zu *cis*-1,2-Diolen; die Syn-Addition läuft über einen
+cyclischen Mangat-Ester. Entscheidend sind Temperatur und Konzentration: Bei
+mehr als 15 °C oder hohen Konzentrationen spaltet sich die Doppelbindung
+stattdessen — der Weg zu Adipinsäure (D.6.4) und der Grund, weshalb der
+Baeyer-Nachweis nur für qualitative Zwecke taugt.
+
+#vorschrift("D.6.5", [cis-1,2-Cyclohexandiol aus Cyclohexen])[
+  #reaktion(
+    $ "C" _6"H" _10 + "KMnO" _4 + "H" _2"O" $,
+    [#text(size: 6.5pt)[0–10 °C, neutral]],
+    $ "cis-1,2-C" _6"H" _10"(OH)" _2 + "MnO" _2 + "KOH" $,
+  )
+
+  #ansatz[
+    8,2 g (10 mL; 0,1 mol) Cyclohexen, 16 g (0,1 mol) Kaliumpermanganat,
+    300 mL Wasser.
+  ]
+
+  In einem 500-mL-Dreihalskolben mit Rührer, Tropftrichter und Thermometer
+  werden 300 mL Wasser mit dem Permanganat versetzt und im Eis-Salz-Bad auf
+  5 °C gekühlt. Unter kräftigem Rühren tropft man das Cyclohexen so zu, daß
+  die Temperatur 10 °C nicht überschreitet (exotherm!); dabei entfärbt sich
+  die Lösung unter Braunfärbung.
+
+  Nach beendeter Zugabe rührt man 1 h bei Raumtemperatur nach. Der
+  Braunstein-Niederschlag wird über eine Faltenfilternutsche abgesaugt und
+  zweimal mit heißem Wasser nachgewaschen. Das Filtrat wird am Rotations-
+  verdampfer auf ein Volumen von etwa 50 mL eingeengt, mit Natriumchlorid
+  gesättigt und viermal mit je 30 mL Essigsäureethylester extrahiert.
+
+  Die vereinigten Extrakte werden über Natriumsulfat getrocknet und eingeengt;
+  der Rückstand wird aus Ethylacetat umkristallisiert.
+
+  #ausbeute[7,0 g (60 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 98 °C #h(2em) cis-Isomer #h(2em)
+    löslich in Wasser und Ethanol, unlöslich in Petrolether
+  ]
+]
+
+#gefahr[Kaliumpermanganat ist stark oxidierend und brandfördernd; die Lösung
+  färbt Haut und Textilien braun (mit verdünnter Ascorbinsäure oder
+  Natriumbisulfit reduzieren). Der Braunsteinschlamm enthält Permanganatreste
+  und wird gesammelt entsorgt, nicht in den Abfluss. Beim Zutropfen des
+  Cyclohexens strenge Temperaturkontrolle halten — oberhalb von 15 °C setzt
+  die Ringöffnung ein. Cyclohexen ist leicht entzündbar.]
+
 *Oxidation von Aromaten.* Benzol wird mit Sauerstoff an Vanadiumpentoxid zu
 Maleinsäureanhydrid oxidiert; Naphthalin mit Chromsäure zu Phthalsäureanhydrid;
 Anthracen zu Anthrachinon. Die Reaktionen laufen über Ringöffnung oder über
@@ -339,3 +388,9 @@ Derivats oder ein Spektrum erforderlich.
   erhalten werden. Ist der Wert plausibel?
 - Nennen Sie zwei Oxidationsmittel, die selektiv einen primären Alkohol zum
   Aldehyd oxidieren, und zwei, die bis zur Carbonsäure oxidieren.
+- Warum läuft die Permanganat-Oxidation von Cyclohexen bei 25 °C zu anderen
+  Produkten als bei 5 °C? Formulieren Sie beide Wege.
+- Das Ansatzprodukt der D.6.5 enthält *trans*-Cyclohexandiol-Verunreinigungen
+  nicht. Woher wissen Sie das?
+- Wie würden Sie prüfen, ob die Doppelbindung vollständig umgesetzt ist?
+- Warum wird der Extrakt mit gesättigter Natriumchloridlösung behandelt?

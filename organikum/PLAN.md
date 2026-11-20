@@ -180,16 +180,16 @@ node tools/stats.mjs            # Kennzahlen
 | 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
 | 1 Gerüst | **fertig** | Teile A–H angelegt, Inhaltsverzeichnis, Register |
 | 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 45 %)** | 5 S. Titelei + A.1–A.5, S. 6–24 |
-| 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.11, S. 25–30 |
-| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 31–46 |
-| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 47–95, 47 Vorschriften |
-| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 96–104 |
-| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 105–110 |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 111–117 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 118–121, Register 162 Stichwörter |
+| 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.9, S. 25–31 |
+| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 32–47 |
+| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 48–96, 47 Vorschriften |
+| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 97–105 |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 106–111 |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 112–118 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 119–122, Register 164 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **121 Seiten** Buchformat (168 × 240 mm), 40 800 Wörter,
+Aktuell gesetzt: **122 Seiten** Buchformat (168 × 240 mm), 41 000 Wörter,
 26 Abbildungen, 106 Tabellen, 47 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF.

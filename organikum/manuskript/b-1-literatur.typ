@@ -215,6 +215,42 @@ Originalliteratur nach.
   aufbauen.
 ]
 
+*Recherchebeispiel: Chalcon.* Die Fragestellung sei: Wie stellt man Chalcon
+(1,3-Diphenylprop-2-en-1-on) dar? Der Weg durch die Datenbank dauert keine
+zehn Minuten, wenn man systematisch vorgeht.
+
+1. *Substanz klären.* IUPAC-Name, Trivialname, CAS-Nummer (94-41-7) und
+  Struktur notieren. Wer hier schlampert, sucht später mit dem falschen
+  Stichwort.
+2. *Datenbank abfragen.* In Reaxys oder SciFinder nach der CAS-Nummer suchen,
+  auf „Darstellungen" filtern. Chalcon hat Dutzende Vorschriften; die
+  Trefferliste wird nach Ausbeute absteigend sortiert.
+3. *Vorschriften auswählen.* Drei Kandidaten genügen: die klassische
+  Aldolkondensation von Benzaldehyd mit Acetophenon in Ethanol/NaOH
+  (Ausbeute 80–85 %), eine Variante in wäßrigem Medium und eine mit
+  Feststoffkatalysator. Für den Anfang ist die klassische Vorschrift die
+  beste: gängige Edukte, Umkristallisation statt Chromatographie.
+4. *Originalarbeit nachschlagen.* Der Literaturhinweis wird verfolgt; in der
+  Originalvorschrift stehen Angaben, die in der Datenbank fehlen: Rührezeit,
+  Temperatur, Grad des Auskristallisierens, Umkristallisationsverhältnis.
+5. *Mengen rechnen.* 0,05 mol Benzaldehyd (5,3 g) und 0,055 mol Acetophenon
+  (6,6 g) liefern theoretisch 10,4 g Chalcon; bei 85 % erwartet man 8,8 g.
+  Diese Zahlen stehen im Protokoll, bevor die Apparatur aufgebaut wird.
+6. *Sicherheit.* Sicherheitsdatenblätter von Benzaldehyd (Sensibilisator),
+  Acetophenon und Natronlauge lesen; Gefahrstoffkataster prüfen.
+
+#block(above: 8pt, below: 8pt, inset: (x: 8pt, y: 6pt), stroke: (left: 2pt + black), fill: luma(246))[
+  *Merke.* Eine Recherche ist erst fertig, wenn man die Vorschrift in der
+  Originalquelle gelesen hat. Datenbanken zeigen, *daß* es eine Vorschrift
+  gibt — die Originalarbeit sagt, *wie* sie geht.
+]
+
+*Übung.* Suchen Sie nach einer Vorschrift für 4-Methoxychalcon und für die
+Reduktion von Benzophenon zu Benzhydrol. Notieren Sie jeweils: CAS-Nummer,
+zwei Darstellungen mit Ausbeute und Bedingungen, die Originalstelle und die
+Mengen für einen 0,05-mol-Ansatz. Vergleichen Sie, ob die Datenbankangabe mit
+der Originalarbeit übereinstimmt.
+
 == Protokollführung
 
 Das Protokoll ist die einzige Spur, die von einem Versuch bleibt. Es wird

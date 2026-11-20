@@ -209,6 +209,29 @@ der Kolben darf nie frei am Kühler hängen.
   ),
 ) <fig:destillationen>
 
+*Standardapparaturen im Überblick.* Die folgende Übersicht nennt
+Aufbau, Einsatz und die typischen Fehlerquellen der gebräuchlichsten
+Apparaturen.
+
+#figure(
+  table(
+    columns: (1fr, 1.1fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Apparatur*], [*Einsatz*], [*Typischer Fehler*]),
+    [Einfachdestillation], [Trennung von Lösungsmittel, Siedepunktdifferenz > 80 K], [Überhitzung, Stoßdestillation],
+    [Vakuumdestillation], [hochsiedende Flüssigkeiten unter 15 hPa], [Siedeverzügen, Druckausgleich fehlt],
+    [Rektifikation (Vigreux, Kolonne)], [Siedepunktdifferenz 10–80 K], [zu hohe Beladung, keine Isolierung],
+    [Rückfluß mit CaCl#sub[2]-Rohr], [Reaktionen am Siedepunkt, wasserempfindlich], [offener Kühler, Feuchtigkeit],
+    [Inertgas-Apparatur (Schlenk)], [Luft- oder feuchtigkeitsempfindliche Reagenzien], [Undichtigkeit, falsche Gase],
+    [Wasserbad / Eisbad], [Temperaturkontrolle bis 100 °C / 0 °C], [Wasserbad ohne Thermostat übersieht Sieden],
+    [Soxhlet-Apparatur], [Extraktion fester Stoffe], [Thimble löst sich, Lösungsmittelmenge zu gering],
+    [Sublimationsapparatur], [Reinigung von Feststoffen (Naphthalin, Koffein)], [zu starker Druckanstieg, zu hohe Temperatur],
+  ),
+  caption: [Standardapparaturen der organisch-chemischen Präparation.],
+) <tab:standardapparaturen>
+
 === Rühren und Schütteln
 
 Rühren verhindert örtliche Überkonzentrationen, hält suspendierte Feststoffe in
@@ -379,6 +402,35 @@ ein Ölbad.
   caption: [Grundausstattung an Chemikalien und Vorratsgefäßen.],
 ) <tab:grundausstattung>
 
+*Grundausstattung des Arbeitsplatzes.* Wer sich ein Labor
+einrichtet, braucht zunächst diese Ausstattung; die Liste ist bewußt
+knapp gehalten und deckt 80 % der Grundpraktikums-Arbeiten ab.
+
+#figure(
+  table(
+    columns: (1.1fr, 1.2fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gerät / Material*], [*Wofür*]),
+    [Rundkolben 50, 100, 250, 500 mL (NS 29)], [Reaktionen, Destillationen],
+    [Destillieraufsatz + Vigreux-Kolonne], [Trennung nach Siedepunkt],
+    [Liebig-Kühler, Rückflußkühler], [Kondensation, Rückfluß],
+    [Schliffklemmen, Stativ, Klemmen], [sicherer Aufbau, kein Freihandbetrieb],
+    [Magnetrührer + Rührfische], [gleichmäßiges Rühren, auch in geschlossenen Systemen],
+    [Scheidetrichter 250 mL], [Extraktion, Phasentrennung],
+    [Vakuumpumpe + Vakuumverteiler], [Vakuumdestillation, Filtration],
+    [Rotationsverdampfer], [Lösemittelentfernung unter Schonung],
+    [Wasserbad, Heizpuppe, Ölbad], [Temperaturkontrolle],
+    [Exsikkator + Vakuumpumpe], [Trocknung, Lagerung luftempfindlicher Substanzen],
+    [Analysewaage (0,01 g), Präzisionswaage (0,1 mg)], [Ansatz, Ausbeutebestimmung],
+    [Schmelzpunktapparatur], [Reinheitsprüfung, Identifizierung],
+    [DC-Kammer, UV-Lampe (254 nm)], [Verlaufskontrolle, Identitätsvergleich],
+    [Schutzausrüstung: Brille, Handschuhe, Kittel], [persönlicher Schutz — keine Verhandlungssache],
+  ),
+  caption: [Grundausstattung des organisch-chemischen Arbeitsplatzes.],
+) <tab:grundausstattung>
+
 === Literaturhinweise
 
 Die in diesem Kapitel gemachten Angaben zu Werkstoffen, Schliffen und
@@ -386,3 +438,7 @@ Temperaturbereichen folgen den einschlägigen Normblättern (DIN 12242,
 DIN ISO 3585) und den Gerätehandbüchern der Hersteller. Für die Sicherheit im
 Laboratorium sei auf Teil G verwiesen, für Trennverfahren auf das folgende
 Kapitel.
+- Welche Apparatur wählen Sie, um 200 mL eines Gemisches aus Aceton und
+  Wasser zu trennen? Begründen Sie.
+- Nennen Sie drei Gründe, warum eine Vakuumdestillation ohne
+  Druckausgleich gefährlich ist.

@@ -85,6 +85,51 @@ steht die größte Gruppe senkrecht zur Carbonylebene; der Angriff erfolgt von d
 Seite der kleineren Gruppe. Mit chelatbildenden Reagenzien (Zn²⁺, Mg²⁺) kehrt
 sich die Selektivität um.
 
+*Grignard-Addition als Kernreaktion.* Organomagnesium-Verbindungen
+greifen Carbonylgruppen nucleophil an; die Alkoholat-Zwischenstufe wird
+bei der wäßrigen Aufarbeitung zum Alkohol. Die folgende Vorschrift zeigt
+die Addition von Phenylmagnesiumbromid an Benzophenon — ein tertiärer
+Alkohol in einer Stufe.
+
+#vorschrift("D.7.9", [Triphenylmethanol aus Benzophenon])[
+  #reaktion(
+    $ "C" _6"H" _5"MgBr" + ("C" _6"H" _5)_2"C=O" $,
+    [#text(size: 6.5pt)[THF, dann H#sub[3]O#super[+]]],
+    $ ("C" _6"H" _5)_3"COH" $,
+  )
+
+  #ansatz[
+    39 g (27 mL; 0,25 mol) Brombenzol, 6,1 g (0,25 mol) Magnesiumspäne,
+    45,5 g (0,25 mol) Benzophenon, 120 mL THF.
+  ]
+
+  In einem 250-mL-Dreihalskolben mit Rückflußkühler, Tropftrichter und
+  Rührer bereitet man das Grignard-Reagenz: Magnesiumspäne und ein
+  Rührfisch in 40 mL trockenem THF, 5 g Brombenzol zugeben, Reaktion durch
+  leichte Erwärmung starten, dann den Rest in 40 mL THF so zuropfen, daß
+  gelindes Sieden anhält.
+
+  Das Benzophenon in 40 mL THF tropft man so zu, daß die Reaktion weiter
+  siedet. Man erhitzt 30 min nach, kühlt ab und gießt vorsichtig auf
+  150 g Eis mit 30 mL konz. Salzsäure. Das Triphenylmethanol fällt als
+  weißer Niederschlag aus; man saugt ab und wäscht mit kaltem Wasser.
+
+  Zur Reinigung wird aus Ethanol umkristallisiert.
+
+  #ausbeute[36 g (55 % d. Th.) weiße Kristalle.]
+
+  #kenndaten[
+    Schmp. 162 °C #h(2em) löslich in Ethanol, Ether, Chloroform
+    #h(2em) $M$ = 260,3 g·mol#super[−1]
+  ]
+]
+
+#gefahr[THF bildet Peroxide und ist leicht entzündbar — vor Gebrauch
+  Peroxidtest, nicht über Natrium trocknen, wenn Alter unbekannt. Grignard-
+  Reagenzien reagieren heftig mit Wasser; Apparatur wasserfrei, Inertgas
+  empfohlen. Brombenzol ist gesundheitsschädlich, Magnesiumspäne sind
+  feuchtigkeitsempfindlich und brennen.]
+
 === α-Reaktionen: Enole und Enolate
 
 Die α-Wasserstoffatome einer Carbonylverbindung sind acid, weil das entstehende
@@ -563,3 +608,6 @@ Schotten-Baumann-Acylierung.
   vorliegen?
 - Berechnen Sie die Atomökonomie der Claisen-Esterkondensation und
   vergleichen Sie mit der Veresterung.
+- Vergleichen Sie die Addition von Phenylmagnesiumbromid an Benzophenon
+  und an Ethylformiat. Welche Produkte entstehen, und warum?
+- Warum muß das THF für die Grignard-Reaktion absolut trocken sein?

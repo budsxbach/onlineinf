@@ -142,26 +142,6 @@ Verschiebung (Umgebung), Integral (Anzahl) und Aufspaltung (Nachbarschaft). Für
 die Identifizierung einer einfachen Verbindung genügt oft die Kombination
 dieser drei Angaben.
 
-#figure(
-  table(
-    columns: (1.6fr, auto, 2.4fr),
-    inset: (x: 5pt, y: 3.4pt),
-    align: (left, right, left),
-    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
-    table.header([*Protonentyp*], [*δ in ppm*], [*Bemerkung*]),
-    [Alkyl, CH#sub[3]], [0,9–1,2], [Triplett oder Singulett],
-    [Alkyl, CH#sub[2]], [1,2–1,6], [Multiplett],
-    [Allyl, benzylisch], [2,0–2,5], [Multiplett],
-    [α zu Carbonyl], [2,1–2,6], [Singulett bei Methylketon],
-    [O–CH#sub[3]], [3,3–3,9], [Singulett],
-    [O–CH#sub[2]], [4,0–4,5], [Quartett bei Ethylester],
-    [Aromat], [6,5–8,0], [Multiplett],
-    [Aldehyd], [9,5–10,5], [Singulett oder Dublett],
-    [Carbonsäure], [10–13], [breit],
-  ),
-  caption: [#super[1]H-chemische Verschiebungen. Die Werte gelten für CDCl#sub[3]
-    als Lösungsmittel.],
-) <tab:nmr-verschiebungen>
 
 *Aufspaltung.* Die Multiplett-Struktur folgt der n+1-Regel: Ein Proton mit n
 äquivalenten Nachbarn erscheint als n+1 Linien. Bei aromatischen und

@@ -337,6 +337,82 @@ scharfem Schmelzpunkt — das klassische Mittel zur Identifizierung.
     genügt die Übereinstimmung mit dem Literaturwert auf ± 2 °C.],
 ) <tab:carbonyl-derivate>
 
+=== Reaktivität der Carbonsäurederivate
+
+Alle Derivate der Carbonsäure reagieren nach demselben Muster: Das Nucleophil
+greift am Carbonylkohlenstoff an, es entsteht ein tetraedrisches Zwischenprodukt,
+und die Abgangsgruppe wird eliminiert. Die Reaktivität hängt davon ab, wie gut
+die Abgangsgruppe ist und wie stark sie den Carbonylkohlenstoff desaktiviert.
+
+#figure(
+  table(
+    columns: (1.4fr, 1.3fr, auto, 1.6fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Derivat*], [*Abgangsgruppe*], [*rel. Rate*], [*typische Umsetzung*]),
+    [Säurechlorid], [Cl⁻], [1000], [Amid, Ester, Anhydrid],
+    [Anhydrid], [RCOO⁻], [100], [Acylierung, Ester],
+    [Ester], [RO⁻], [1], [Hydrolyse, Umesterung],
+    [Carbonsäure], [HO⁻], [0,01], [nur mit Aktivierung],
+    [Amid], [NH#sub[2]⁻], [0,001], [Hydrolyse, Dehydratisierung],
+  ),
+  caption: [Reaktivitätsreihe der Carbonsäurederivate. Die Reihe gilt für
+    nucleophile Substitutionen am Acylkohlenstoff.],
+) <tab:acyl-reaktivitaet>
+
+*Anwendung in der Synthese.* Man wählt das Derivat so unreaktiv wie möglich, um
+Selektivität zu gewinnen: Ein Säurechlorid setzt man nur dort ein, wo keine
+anderen nucleophilen Gruppen im Molekül sind; für die Acylierung empfindlicher
+Alkohole nimmt man ein Anhydrid oder aktiviert die Säure in situ mit DCC.
+
+*Acylierung von Phenolen und Alkoholen.* Die Veresterung von Phenolen gelingt mit
+Carbonsäuren nicht direkt, weil das Phenoxid zu schwach nucleophil und die
+Gleichgewichtslage ungünstig ist. Man acyliert mit Anhydrid in Gegenwart von
+Schwefelsäure oder Pyridin — die klassische Vorschrift für Acetylsalicylsäure.
+
+#vorschrift("D.7.5", [Acetylsalicylsäure aus Salicylsäure])[
+  #reaktion(
+    $ "2-HOC" _6"H" _4"COOH" + "(CH" _3"CO)" _2"O" $,
+    [#text(size: 6.5pt)[H#sub[2]SO#sub[4], 60 °C]],
+    $ "2-CH" _3"COO-C" _6"H" _4"COOH" + "CH" _3"COOH" $,
+  )
+
+  #ansatz[
+    138 g (1,0 mol) Salicylsäure, 153 g (142 mL; 1,5 mol) Essigsäureanhydrid,
+    5 mL konzentrierte Schwefelsäure.
+  ]
+
+  In einem 1-l-Erlenmeyerkolben mit Thermometer werden Salicylsäure und
+  Essigsäureanhydrid vorgelegt und mit der Schwefelsäure versetzt. Man erwärmt
+  im Wasserbad auf 60 °C und hält diese Temperatur 30 min; die Salicylsäure
+  löst sich, anschließend beginnt das Produkt zu kristallisieren.
+
+  Man kühlt auf Raumtemperatur, gibt 300 mL Wasser zu und zerstört das
+  überschüssige Anhydrid durch 30 min Rühren (Hydrolyse zu Essigsäure).
+
+  Man saugt ab, wäscht mit kaltem Wasser und kristallisiert aus Ethanol/Wasser
+  (1 : 3) um. Das Produkt wird bei 60 °C getrocknet — nicht höher, sonst
+  entsteht aus Spuren von Schwefelsäure und Feuchtigkeit Essigsäuregeruch.
+
+  #ausbeute[162 g (90 % d. Th.) farblose Nadeln.]
+
+  #kenndaten[
+    Schmp. 136 °C #h(2em) Gehalt (Titration) > 99,5 % #h(2em)
+    Säurezahl 311 mg KOH·g#super[−1]
+  ]
+]
+
+#gefahr[Essigsäureanhydrid ist ätzend, verursacht schwere Augenschäden und reizt
+  die Atemwege; mit Wasser reagiert es heftig unter Wärmeentwicklung — nie in
+  geschlossenen Gefäßen hydrolysieren. Schwefelsäure ist stark ätzend.
+  Salicylsäure reizt Haut und Augen; Acetylsalicylsäure ist
+  gesundheitsschädlich bei größeren Mengen (Salicylismus).]
+
+*Prüfung auf Reinheit.* Acetylsalicylsäure riecht nach Essigsäure, wenn sie
+teilweise hydrolysiert ist; der Gehalt wird durch Titration mit Natronlauge
+bestimmt. Ein Gehalt unter 99 % zeigt, daß beim Trocknen zu hoch erhitzt wurde.
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber
@@ -345,3 +421,9 @@ scharfem Schmelzpunkt — das klassische Mittel zur Identifizierung.
   Wasserentzug, die von Chloral dagegen schon bei Raumtemperatur?
 - Formulieren Sie die Synthese von 4-Phenylbut-3-en-2-on aus Benzaldehyd und
   Aceton und geben Sie an, welche Nebenprodukte entstehen können.
+- Warum wird bei der Acylierung von Salicylsäure Schwefelsäure zugesetzt, obwohl
+  die Reaktion ohne Katalysator auch abläuft?
+- Ein Ester soll in ein Amid überführt werden. Welchen Weg wählen Sie, wenn der
+  Ester eine säureempfindliche Gruppe trägt?
+- Ordnen Sie die vier Derivate Acetylchlorid, Acetamid, Ethylacetat und
+  Essigsäureanhydrid nach ihrer Hydrolysegeschwindigkeit in Wasser.

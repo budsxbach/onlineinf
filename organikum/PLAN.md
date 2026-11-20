@@ -179,18 +179,18 @@ node tools/stats.mjs            # Kennzahlen
 | --- | --- | --- |
 | 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
 | 1 Gerüst | **fertig** | Teile A–H angelegt, Inhaltsverzeichnis, Register |
-| 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 45 %)** | 5 S. Titelei + A.1–A.5, S. 5–28 |
-| 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.9, S. 23–28 |
-| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 29–44 |
-| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 45–87, 42 Vorschriften |
-| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 88–94 |
-| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 95–99 |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 100–105 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 106–111, Register 122 Stichwörter |
+| 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 45 %)** | 5 S. Titelei + A.1–A.5, S. 6–23 |
+| 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.11, S. 24–29 |
+| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 30–45 |
+| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 46–91, 43 Vorschriften |
+| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 92–99 |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 100–104 |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 105–110 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 111–114, Register 133 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **111 Seiten** Buchformat (168 × 240 mm), 36 300 Wörter,
-24 Abbildungen, 79 Tabellen, 42 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **114 Seiten** Buchformat (168 × 240 mm), 37 500 Wörter,
+26 Abbildungen, 100 Tabellen, 43 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF.
 

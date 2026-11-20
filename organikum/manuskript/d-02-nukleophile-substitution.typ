@@ -93,6 +93,31 @@ eine starke Base führt zur Eliminierung. Wer eine Vorschrift für ein sekundär
 Substrat schreibt, legt deshalb alle drei Bedingungen fest — nicht nur das
 Reagenz.
 
+*Grenzfälle.* Vier Substratklassen passen nicht in das Schema und werden in
+der Praxis am häufigsten falsch eingeschätzt:
+
+#figure(
+  table(
+    columns: (1.3fr, 1.5fr, 1.5fr, 1.7fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Substrat*], [*S#sub[N]2*], [*S#sub[N]1*], [*typisches Ergebnis*]),
+    [Neopentyl, (CH#sub[3])#sub[3]CCH#sub[2]X], [stark gehindert], [primäres Kation instabil], [kaum Reaktion, bei S#sub[N]1 Umlagerung],
+    [Benzylisch, allylisch], [schnell (aktiviert)], [schnell (Kation stabilisiert)], [beide Wege brauchbar, gute Ausbeuten],
+    [Vinyl-, Arylhalogenide], [ausgeschlossen], [ausgeschlossen], [inert; nur Addition-Eliminierung],
+    [Cyclopropyl], [gehindert], [Cyclopropylkation instabil], [praktisch inert],
+  ),
+  caption: [Grenzfälle der nucleophilen Substitution. Wer diese vier Fälle
+    kennt, vermeidet die üblichen Fehlplanungen.],
+) <tab:sn-grenzfaelle>
+
+Bei Vinyl- und Arylhalogeniden liegt das freie Elektronenpaar des Halogens in
+Konjugation zum π-System; die C–X-Bindung ist verkürzt und verstärkt, und der
+Rückseitenangriff ist geometrisch unmöglich. Neopentylhalogenide sind das
+Gegenstück: kinetisch unerreichbar für S#sub[N]2, thermodynamisch unerreichbar
+für S#sub[N]1 — bei energischen Bedingungen reagieren sie über Umlagerungen.
+
 *Nachweis des Mechanismus.* Drei Experimente entscheiden:
 
 - *Kinetik*: erste Ordnung → S#sub[N]1, zweite Ordnung → S#sub[N]2.
@@ -100,6 +125,23 @@ Reagenz.
 - *Mischungsverhalten*: Zusatz eines anderen Nucleophils führt bei S#sub[N]1 zu
   einem Produktgemisch, bei S#sub[N]2 zu einem einheitlichen Produkt aus dem
   zugesetzten Nucleophil.
+
+*Ionenpaare und partielle Racemisierung.* Die Stereochemie ist oft weniger
+eindeutig als das Lehrbuchschema: Das S#sub[N]1-Kation entsteht zunächst als
+Kontakt-Ionenpaar, und ein Teil davon reagiert zurück, bevor das Lösungsmittel
+die Ionen trennt. Beobachtet wird dann keine vollständige Racemisierung,
+sondern ein Inversionsexzess von 5–20 %. Wer die optische Reinheit eines
+Produkts mißt, rechnet deshalb mit diesem Hintergrund — ein kleiner
+Inversionsexzess beweist keinen S#sub[N]2-Anteil.
+
+#block(above: 8pt, below: 8pt, inset: (x: 8pt, y: 6pt), stroke: (left: 2pt + black), fill: luma(246))[
+  *Entscheidungsschema.* 1. Substrat ordnen: primär/sekundär/tertiär oder
+  Grenzfall (Tabelle). 2. Nucleophil: stark (S#sub[N]2) oder schwach
+  (S#sub[N]1)? 3. Lösungsmittel: polar-protisch oder polar-aprotisch?
+  4. Temperatur: hoch begünstigt Dissoziation und Eliminierung. 5. Nebenreaktion
+  antizipieren: Eliminierung bei starker Base, Umlagerung bei Carbeniumionen.
+  6. Kontrolle: GC des Reaktionsverlaufs, Drehung des Produkts.
+]
 
 === Reaktionsführung und Reagenzien
 
@@ -409,3 +451,15 @@ Natriumsulfat.
   ),
   caption: [Siedepunkte und Brechungsindizes der Butylhalogenide bei 20 °C.],
 ) <tab:butylhalogenide>
+
+=== Aufgaben
+
+- Neopentylbromid reagiert weder gut nach S#sub[N]2 noch nach S#sub[N]1.
+  Erklären Sie beide Beobachtungen.
+- Warum sind Chlorbenzol und Vinylchlorid inert gegenüber Natriumethanolat?
+- Bei der Solvolyse eines chiralen Halogenids erhält man 80 % Racemat und
+  20 % Inversionsexzess. Deuten Sie das Ergebnis.
+- 2-Bromoctan wird mit Natriumazid einmal in DMSO, einmal in Methanol
+  umgesetzt. Welcher Mechanismus läuft jeweils, und was ändert sich am
+  Produkt?
+- Warum läuft die Finkelstein-Reaktion in Aceton und nicht in Wasser?

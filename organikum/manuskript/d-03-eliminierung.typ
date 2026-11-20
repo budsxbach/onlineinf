@@ -110,7 +110,7 @@ Abgangsgruppe; der Übergangszustand ist planar. Daraus folgt:
   ]
 
   In einem 500-ml-Rundkolben mit Kolonnenaufsatz, absteigendem Kühler und
-  Vorlage werden Cyclohexanol und Phosphorsäure vorgelegt. Man erhitzt im
+  Vorlage werden Cyclohexanol, Phosphorsäure und Schwefelsäure vorgelegt. Man erhitzt im
   Ölbad auf 160 °C; das gebildete Cyclohexen destilliert mit Wasser über. Die
   Destillation wird fortgesetzt, bis die Temperatur im Dampfraum 95 °C
   übersteigt.

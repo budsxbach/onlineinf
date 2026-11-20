@@ -290,6 +290,54 @@ eine ausgebliebene oder überraschend gute Ausbeute.
   sofort, ob das Ergebnis plausibel ist.
 ]
 
+*Musterprotokoll.* Das folgende Protokoll zur Dehydratisierung von Cyclohexanol
+(Vorschrift D.3.1) zeigt den geforderten Umfang — eine Seite, vollständig
+wiederholbar, mit allen Zahlen *vor* dem Versuch.
+
+#block(above: 8pt, below: 8pt, inset: (x: 8pt, y: 6pt), stroke: (left: 2pt + black), fill: luma(246))[
+  *Kopf.* 12.11.2026 · Versuch: Cyclohexen aus Cyclohexanol · M. Beispiel ·
+  Betreuung: Dr. N. Mustermann
+
+  *Aufgabe.* Dehydratisierung von Cyclohexanol zu Cyclohexen (Säurekatalyse,
+  Destillation). Literatur: dieses Buch, Vorschrift D.3.1.
+
+  #figure(
+    table(
+      columns: (1.6fr, auto, auto, auto, auto, auto),
+      inset: (x: 5pt, y: 3pt),
+      align: (left, right, right, right, right, right),
+      stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+      table.header([*Substanz*], [*M*], [*n*], [*m*], [*V*], [*Äq.*]),
+      [Cyclohexanol], [100,2], [1,00], [100 g], [104 mL], [1,00],
+      [Phosphorsäure 85 %], [—], [kat.], [—], [10 mL], [—],
+      [Schwefelsäure 96 %], [—], [kat.], [—], [20 mL], [—],
+    ),
+    caption: none,
+  )
+
+  Sollausbeute: 82,1 g Cyclohexen (M = 82,1 g·mol⁻¹).
+
+  *Durchführung.* 9:15 Apparatur aufgebaut (500-mL-Kolben, Vigreux-Kolonne,
+  absteigender Kühler, Vorlage im Eisbad), Säuren zugegeben. 9:25 Ölbad auf
+  160 °C gestellt. 9:50 erste Tropfen, Dampftemperatur 82 °C, Destillat
+  milchig trüb (Wasser-Alken-Azeotrop). 10:20 Dampftemperatur steigt über
+  95 °C, Destillation beendet; im Kolben bräunliche Rückstände.
+
+  *Aufarbeitung.* Destillat mit 20 mL 10-prozentiger Natriumcarbonatlösung
+  gewaschen (lebhafte Gasentwicklung), Phasen getrennt, organische Phase über
+  Calciumchlorid 15 min getrocknet. 11:00 Destillation über Vigreux; Fraktion
+  82–84 °C gesammelt.
+
+  *Ergebnis.* 68 g (83 % d. Th.) farblose Flüssigkeit. Sdp. 83 °C;
+  $n_D^20$ = 1,4462 (Literatur 1,4465).
+
+  *Auswertung.* Verluste ca. 3 g: Rückstände im Kolben, Löslichkeit in der
+  wäßrigen Phase, Spuren im Trockenmittel. Der schnelle Anstieg der
+  Dampftemperatur am Ende zeigt, daß das Wasser ausgetrieben war. Der
+  Brechungsindex liegt 0,0003 unter dem Literaturwert — die Probe ist rein
+  genug für Folgeversuche. Abweichung von der Vorschrift: keine.
+]
+
 == Literaturhinweise
 
 Die im Text genannten Werke sind im folgenden zusammengefaßt; die Liste ist für

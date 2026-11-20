@@ -255,6 +255,29 @@ Betriebsarztes und des Rettungsdienstes am Ausgang angeschlagen. Die europäisch
 Notrufnummer 112 gilt überall; die Giftnotrufnummern sind regional
 unterschiedlich.
 
+*Erste-Hilfe-Matrix.* In den ersten Minuten entscheidet sich, wie ein
+Unfall ausgeht. Die folgende Übersicht ersetzt keine Ausbildung, gibt aber
+die Reihenfolge vor.
+
+#figure(
+  table(
+    columns: (0.9fr, 1.3fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Notfall*], [*Sofortmaßnahme*], [*Danach*]),
+    [Hautkontakt], [Kontaminierte Kleidung aus, Haut 15 min mit Wasser spülen; bei Phenol erst PEG/Ethanol, dann Wasser], [Hautarzt bei Reizung; Papiere zum Arzt mitnehmen],
+    [Augenkontakt], [Augenlid aufhalten, 15 min unter fließendem Wasser spülen], [Augenklinik, auch bei Besserung],
+    [Einatmen], [An die frische Luft, bei Bewußtlosigkeit stabile Seitenlage], [Notruf 112; Sicherheitsdatenblatt bereithalten],
+    [Verschlucken], [Nicht erbrechen! Mund spülen, Wasser in kleinen Schlucken (außer bei ätzenden Stoffen)], [Giftnotruf, Produktverpackung mitnehmen],
+    [Schnittverletzung], [Wunde drücken, hochlagern, keimfrei abdecken], [Tetanusimpfung prüfen lassen],
+    [Verbrennung], [kaltes Wasser 10 min, keine Salben, keine Kleidung an der Wunde], [ab 2. Grades Arzt],
+    [Stromschlag], [Stromquelle trennen (nicht anfassen!), Herzdruckmassage bei Bewußtlosigkeit], [immer Notruf, auch bei scheinbarer Erholung],
+  ),
+  caption: [Erste Hilfe im Chemielabor. Notruf 112, Giftnotruf in
+    Deutschland: 030-19240. Im Zweifel immer den Notarzt rufen.],
+) <tab:erste-hilfe>
+
 === Brände
 
 #figure(
@@ -350,3 +373,29 @@ Einleiten von Schwermetallsalzen in den Abfluß.
 - Ein Kollege trägt bei einer Bromoperation Latexhandschuhe. Nennen Sie drei
   Punkte, die Sie beanstanden.
 - Wann ist ein Atemschutzfilter der Klasse A2P3 unzulässig?
+
+=== Entsorgungsgruppen im Überblick
+
+#figure(
+  table(
+    columns: (1fr, 1.2fr, 1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gruppe*], [*Beispiele*], [*Sammelgefäß*]),
+    [halogenierte Lösemittel], [DCM, Chloroform, CCl#sub[4]], [Kanister „halogeniert"],
+    [nicht-halogenierte Lösemittel], [Aceton, Ethanol, Ether, Hexan], [Kanister „nicht halogeniert"],
+    [Säuren und Basen], [H#sub[2]SO#sub[4], NaOH, Essigsäure], [getrennt, neutralisierbar],
+    [Schwermetall-haltig], [Chrom-, Kupfer-, Quecksilberlösungen], [Sonderabfall, keine Kanalisation],
+    [Peroxide und Azide], [alte Ether, Diazoniumsalze], [Sonderabfall, nicht lagern!],
+    [Feststoffe, inert], [Tonerde, Celite, Natriumsulfat], [Feststoffabfall, vorsortiert],
+  ),
+  caption: [Entsorgungsgruppen im Labor. Entsorgung ist Ländersache — die
+    Vorschriften der örtlichen Sammelstelle haben Vorrang. Keine
+    unbekannten Reste in den Abfall geben.],
+) <tab:entsorgung>
+
+- Ein Kollege verschüttet 50 mL konzentrierte Schwefelsäure auf den
+  Arbeitsplatz. Schildern Sie die Sofortmaßnahmen.
+- In welchen Kanister gehört ein Gemisch aus Aceton, Wasser und
+  Natriumchlorid? Begründen Sie die Entscheidung.

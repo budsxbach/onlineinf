@@ -121,6 +121,34 @@ Ein Mischschmelzpunkt mit der vermuteten Substanz bestätigt die Identität:
 Stimmen beide Schmelzpunkte überein und zeigt das Gemisch keine Depression, ist
 die Verbindung identisch.
 
+*Schmelzpunkt-Standards.* Zur Kalibrierung von Schmelzpunktbestimmern
+eignen sich reine Verbindungen mit scharfen, gut reproduzierbaren
+Schmelzpunkten; die Siedepunktskorrektur für den Quecksilberfaden ist bei
+Ergebnissen über 200 °C anzubringen.
+
+#figure(
+  table(
+    columns: (1.2fr, auto, 1.2fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Substanz*], [*Schmp. °C*], [*Anmerkung*]),
+    [Wasser (Eis)], [0,0], [Fixpunkt, definiert],
+    [Benzophenon], [48,1], [weicher Übergang, gut geeignet],
+    [p-Nitrotoluol], [51,6], [Standard in der Praxis],
+    [Naphthalin], [80,2], [sublimierend — schnell arbeiten],
+    [Acetanilid], [114,2], [scharf schmelzend],
+    [Benzoësäure], [122,4], [Referenzsubstanz der DSC],
+    [Harnstoff], [132,8], [zersetzt sich leicht bei Überhitzung],
+    [Indium], [156,6], [Metallstandard, DSC],
+    [Salicylsäure], [158,6], [Standard für höheren Bereich],
+    [Koffein], [235], [Zersetzung beachten],
+  ),
+  caption: [Schmelzpunkt-Standards zur Kalibrierung. Abweichungen unter
+    1 °C sind bei korrekturfreier Messung akzeptabel; darüber die
+    Stangentemperatur prüfen.],
+) <tab:schmelzpunkt-standards>
+
 === Siedepunkt und Dampfdruck
 
 Der Siedepunkt ist druckabhängig. Für die Umrechnung von Meßwerten auf
@@ -149,6 +177,30 @@ Das Refraktometer mißt den Brechungsindex bei 20 °C und der Natrium-D-Linie
 (589 nm). Die Temperaturkorrektur beträgt −0,00045 pro Kelvin. Ein reiner Stoff
 zeigt eine Abweichung von höchstens 0,0005 vom Literaturwert; größere
 Abweichungen deuten auf Wasser oder Lösungsmittelreste.
+
+*Brechungsindex-Standards.* Das Refraktometer wird mit
+Flüssigkeiten bekannter Brechzahl geprüft; die Messung erfolgt bei
+20 °C, die Korrektur für andere Temperaturen beträgt bei organischen
+Flüssigkeiten rund −4 × 10#super[−4] K#super[−1].
+
+#figure(
+  table(
+    columns: (1.1fr, auto, auto),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Flüssigkeit*], [*$n_D^20$*], [*ρ (g·cm#super[−3])*]),
+    [Wasser], [1,3330], [0,998],
+    [Cyclohexan], [1,4262], [0,779],
+    [Toluol], [1,4961], [0,867],
+    [Chloroform], [1,4459], [1,489],
+    [Anilin], [1,5863], [1,022],
+    [α-Bromnaphthalin], [1,6582], [1,483],
+  ),
+  caption: [Brechungsindex und Dichte von Standardflüssigkeiten bei 20 °C.
+    Wasser und α-Bromnaphthalin decken den gesamten üblichen
+    Meßbereich ab.],
+) <tab:brechungsindex-standards>
 
 === Optische Drehung
 
@@ -295,3 +347,7 @@ Angabe von Inhalt und Datum ist ein Gefahrstoff ohne Sicherheitsdatenblatt.
 Halogenierte Lösungsmittel dürfen nicht mit Alkalimetallen oder mit
 Nitromethan in Berührung kommen; Natriumreste werden mit Isopropanol
 abgetötet und erst danach entsorgt.]
+- Welches Azeotrop stört die Trennung von Ethanol und Wasser, und wie
+  umgeht man es?
+- Berechnen Sie, wieviel Wasserdampf man benötigt, um 0,10 mol
+  Naphthalin zu destillieren (Dampfdruck bei 99 °C: 13 hPa).

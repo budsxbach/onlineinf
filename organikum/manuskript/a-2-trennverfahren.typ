@@ -106,6 +106,33 @@ das ein neues, günstiger gelegenes Azeotrop bildet; Druckwechseldestillation
 auf dem Dampfdruck beruht (Extraktion, Adsorption, Pervaporation). Die
 Zugabe eines Salzes (Aussalzen) verschiebt die Lage des Azeotrops ebenfalls.
 
+*Azeotrope im Überblick.* Azeotrope Mischungen lassen sich nicht durch
+Rektifikation trennen; man weicht auf Schleppmittel, Extraktion oder
+chemische Bindung aus. Die folgende Tabelle nennt die wichtigsten
+Wasser-Azeotrope.
+
+#figure(
+  table(
+    columns: (1.1fr, auto, auto),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gemisch*], [*Azeotrop °C*], [*Wasseranteil*]),
+    [Wasser–Ethanol], [78,2], [4,4 %],
+    [Wasser–Benzol], [69,2], [8,9 %],
+    [Wasser–Toluol], [84,1], [19,6 %],
+    [Wasser–Essigester], [70,4], [8,2 %],
+    [Wasser–Cyclohexan], [69,8], [8,0 %],
+    [Wasser–1,4-Dioxan], [87,8], [18,0 %],
+    [Wasser–Pyridin], [92,6], [43,0 %],
+    [Ethanol–Benzol], [67,9], [32,4 % (Ethanol)],
+    [Ethanol–Essigester], [71,8], [30,8 % (Ethanol)],
+  ),
+  caption: [Azeotrope bei 1013 hPa. Der Ethanol-Wasser-Niederschlag bei
+    78,2 °C erklärt, warum man Ethanol durch Zugabe von Benzol oder
+    Cyclohexan „absolutiert".],
+) <tab:azeotrope>
+
 === Wasserdampfdestillation
 
 Mit Wasserdampf lassen sich Substanzen schonend aus Gemischen austreiben, die
@@ -129,6 +156,17 @@ Ein Stoff mit einem Dampfdruck von 10 mbar und der Molmasse 150 g·mol⁻¹ geht
 danach im Verhältnis 1 : 8 mit Wasser über. Das bedeutet: Für 10 g Substanz
 sind etwa 80 g Wasser abzudestillieren — ein Volumen, das man vor dem Ansatz
 berechnet, nicht während der Destillation.
+
+*Rechenbeispiel: Wasserdampfdestillation von Anilin.* Bei 98,5 °C
+beträgt der Dampfdruck von Wasser 718 hPa, der von Anilin 42 hPa. Das
+Verhältnis der Partialdrücke entscheidet über die Destillatzusammensetzung:
+
+$ m_("Anilin")/m_("Wasser") = (42 "hPa" dot 93,1 "g/mol") \/ (718 "hPa" dot 18,0 "g/mol") = 0,31 $
+
+100 g Wasserdampf tragen also rund 31 g Anilin über — bei 0,25 mol Anilin
+(23 g) genügen 75 g Wasser. Die Rechnung zeigt auch, warum man bei
+hochsiedenden, wasserunlöslichen Stoffen die Destillation bricht: Das
+Verhältnis bleibt konstant, solange beide Phasen vorliegen.
 
 === Vakuumdestillation und Sublimation
 

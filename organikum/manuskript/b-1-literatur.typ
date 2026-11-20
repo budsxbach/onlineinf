@@ -146,6 +146,51 @@ zuerst, Trivialname in Klammern.
     werden.],
 ) <tab:nomenklatur>
 
+== Digitale Recherche
+
+Die Recherche am Bildschirm hat die Wälzen der Bände ersetzt — nicht aber das
+Urteilen über die gefundene Quelle. Drei Arten von Datenbanken sind zu
+unterscheiden:
+
+#figure(
+  table(
+    columns: (1.4fr, 1.5fr, 1.5fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Datenbank*], [*Inhalt*], [*Zugang*]),
+    [Reaxys], [Struktur- und Reaktionsdatenbank, Nachfolger von Beilstein und
+      Gmelin], [lizenzpflichtig, über die Hochschule],
+    [SciFinder-n], [CAplus, Medline, Reaktionen, Patente], [lizenzpflichtig],
+    [PubChem], [Verbindungen, Bioassays, Literaturverweise], [frei],
+    [ChemSpider], [Strukturen mit Verweisen auf Lieferanten], [frei],
+    [CSD], [Kristallstrukturen kleiner Moleküle], [lizenzpflichtig],
+    [NIST WebBook], [Spektren, thermodynamische Daten], [frei],
+    [Sigma-Aldrich], [Kataloge, Sicherheitsdatenblätter], [frei],
+  ),
+  caption: [Datenbanken für die Recherche. Frei zugängliche Quellen sind für
+    Kenndaten gut, für präparative Vorschriften reichen sie nicht.],
+) <tab:datenbanken>
+
+*Struktursuche.* Der eigentliche Gewinn der digitalen Recherche ist die Suche
+nach Teilstrukturen: Man zeichnet ein Fragment (etwa ein α,β-ungesättigtes
+Keton) und erhält alle Verbindungen, die es enthalten. Damit findet man
+Reaktionsvorschriften, ohne den Namen der Zielverbindung zu kennen — der
+umgekehrte Weg zur Suche im Register.
+
+*Treffer bewerten.* Eine Trefferliste ist keine Bibliothek. Drei Fragen
+entscheiden, ob ein Treffer brauchbar ist:
+
+- Ist die Vorschrift *primär* (Originalarbeit) oder nur ein Referat?
+- Sind Ausbeute und Maßstab angegeben — läuft die Reaktion im Gramm- oder im
+  Kilogrammbereich?
+- Ist die Arbeit nach 1990 erschienen? Ältere Vorschriften sind nicht falsch,
+  aber die Arbeitstechnik und die Sicherheitsanforderungen haben sich geändert.
+
+*Zitieren.* Im Protokoll wird jede Vorschrift mit Autor, Zeitschrift, Jahr,
+Band und Seite belegt; bei Datenbanken zusätzlich mit dem Zugriffsdatum.
+Direkte Übernahme ohne Beleg ist ein Plagiat, auch im Praktikumsprotokoll.
+
 == Durchführung einer Recherche
 
 *Recherche über eine definierte Verbindung.* Man sucht den Namen in Reaxys oder
@@ -227,3 +272,43 @@ die Arbeit im Praktikum gedacht, nicht als Bibliographie.
   die in diesem Buch verwendet werden.
 - *Safety in the Chemical Laboratory*. Praktische Hinweise zum Umgang mit
   Gefahrstoffen, die in Sicherheitsdatenblättern zu kurz kommen.
+- *Organikum*, 20. Auflage. Das vorliegende Buch; Vorschriften mit
+  Arbeitstechnik, Tabellen und theoretischen Einleitungen.
+- *Vogel's Textbook of Practical Organic Chemistry*, 5. Auflage. Ausführliche
+  Arbeitstechnik in englischer Sprache, mit Vorschriften im Halbmikromaßstab.
+- *Handbook of Chemistry and Physics*. Für Dichten, Brechungsindizes und
+  Löslichkeiten, wenn die Vorschrift keine Angabe macht.
+- *Bretherick's Handbook of Reactive Chemical Hazards*. Für die Frage, welche
+  Stoffkombinationen gefährlich sind — vor dem ersten Versuch lesen, nicht
+  danach.
+
+=== Wie man eine Vorschrift liest
+
+Eine Vorschrift ist kein Kochrezept, sondern ein Protokoll mit Lücken. Wer sie
+vor dem Versuch vollständig durcharbeitet, findet die Lücken; wer sie während
+des Versuchs liest, findet sie zu spät.
+
+*Vier Durchgänge.*
+
+- *Erster Durchgang — Mengen.* Molzahlen nachrechnen, Äquivalente prüfen,
+  Maßstab wählen. Stimmen Ansatz und Ausbeute zusammen?
+- *Zweiter Durchgang — Apparatur.* Welche Glasgeräte, welche Rührform, welcher
+  Kühler? Was muß vorher getrocknet werden?
+- *Dritter Durchgang — Gefahren.* Welche Stoffe sind giftig, entzündbar, ätzend?
+  Wo entsteht Gas, wo entsteht Wärme, wo ist Druck?
+- *Vierter Durchgang — Aufarbeitung.* Welche Phasen, welche Trockenmittel,
+  welche Reinigung? Wie erkennt man, daß die Reaktion fertig ist?
+
+*Beispiel.* Eine Vorschrift verlangt „20 g (0,1 mol) Keton, gelöst in 100 mL
+absolutem Ether; Zugabe von 1,2 Äquivalenten Grignard-Reagenz". Man rechnet:
+0,12 mol Reagenz, bei einer 1-molaren Lösung also 120 mL. Zusammen mit dem
+Ether sind das 220 mL Flüssigkeit — der Kolben muß mindestens 500 mL fassen.
+Der Ether muß absolut sein, sonst zerstört das Reagenz einen Teil des
+Grignard-Reagenzes. Und die Zugabe erfolgt bei 0 °C, weil die Reaktion exotherm
+ist.
+
+*Typische Lücken.* Ältere Vorschriften nennen keine Konzentration der
+Schwefelsäure, kein Trockenmittel und keine Rührdauer. Man ergänzt sie aus dem
+Theorieteil, aus einer neueren Vorschrift derselben Verbindung oder aus dem
+Sicherheitsdatenblatt — und schreibt im Protokoll, welche Ergänzung man
+vorgenommen hat.

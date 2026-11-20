@@ -301,6 +301,83 @@ sind.
 
 $ "R–Cl" + "NaI" ->^("Aceton") "R–I" + "NaCl" arrow.b $
 
+#vorschrift("D.2.6", [Diethylether aus Ethanol])[
+  #reaktion(
+    $ "2 C" _2"H" _5"OH" $,
+    [#text(size: 6.5pt)[H#sub[2]SO#sub[4], 140 °C]],
+    $ "C" _2"H" _5"OC" _2"H" _5 + "H" _2"O" $,
+  )
+
+  #ansatz[
+    200 g (253 mL; 4,3 mol) Ethanol (96 %), 100 mL konzentrierte Schwefelsäure.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Thermometer, Tropftrichter und absteigendem
+  Kühler werden Ethanol und Schwefelsäure vorgelegt; man erhitzt im Ölbad auf
+  140 °C. Das gebildete Ether-Wasser-Gemisch destilliert ab; man tropft laufend
+  Ethanol nach, so daß der Kolbeninhalt etwa konstant bleibt.
+
+  Das Destillat wird mit Natriumhydroxidlösung gewaschen, über Kaliumhydroxid
+  getrocknet und über eine Vigreux-Kolonne fraktioniert. Diethylether geht bei
+  34–35 °C über; er wird über Natriumhydroxid in brauner Flasche aufbewahrt.
+
+  #ausbeute[92 g (62 % d. Th.) farblose, leicht flüchtige Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 34,6 °C (1013 hPa) #h(2em) $n_D^20$ = 1,3526 #h(2em)
+    $rho_20$ = 0,713 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Diethylether ist extrem entzündbar (Flammpunkt −40 °C), bildet mit Luft
+  explosive Gemische und beim Lagern explosive Peroxide. Keine Zündquellen,
+  Apparatur erden, Destillation im Wasserbad, Vorlage kühlen. Vor jeder
+  Destillation auf Peroxide prüfen (Kaliumiodid-Stärke-Papier).
+  Schwefelsäure ist stark ätzend.]
+
+#vorschrift("D.2.7", [Ethylphenyl ether aus Phenol und Bromethan])[
+  #reaktion(
+    $ "C" _6"H" _5"OH" + "C" _2"H" _5"Br" $,
+    [#text(size: 6.5pt)[K#sub[2]CO#sub[3], Aceton, Rückfluß]],
+    $ "C" _6"H" _5"OC" _2"H" _5 + "KBr" + "H" _2"O" + "CO" _2 $,
+  )
+
+  #ansatz[
+    94 g (1,0 mol) Phenol, 120 g (80 mL; 1,1 mol) Bromethan,
+    152 g (1,1 mol) gepulvertes Kaliumcarbonat, 400 mL Aceton.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer und Rückflußkühler werden Phenol,
+  Kaliumcarbonat und Aceton vorgelegt. Man erhitzt zum Rückfluß und tropft das
+  Bromethan zu; anschließend wird 6 h unter Rückfluß gerührt.
+
+  Man kühlt ab, filtriert die Salze ab und wäscht sie mit Aceton. Das Filtrat
+  wird eingeengt, der Rückstand in 200 mL Wasser aufgenommen und die organische
+  Phase abgetrennt.
+
+  Man trocknet über Kaliumcarbonat und fraktioniert; der Ether geht bei
+  169–172 °C über.
+
+  #ausbeute[98 g (80 % d. Th.) farblose Flüssigkeit mit aromatischem Geruch.]
+
+  #kenndaten[
+    Sdp. 170 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5080 #h(2em)
+    $rho_20$ = 0,966 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Phenol ist ätzend, giftig und wird über die Haut aufgenommen; es
+  verursacht schwere Verätzungen. Bromethan ist entzündbar und
+  gesundheitsschädlich. Aceton ist leicht entzündbar. Nur im Abzug arbeiten —
+  Phenol hat einen niedrigen Schmelzpunkt (41 °C) und ist leicht flüchtig.]
+
+*Williamson-Ethersynthese.* Der Angriff eines Phenoxids auf ein Alkylhalogenid
+verläuft als S#sub[N]2; damit ist die Reaktion auf primäre Halogenide
+beschränkt. Mit sekundären und tertiären Halogeniden entsteht überwiegend
+Eliminierungsprodukt. Für Methylarylether sind Dimethylsulfat oder
+Methyliodid die Reagenzien der Wahl — Dimethylsulfat ist jedoch krebserzeugend
+und wird heute ersetzt.
+
 === Störungen und ihre Ursachen
 
 *Keine Umsetzung.* Bei zu geringer Säurekonzentration bleibt das Gleichgewicht

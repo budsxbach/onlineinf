@@ -164,6 +164,39 @@ bestimmende Schritt ist die Umlagerung des Acylazids bzw. des N-Bromamids. Bei
 Hofmann-Abbau ist die Konfiguration am α-Kohlenstoff nicht betroffen — ein
 Vorteil gegenüber der Decarboxylierung.
 
+#vorschrift("D.9.3", [Anthranilsäure aus Phthalsäureanhydrid durch Hofmann-Abbau])[
+  #reaktion(
+    $ "C"_6"H"_4"(COOH)"_2 $,
+    [#text(size: 6.5pt)[1. NH#sub[3], 2. Br#sub[2]/NaOH]],
+    $ "H"_2"N-C"_6"H"_4"-COOH" $,
+  )
+
+  #ansatz[
+    148 g (1,0 mol) Phthalsäure, 400 mL konzentriertes Ammoniak (25 %),
+    160 g (1,0 mol) Brom, 400 mL 30-prozentige Natriumhydroxidlösung.
+  ]
+
+  Phthalsäure wird mit Ammoniak im Autoklaven 3 h auf 200 °C erhitzt; nach dem
+  Abkühlen erhält man Phthalsäureimid, das abgesaugt und getrocknet wird.
+
+  Das Imid wird in Natronlauge gelöst, auf 0 °C gekühlt und mit Brom versetzt
+  (Hofmann-Abbau). Man rührt 1 h bei 0 °C und erwärmt anschließend langsam auf
+  80 °C, bis die Gasentwicklung beendet ist.
+
+  Man kühlt, filtriert und säuert das Filtrat mit Essigsäure auf pH 5 an;
+  Anthranilsäure fällt aus. Sie wird aus Wasser umkristallisiert.
+
+  #ausbeute[96 g (70 % d. Th.) farblose Blättchen.]
+
+  #kenndaten[
+    Schmp. 146 °C #h(2em) Sdp. 284 °C (Subl.)
+  ]
+]
+
+#gefahr[Brom ist stark ätzend und stark oxidierend; Natriumhydroxid ist ätzend,
+  Ammoniak giftig und ätzend. Der Autoklav muß druckgeprüft sein. Hofmann-Abbau
+  nur im Abzug; Bromdämpfe nicht einatmen.]
+
 === Claisen- und Cope-Umlagerung
 
 Beide sind [3,3]-sigmatrope Umlagerungen mit cyclischem Übergangszustand; sie

@@ -144,6 +144,79 @@ Natriumhypochlorit bei pH 10–11 oxidiert (Cyanat), erst danach dürfen sie in 
 Abwasserstrom. Die Zugabe von Säure zu Cyanidabfällen ist die häufigste Ursache
 von Blausäureunfällen im Labor.
 
+#vorschrift("D.8.2", [N-Benzylidenanilin aus Benzaldehyd und Anilin])[
+  #reaktion(
+    $ "C" _6"H" _5"CHO" + "C" _6"H" _5"NH" _2 $,
+    [#text(size: 6.5pt)[EtOH, Rückfluß, Wasserabscheider]],
+    $ "C" _6"H" _5"CH=NC" _6"H" _5 + "H" _2"O" $,
+  )
+
+  #ansatz[
+    106 g (101 mL; 1,0 mol) Benzaldehyd, 93 g (91 mL; 1,0 mol) Anilin,
+    300 mL Ethanol.
+  ]
+
+  In einem 1-l-Rundkolben mit Wasserabscheider und Rückflußkühler werden
+  Benzaldehyd, Anilin und Ethanol vorgelegt. Man erhitzt zum Sieden und trennt
+  das übergehende Wasser im Abscheider ab, bis keine Wasserabscheidung mehr
+  erfolgt (etwa 1,5 h).
+
+  Man engt die Lösung auf 150 mL ein, kühlt auf 0 °C und saugt die ausfallenden
+  Kristalle ab. Zur Reinigung wird aus Ethanol umkristallisiert; das Produkt
+  wird unter Stickstoff im Dunkeln aufbewahrt.
+
+  #ausbeute[163 g (90 % d. Th.) hellgelbe Kristalle.]
+
+  #kenndaten[
+    Schmp. 52 °C #h(2em) Sdp. 300 °C (Zersetzung)
+  ]
+]
+
+#gefahr[Anilin ist giftig, wird über die Haut aufgenommen und steht im Verdacht,
+  krebserzeugend zu sein; es verursacht Methämoglobinbildung. Nur im Abzug und
+  mit Nitrilhandschuhen arbeiten. Benzaldehyd ist gesundheitsschädlich und
+  entzündbar; Ethanol ist leicht entzündbar.]
+
+*Nachweis der Iminbildung.* Das Verschwinden der Carbonylbande im IR
+(1705 cm⁻¹) und das Auftreten der C=N-Bande (1640 cm⁻¹) zeigen den Umsatz an.
+Reine Imine sind hydrolyseempfindlich; für die Analytik wird das Imin in situ
+mit Natriumborhydrid zum Amin reduziert.
+
+#vorschrift("D.8.3", [N-Benzylanilin aus Benzaldehyd und Anilin durch reduktive Aminierung])[
+  #reaktion(
+    $ "C" _6"H" _5"CHO" + "C" _6"H" _5"NH" _2 $,
+    [#text(size: 6.5pt)[1. EtOH, 2. NaBH#sub[4]]],
+    $ "C" _6"H" _5"CH" _2"NHC" _6"H" _5 + "H" _2"O" $,
+  )
+
+  #ansatz[
+    106 g (101 mL; 1,0 mol) Benzaldehyd, 93 g (91 mL; 1,0 mol) Anilin,
+    38 g (1,0 mol) Natriumborhydrid, 400 mL Ethanol.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Thermometer und Tropftrichter werden
+  Benzaldehyd und Anilin in 300 mL Ethanol vorgelegt und 1 h bei 40 °C gerührt;
+  das Imin bildet sich als gelbe Lösung.
+
+  Man kühlt auf 10 °C und trägt das Natriumborhydrid in kleinen Anteilen so ein,
+  daß die Temperatur 25 °C nicht übersteigt (Wasserstoffentwicklung). Danach
+  wird 2 h bei Raumtemperatur gerührt.
+
+  Man gießt auf 1 L Eiswasser, saugt das ausfallende Produkt ab, wäscht mit
+  Wasser und kristallisiert aus Ethanol um.
+
+  #ausbeute[165 g (84 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 37 °C #h(2em) Sdp. 306 °C
+  ]
+]
+
+#gefahr[Natriumborhydrid entwickelt mit Wasser und Säuren Wasserstoff; nicht in
+  geschlossenen Gefäßen arbeiten. Anilin ist giftig und wird über die Haut
+  aufgenommen — Abzug, Handschuhe, Hautkontakt vermeiden. Ethanol ist leicht
+  entzündbar.]
+
 === Kohlensäurederivate
 
 Harnstoff, Phosgen, Carbamate und Isocyanate sind formal Derivate der

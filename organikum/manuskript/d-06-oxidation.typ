@@ -244,6 +244,63 @@ chinoiden Zwischenstufen.
   kann Asthma auslösen; Staub vermeiden, im Abzug arbeiten. Vanadiumpentoxid
   ist giftig und steht im Verdacht, krebserzeugend zu sein.]
 
+#vorschrift("D.6.4", [Benzoesäure aus Toluol])[
+  #reaktion(
+    $ "C" _6"H" _5"CH" _3 $,
+    [#text(size: 6.5pt)[KMnO#sub[4], H#sub[2]O, Rückfluß]],
+    $ "C" _6"H" _5"COOH" $,
+  )
+
+  #ansatz[
+    46 g (50 mL; 0,5 mol) Toluol, 160 g (1,0 mol) Kaliumpermanganat,
+    800 mL Wasser, 10 g Natriumhydroxid.
+  ]
+
+  In einem 2-l-Dreihalskolben mit Rührer und Rückflußkühler werden Toluol,
+  Natriumhydroxid und 600 mL Wasser vorgelegt und zum Rückfluß erhitzt. Man
+  trägt das Kaliumpermanganat in Portionen so ein, daß die Reaktion in Gang
+  bleibt, und spült mit den restlichen 200 mL Wasser nach.
+
+  Man erhitzt 4 h unter Rückfluß, bis die violette Farbe verschwunden ist und
+  sich Braunstein abgesetzt hat. Überschüssiges Permanganat wird mit wenig
+  Ethanol zerstört.
+
+  Man läßt abkühlen, filtriert den Braunstein ab und wäscht ihn mit heißem
+  Wasser. Das Filtrat wird im Vakuum auf 300 mL eingeengt, mit Salzsäure
+  kongosauer gestellt und gekühlt. Die ausgeschiedene Benzoesäure wird
+  abgesaugt und aus Wasser umkristallisiert.
+
+  #ausbeute[49 g (80 % d. Th.) farblose Blättchen.]
+
+  #kenndaten[
+    Schmp. 122 °C #h(2em) Sdp. 249 °C (1013 hPa)
+  ]
+]
+
+#gefahr[Kaliumpermanganat ist stark oxidierend und ätzend; Kontakt mit
+  brennbaren Stoffen (Papier, Ethanol in größeren Mengen) kann Brand auslösen.
+  Beim Ansäuern entsteht Chlor — im Abzug arbeiten. Toluol ist
+  gesundheitsschädlich und entzündbar.]
+
+*Seitenkettenoxidation.* Die Reaktion ist der Standardweg zu aromatischen
+Carbonsäuren. Voraussetzung ist ein benzylischer Wasserstoff: Toluol,
+Ethylbenzol und Isopropylbenzol werden oxidiert, tert-Butylbenzol nicht. Die
+Kette wird dabei bis zum Carboxyl abgebaut, unabhängig von ihrer Länge — aus
+Ethylbenzol entsteht ebenfalls Benzoesäure.
+
+*Milder: Wasserstoffperoxid und Natriumhypochlorit.* Für empfindliche Substrate
+ersetzt man Permanganat durch Natriumhypochlorit (NaOCl) mit einem
+Phasentransfer-Katalysator oder durch Wasserstoffperoxid mit Natriumwolframat.
+Beide arbeiten bei 60–80 °C und hinterlassen keinen Braunstein.
+
+*Kinetik der Seitenkettenoxidation.* Der geschwindigkeitsbestimmende Schritt ist
+die Wasserstoffabstraktion am benzylischen Kohlenstoff; die Reaktion folgt
+einem Radikalmechanismus mit Kettenfortpflanzung. Daraus folgt die
+Selektivität: Ein Benzylwasserstoff wird 30-mal schneller abstrahiert als ein
+tertiärer aliphatischer. Elektronenziehende Substituenten am Ring beschleunigen
+die Reaktion, weil sie das gebildete Benzylradikal stabilisieren — der
+Hammett-Exponent ist positiv.
+
 === Nachweisreaktionen und ihre Grenzen
 
 Für die Prüfung, ob eine Oxidation vollständig verlaufen ist, genügen einfache
@@ -267,3 +324,11 @@ Derivats oder ein Spektrum erforderlich.
   sind geeignet, welche nicht, und warum?
 - Formulieren Sie die Ozonolyse von 2-Methylbut-2-en mit reduktiver und mit
   oxidativer Aufarbeitung.
+- Warum liefert die Oxidation von Ethylbenzol Benzoesäure und nicht
+  Phenylessigsäure? Geben Sie die Zwischenstufen an.
+- Ein Gemisch aus Toluol und 4-Nitrotoluol soll oxidiert werden. Welches Isomer
+  reagiert schneller, und wie läßt sich das für eine Trennung nutzen?
+- Berechnen Sie die Ausbeute, wenn aus 25 g Cyclohexanol 22 g Cyclohexanon
+  erhalten werden. Ist der Wert plausibel?
+- Nennen Sie zwei Oxidationsmittel, die selektiv einen primären Alkohol zum
+  Aldehyd oxidieren, und zwei, die bis zur Carbonsäure oxidieren.

@@ -32,10 +32,10 @@ for f in sorted((ROOT / 'manuskript').glob('*.typ')):
 
 # Teilstarts im PDF finden
 starts = {}
-for pat in [r'^E\.1 ', r'^F\.1 ', r'^G\.1 ', r'^H\.1 ']:
+for key, pat in [('E', r'^E\.1 '), ('F', r'^F\.1 '), ('G', r'^G\.1 '), ('H', r'^H\.1 ')]:
     for pg in doc:
         if pg.number > 3 and re.search(pat, pg.get_text(), re.M):
-            starts[pat[0]] = pg.number + 1
+            starts[key] = pg.number + 1
             break
 
 s = PLAN.read_text()
@@ -51,8 +51,9 @@ def rep(pat, repl):
 
 
 # "Aktuell gesetzt"-Absatz
-rep(r'\*\*\d+ Seiten\*\* Buchformat \(168 × 240 mm\), [\d ]+ Wörter,',
-    f'**{pages} Seiten** Buchformat (168 × 240 mm), {words:,} Wörter,'.replace(',', ' '))
+w = f'{words:,}'.replace(',', ' ')
+rep(r'\*\*\d+ Seiten\*\* Buchformat \(168 × 240 mm\),? ?[\d ]+ Wörter,?',
+    f'**{pages} Seiten** Buchformat (168 × 240 mm), {w} Wörter,')
 rep(r'\d+ Abbildungen, \d+ Tabellen, \d+ Vorschriften\.',
     f'{abbs} Abbildungen, {tabs} Tabellen, {vorschr} Vorschriften.')
 
@@ -64,7 +65,7 @@ if all(k in starts for k in 'EFGH'):
     rep(r'\| E\.1–E\.2, S\. \d+–\d+ \|', f'| E.1–E.2, S. {e}–{f_-1} |')
     rep(r'\| F\.1–F\.2, S\. \d+–\d+ \|', f'| F.1–F.2, S. {f_}–{g-1} |')
     rep(r'\| G\.1–G\.3, S\. \d+–\d+ \|', f'| G.1–G.3, S. {g}–{h-1} |')
-    reg = len(re.findall(r'^\[[^\]]+\], \[[^\]]+\],$', (ROOT / 'manuskript' / 'h-anhang.typ').read_text(), re.M))
+    reg = len(re.findall(r'\[[A-H]\.[0-9.]+\]', (ROOT / 'manuskript' / 'h-anhang.typ').read_text()))
     rep(r'\| H\.1–H\.4, S\. \d+–\d+, Register \d+ Stichwörter \|',
         f'| H.1–H.4, S. {h}–{pages}, Register {reg} Stichwörter |')
 

@@ -323,6 +323,50 @@ Lichtausschluß aufbewahrt; vor der Destillation wird auf Peroxide geprüft. Ein
 Peroxidgehalt über 100 ppm macht den Ether unbrauchbar, weil beim Einengen eine
 Explosion möglich ist.
 
+*Peroxide aus Säurechloriden.* Gezielt hergestellte Peroxide entstehen aus
+Säurechloriden und Wasserstoffperoxid in alkalischem Medium (Perhydrolyse).
+Dibenzoylperoxid ist der gebräuchlichste Radikalinitiator für Polymerisationen
+und radikalische Substitutionen — die Verbindung, die den Kreis zu AIBN
+(D.1.4) und zur Autoxidation schließt.
+
+#vorschrift("D.1.5", [Dibenzoylperoxid aus Benzoylchlorid])[
+  #reaktion(
+    $ 2 "C" _6"H" _5"COCl" + "H" _2"O" _2 + 2 "NaOH" $,
+    [#text(size: 6.5pt)[5–10 °C]],
+    $ "C" _6"H" _5"CO–O–O–COC" _6"H" _5 + 2 "NaCl" + 2 "H" _2"O" $,
+  )
+
+  #ansatz[
+    14 g (12 mL; 0,1 mol) Benzoylchlorid, 5,7 g (0,055 mol H#sub[2]O#sub[2])
+    30-prozentige Wasserstoffperoxidlösung, 4 g (0,1 mol) Natriumhydroxid in
+    20 mL Wasser.
+  ]
+
+  In einem 250-mL-Erlenmeyerkolben werden Natronlauge und Wasserstoffperoxid
+  vorgelegt und im Eisbad auf 5 °C gekühlt. Unter Schütteln tropft man das
+  Benzoylchlorid zu und hält die Temperatur unter 10 °C; bald fällt das
+  Peroxid als weißer Niederschlag aus.
+
+  Man rührt 30 min im Eisbad nach, saugt ab und wäscht gründlich mit kaltem
+  Wasser, bis das Waschwasser chloridfrei ist. Das Produkt wird an der Luft
+  getrocknet und unter Wasser oder feucht im Dunkeln aufbewahrt.
+
+  #ausbeute[10 g (85 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 103–105 °C (unter Zersetzung) #h(2em) unlöslich in Wasser,
+    löslich in Chloroform, Ether #h(2em) $M$ = 242,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Trockenes Dibenzoylperoxid ist explosionsfähig und stoßempfindlich.
+  Das Produkt wird niemals getrocknet, erhitzt, gerieben oder in größerer
+  Menge aufbewahrt; es bleibt feucht und wird unter Wasser im Dunkeln
+  gelagert. Handelsübliches Peroxid ist mit Wasser stabilisiert — im Zweifel
+  käufliches Material verwenden statt eigenen. Benzoylchlorid ist ätzend und
+  tränenreizend; die Reaktion wird nur im Abzug und in kleinen Ansätzen
+  durchgeführt.]
+
 === Aufgaben
 
 - Berechnen Sie das Produktverhältnis der Chlorierung von Propan bei 25 °C
@@ -337,3 +381,10 @@ Explosion möglich ist.
   ein zähes. Erklären Sie den Zusammenhang.
 - Das Reagenzglas wird bei der Polymerisation nur locker verschlossen. Was
   passierte bei einem festen Verschluß?
+- Warum entsteht bei der Perhydrolyse von Benzoylchlorid kein Peroxid, wenn
+  man ohne Natronlauge arbeitet?
+- Dibenzoylperoxid wird unter Wasser gelagert, AIBN nicht. Begründen Sie den
+  Unterschied.
+- Ein Initiator für die Polymerisation von Styrol soll gewechselt werden.
+  Vergleichen Sie Dibenzoylperoxid und AIBN hinsichtlich Handhabung und
+  Zersetzungstemperatur.

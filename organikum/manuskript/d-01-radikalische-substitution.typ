@@ -1,5 +1,5 @@
 // ============================================================================
-//  Musterkapitel D.1 — Radikalische Substitution (Auszug für die Layoutprobe)
+//  D.1  Radikalische Substitution
 // ============================================================================
 
 #import "/vorlage/layout.typ": *
@@ -9,8 +9,8 @@
 Die radikalische Substitution verläuft über kettenförmige Folgen von
 Elementarschritten. Der Start erfolgt durch thermische oder photochemische
 Bindungsspaltung, die Kette wird über Abstraktion eines Wasserstoffatoms durch
-ein Radikal fortgeführt, und der Abbruch wird durch Rekombination oder
-Disproportionierung zweier Radikale eingeleitet.
+ein Radikal fortgeführt, und der Abbruch erfolgt durch Rekombination oder
+Disproportionierung zweier Radikale.
 
 === Erzeugung und Stabilität von Radikalen
 
@@ -18,10 +18,48 @@ Radikale entstehen bevorzugt aus schwachen Bindungen: O–O-Bindungen in Peroxid
 N–Br-Bindungen in N-Bromamiden, Halogen-Kohlenstoff-Bindungen in Gegenwart von
 Licht oder Radikalstartern. Ihre Stabilität folgt der Reihe
 
-$ "C"("CH"_3)_3 dot > "CH"("CH"_3)_2 dot > "CH"_2"CH"_3 dot > dot "CH"_3 > dot "CH"_2"Cl" $
+$ "C"("CH" _3)_3 dot > "CH"("CH" _3)_2 dot > "CH" _2"CH" _3 dot > dot "CH" _3 > dot "CH" _2"Cl" $
 
 und wird durch Hyperkonjugation, Delokalisation und sterische Abschirmung
-erklärt.
+erklärt. Benzylische und allylische Radikale sind besonders stabil, weil das
+unpaarige Elektron über den Ring bzw. die Doppelbindung delokalisiert wird;
+daraus folgt die hohe Reaktivität benzylischer Positionen.
+
+#figure(
+  table(
+    columns: (2fr, auto, 2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Radikal*], [*rel. Stabilität*], [*Bemerkung*]),
+    [Phenyl], [1], [Referenz],
+    [Benzyl], [3], [delokalisiert, mesomeriestabilisiert],
+    [tert-Butyl], [2,5], [Hyperkonjugation],
+    [Isopropyl], [1,5], [zwei Nachbargruppen],
+    [Ethyl], [1,2], [eine Nachbargruppe],
+    [Methyl], [1,0], [keine Stabilisierung],
+    [Trichlormethyl], [0,3], [elektronenziehende Gruppen destabilisieren],
+  ),
+  caption: [Relative Stabilität von Radikalen (bezogen auf Phenylradikal).
+    Die Reihenfolge bestimmt die Regioselektivität jeder radikalischen
+    Reaktion.],
+) <tab:radikalstabilitaet>
+
+*Startreaktionen.* Drei Wege sind gebräuchlich:
+
+- *thermisch*: Azobisisobutyronitril (AIBN) zerfällt bei 70–80 °C unter
+  Stickstoffabspaltung; Dibenzoylperoxid bei 80–90 °C.
+- *photochemisch*: Halogen-Moleküle spalten im UV-Licht homolytisch; eine
+  Wolframlampe oder eine Quecksilberdampflampe genügt.
+- *redox*: Eisen(II)-Ionen reduzieren Hydroperoxide (Fenton-Reaktion);
+  Kupfer(I) und Wasserstoffperoxid erzeugen Hydroxylradikale.
+
+$ "AIBN" ->^(70 °C) 2 "R" dot + "N" _2 $
+
+*Abbruchreaktionen.* Zwei Radikale rekombinieren oder disproportionieren. Bei
+der Chlorierung von Methan entsteht neben Chlormethan auch Ethan (Rekombination
+zweier Methylradikale) — ein Nebeneffekt, der bei der Ausbeuteberechnung oft
+übersehen wird.
 
 === Reaktivität und Selektivität
 
@@ -30,28 +68,121 @@ Bromierung von 2-Methylbutan beobachtet man statistisch-normiert:
 
 #figure(
   table(
-    columns: (auto, auto, auto),
+    columns: (auto, auto, auto, auto),
     inset: (x: 5pt, y: 3.5pt),
-    align: (left, right, right),
+    align: (left, right, right, right),
     stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
-    table.header([*Wasserstofftyp*], [*rel. Reaktivität (Cl, 25 °C)*], [*rel. Reaktivität (Br, 127 °C)*]),
-    [primär], [1], [1],
-    [sekundär], [3,8], [82],
-    [tertiär], [5,2], [1600],
+    table.header([*Wasserstofftyp*], [*Zahl der H*], [*rel. Reaktivität (Cl, 25 °C)*], [*rel. Reaktivität (Br, 127 °C)*]),
+    [primär], [9], [1], [1],
+    [sekundär], [2], [3,8], [82],
+    [tertiär], [1], [5,2], [1600],
   ),
-  caption: [Selektivität der radikalischen Halogenierung von Alkanen.],
+  caption: [Selektivität der radikalischen Halogenierung von Alkanen. Die Werte
+    sind auf ein primäres Wasserstoffatom bezogen.],
 ) <tab:selektivitaet>
 
-#vorschrift("D.1.1", [Benzylbromid aus Toluol])[
+Aus den Zahlen folgt das Produktverhältnis: Bei der Chlorierung von
+2-Methylbutan entstehen 65 % 1-Chlor-2-methylbutan und 35 % 2-Chlor-2-methylbutan;
+bei der Bromierung überwiegt das tertiäre Produkt mit über 95 %.
+
+*Warum ist Brom selektiver?* Die Abstraktion des Wasserstoffatoms ist bei Brom
+endotherm und liegt nahe am Übergangszustand (Hammond-Postulat): Der
+Übergangszustand ähnelt dem Radikal, und dessen Stabilität entscheidet. Bei Chlor
+ist der Schritt exotherm, der Übergangszustand ähnelt den Edukten, und die
+Unterschiede zwischen primär, sekundär und tertiär fallen kaum ins Gewicht.
+
+*Quantitative Auswertung.* Das Verhältnis der Produkte ergibt sich aus
+
+$ "Verhältnis" = (n_1 dot r_1) \/ (n_2 dot r_2) $
+
+mit der Zahl der Wasserstoffatome $n$ und der relativen Reaktivität $r$. Wer die
+Rechnung beherrscht, kann vorhersagen, ob ein Ansatz sinnvoll ist — und ob eine
+Trennung nötig wird.
+
+=== Chlorierung von Alkanen
+
+Die technische Chlorierung von Methan führt zu einem Gemisch von Chlormethan bis
+Tetrachlormethan; im Labor ist sie nur für Reaktionen mit einheitlichem Produkt
+sinnvoll (Neopentan, Cyclohexan unter bestimmten Bedingungen).
+
+#vorschrift("D.1.1", [Chlorcyclohexan aus Cyclohexan])[
   #reaktion(
-    $ "C"_6"H"_5"CH"_3 + "Br"_2 $,
+    $ "C" _6"H" _12 + "Cl" _2 $,
+    [#text(size: 6.5pt)[h $nu$, 20 °C]],
+    $ "C" _6"H" _11"Cl" + "HCl" $,
+  )
+
+  #ansatz[
+    84 g (107 mL; 1,0 mol) Cyclohexan, 36 g (25 mL; 0,50 mol) Chlor,
+    2 g Natriumcarbonat.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Gaseinleitungsrohr, Thermometer und
+  Rückflußkühler werden Cyclohexan und Natriumcarbonat vorgelegt und auf 20 °C
+  gekühlt. Man leitet trockenes Chlor so langsam ein, daß die Temperatur
+  25 °C nicht übersteigt und kein gelbgrüner Nebel über der Flüssigkeit steht;
+  die Belichtung erfolgt mit einer Wolframlampe aus 30 cm Abstand.
+
+  Nach beendeter Chlormenge (etwa 2 h) spült man mit Stickstoff, wäscht mit
+  Wasser und 5-prozentiger Natriumcarbonatlösung und trocknet über
+  Calciumchlorid.
+
+  Das Rohprodukt wird über eine Vigreux-Kolonne fraktioniert. Die bei
+  140–143 °C übergehende Fraktion ist reines Chlorcyclohexan; Vorlauf und
+  Nachlauf enthalten das Ausgangsmaterial und Dichlorcyclohexan.
+
+  #ausbeute[47 g (40 % d. Th., bezogen auf Chlor) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 142 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4626 #h(2em)
+    $rho_20$ = 1,000 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Chlor ist stark giftig, ätzend und stark oxidierend; es reizt die Atemwege
+  schon in geringer Konzentration und kann zum Lungenödem führen. Nur im Abzug
+  arbeiten, Chlorgeruch als Warnsignal ernst nehmen. Chlorwasserstoff, der bei
+  der Reaktion entsteht, ist ätzend; Abgas durch Natronlauge leiten.
+  Cyclohexan ist leicht entzündbar, gesundheitsschädlich und
+  reproduktionstoxisch.]
+
+*Ausbeute und Selektivität.* Die Ausbeute ist bewußt niedrig gehalten (0,5 mol
+Chlor auf 1 mol Cyclohexan), weil bei höherem Umsatz die Dichlorierung zunimmt.
+Für die Praxis gilt: Bei radikalischen Chlorierungen wird der Umsatz begrenzt,
+nicht maximiert.
+
+=== Bromierung von Aromaten-Seitenketten
+
+Benzylische Positionen sind besonders reaktiv. Toluol, Ethylbenzol und
+Methylnaphthaline reagieren mit Brom unter Belichtung oder in Gegenwart von
+Radikalstartern an der Seitenkette — nicht am Ring. Das ist der grundlegende
+Unterschied zur elektrophilen Substitution, die einen Katalysator (FeBr#sub[3])
+und Ringpositionen verlangt.
+
+$ "Ar–CH" _3 + "Br" _2 ->^(h $nu$) "Ar–CH" _2"Br" + "HBr" $
+
+*Selektivität in der Seitenkette.* Bei Alkylgruppen mit mehreren
+Wasserstofftypen wird bevorzugt die benzylische Position substituiert. Bei
+Ethylbenzol entsteht 1-Brom-1-phenylethan, bei Isopropylbenzol
+2-Brom-2-phenylpropan; die Kettenenden werden nicht angegriffen, solange die
+benzylische Position frei ist.
+
+*N-Bromsuccinimid (NBS)* eignet sich für die Bromierung empfindlicher
+Verbindungen, weil es Brom in niedriger Konzentration freisetzt und keine
+Bromwasserstoffsäure im Reaktionsgemisch anreichert. Die Reaktion wird in
+Tetrachlormethan oder Tetrahydrofuran bei Rückfluß durchgeführt, mit AIBN oder
+Licht als Initiator.
+
+#vorschrift("D.1.2", [Benzylbromid aus Toluol])[
+  #reaktion(
+    $ "C" _6"H" _5"CH" _3 + "Br" _2 $,
     [#text(size: 6.5pt)[h $nu$, 80 °C]],
-    $ "C"_6"H"_5"CH"_2"Br" + "HBr" $,
+    $ "C" _6"H" _5"CH" _2"Br" + "HBr" $,
   )
 
   #ansatz[
     92 g (106 mL; 1,0 mol) Toluol, 176 g (55 mL; 1,1 mol) Brom,
-  4 g wasserfreies Natriumcarbonat.
+    4 g wasserfreies Natriumcarbonat.
   ]
 
   In einem 500-ml-Rundkolben mit Rückflußkühler und Tropftrichter legt man
@@ -72,6 +203,90 @@ Bromierung von 2-Methylbutan beobachtet man statistisch-normiert:
 ]
 
 #gefahr[Brom ist stark ätzend und wirkt stark oxidierend; es verursacht schwere
-Verbrennungen und ist für Wasserorganismen sehr giftig. Nur im Abzug und in
-kleinen Portionen arbeiten, Tropftrichter mit Überdruckventil verwenden. Die
-Bestrahlung mit UV-Licht erzeugt zusätzlich Reizstoffe.]
+  Verbrennungen und ist für Wasserorganismen sehr giftig. Nur im Abzug und in
+  kleinen Portionen arbeiten, Tropftrichter mit Überdruckventil verwenden. Die
+  Bestrahlung mit UV-Licht erzeugt zusätzlich Reizstoffe. Benzylbromid ist
+  giftig und tränenreizend; Hautkontakt vermeiden.]
+
+*Reinheit und Zersetzung.* Benzylbromid hydrolysiert an feuchter Luft zu
+Benzylalkohol und Bromwasserstoff; es wird in brauner Flasche über
+Natriumcarbonat aufbewahrt. Für die Weiterverarbeitung ist frisch destilliertes
+Material zu verwenden.
+
+#vorschrift("D.1.3", [Benzylbromid aus Toluol mit N-Bromsuccinimid])[
+  #reaktion(
+    $ "C" _6"H" _5"CH" _3 + "NBS" $,
+    [#text(size: 6.5pt)[AIBN, CCl#sub[4], Rückfluß]],
+    $ "C" _6"H" _5"CH" _2"Br" + "Succinimid" $,
+  )
+
+  #ansatz[
+    46 g (53 mL; 0,50 mol) Toluol, 98 g (0,55 mol) N-Bromsuccinimid,
+    0,5 g Azobisisobutyronitril, 300 mL Tetrachlormethan.
+  ]
+
+  In einem 1-l-Rundkolben mit Rückflußkühler werden Toluol, N-Bromsuccinimid,
+  AIBN und Tetrachlormethan vorgelegt. Man erhitzt zum Rückfluß und hält die
+  Reaktion in Gang, bis sich das Succinimid als Feststoff am Kolbenboden
+  absetzt (1–2 h).
+
+  Man kühlt ab, filtriert das Succinimid ab und wäscht den Rückstand mit wenig
+  Tetrachlormethan. Das Filtrat wird eingeengt und im Vakuum fraktioniert.
+
+  #ausbeute[72 g (84 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 198–199 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5751
+  ]
+]
+
+#gefahr[N-Bromsuccinimid reizt Augen und Atemwege und kann Allergien auslösen;
+  Tetrachlormethan ist krebserzeugend und ozonschädigend — nur im Abzug und in
+  geschlossenen Gefäßen arbeiten. AIBN zerfällt oberhalb 70 °C und ist
+  explosionsgefährlich, wenn es trocken erhitzt wird.]
+
+*Vergleich der Verfahren.* Die Bromierung mit elementarem Brom ist billiger,
+aber weniger selektiv und erzeugt Bromwasserstoff, der die Reaktion hemmt. NBS
+ist teurer, aber schonender und für empfindliche Substrate die Methode der Wahl.
+Wer Toluol in größerer Menge umsetzt, wählt Brom; wer eine empfindliche
+Verbindung bromiert, wählt NBS.
+
+=== Radikalische Addition und Polymerisation
+
+Radikale addieren an Doppelbindungen; die Reaktion ist die Grundlage der
+Polymerisation und der technischen Kautschukherstellung.
+
+*Anti-Markownikoff-Addition von HBr* wurde in D.4.3 behandelt.
+
+*Polymerisation.* Styrol, Methylmethacrylat und Vinylchlorid polymerisieren
+radikalisch; der Initiator zerfällt in Radikale, die an die Doppelbindung
+addieren und eine Kette aufbauen. Die Reaktion wird durch Sauerstoff gehemmt
+und durch Wärme beschleunigt.
+
+$ n "CH" _2"=CHPh" ->^("AIBN") "[–CH" _2"–CHPh–]" _n $
+
+#gefahr[Styrol ist gesundheitsschädlich, entzündbar und polymerisiert bei
+  Erwärmung ohne Inhibitor spontan unter Wärmeentwicklung. Nie in geschlossenen
+  Gefäßen erhitzen; Inhibitor (4-tert-Butylbrenzcatechin) prüfen.]
+
+=== Autoxidation und Peroxide
+
+Sauerstoff addiert an Radikale unter Bildung von Peroxiden. Diese Autoxidation
+ist die Ursache für das Verderben von Ethern, Fetten und Terpenen; technisch wird
+sie gezielt genutzt (Trocknungsöle, Alkydharze).
+
+$ "R–H" ->^("O"_2) "R–OO" dot -> "R–OOH" $
+
+*Konsequenz für die Praxis.* Ether werden über Kaliumhydroxid und unter
+Lichtausschluß aufbewahrt; vor der Destillation wird auf Peroxide geprüft. Ein
+Peroxidgehalt über 100 ppm macht den Ether unbrauchbar, weil beim Einengen eine
+Explosion möglich ist.
+
+=== Aufgaben
+
+- Berechnen Sie das Produktverhältnis der Chlorierung von Propan bei 25 °C
+  (relative Reaktivitäten 1 : 3,8).
+- Warum liefert die Bromierung von Toluol mit Brom in Gegenwart von FeBr#sub[3]
+  ein anderes Produkt als die Belichtung ohne Katalysator?
+- Erklären Sie, weshalb NBS für die Bromierung von Allylpositionen geeignet ist,
+  elementares Brom aber nicht.

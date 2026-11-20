@@ -1,6 +1,5 @@
 // ============================================================================
-//  Musterkapitel D.2 — Nukleophile Substitution am gesättigten Kohlenstoffatom
-//  Vorführkapitel für die Layoutprobe: Theorie + drei vollständige Vorschriften
+//  D.2 — Nukleophile Substitution am gesättigten Kohlenstoffatom
 // ============================================================================
 
 #import "/vorlage/layout.typ": *
@@ -65,6 +64,42 @@ schwache Nucleophile häufig mit allylischer Umlagerung.
 sekundären Substraten liegen beide Wege oft dicht beieinander, so daß
 Substratkonzentration, Temperatur und Nucleophilkonzentration das Ergebnis
 bestimmen.]
+
+=== Abgrenzung der Mechanismen
+
+Zwischen S#sub[N]1 und S#sub[N]2 gibt es keinen Schalter, sondern ein Kontinuum.
+Vier Größen verschieben das Gleichgewicht:
+
+#figure(
+  table(
+    columns: (1.3fr, 1.5fr, 1.5fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Größe*], [*begünstigt S#sub[N]1*], [*begünstigt S#sub[N]2*]),
+    [Substrat], [tertiär, benzylisch, allylisch], [methyl, primär, sekundär],
+    [Nucleophil], [schwach, gut solvatisiert], [stark, wenig solvatisiert],
+    [Lösungsmittel], [polar-protisch (Wasser, Alkohol)], [polar-aprotisch (DMSO, DMF, Aceton)],
+    [Temperatur], [hoch (Dissoziation)], [mäßig (keine Eliminierung)],
+  ),
+  caption: [Steuerung der Mechanismen. In der Praxis werden die Größen
+    kombiniert, um ein Produkt zu erzwingen.],
+) <tab:sn1-sn2>
+
+*Sonderfall sekundäres Substrat.* Hier liegen beide Wege dicht beieinander, und
+das Ergebnis hängt von Details ab: Ein Überschuß an Nucleophil begünstigt
+S#sub[N]2, ein polares Lösungsmittel ohne Nucleophil begünstigt S#sub[N]1, und
+eine starke Base führt zur Eliminierung. Wer eine Vorschrift für ein sekundäres
+Substrat schreibt, legt deshalb alle drei Bedingungen fest — nicht nur das
+Reagenz.
+
+*Nachweis des Mechanismus.* Drei Experimente entscheiden:
+
+- *Kinetik*: erste Ordnung → S#sub[N]1, zweite Ordnung → S#sub[N]2.
+- *Stereochemie*: Umkehr → S#sub[N]2, Racemisierung → S#sub[N]1.
+- *Mischungsverhalten*: Zusatz eines anderen Nucleophils führt bei S#sub[N]1 zu
+  einem Produktgemisch, bei S#sub[N]2 zu einem einheitlichen Produkt aus dem
+  zugesetzten Nucleophil.
 
 === Reaktionsführung und Reagenzien
 
@@ -188,6 +223,83 @@ vermeiden, da sonst bei der Destillation Azeotrope mit dem Bromid auftreten.
     Sdp. 68,9 °C #h(2em) $n_D^20$ = 1,3980 #h(2em) $rho_20$ = 0,877 g·cm#super[−3]
   ]
 ]
+
+#vorschrift("D.2.4", [1-Bromhexan aus Hexan-1-ol])[
+  #reaktion(
+    $ "CH" _3("CH" _2")" _4"CH" _2"OH" + "HBr" $,
+    [#text(size: 6.5pt)[H#sub[2]SO#sub[4], Rückfluß]],
+    $ "CH" _3("CH" _2")" _4"CH" _2"Br" + "H" _2"O" $,
+  )
+
+  #ansatz[
+    102 g (125 mL; 1,0 mol) Hexan-1-ol, 243 g (1,4 mol) Bromwasserstoffsäure
+    (48 %), 60 mL konzentrierte Schwefelsäure.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Rückflußkühler und Tropftrichter werden
+  Hexan-1-ol und Bromwasserstoffsäure vorgelegt. Man erhitzt zum Rückfluß und
+  tropft die Schwefelsäure innerhalb von 45 min zu; anschließend wird 4 h unter
+  Rückfluß gerührt.
+
+  Nach dem Abkühlen trennt man die organische Phase ab, wäscht sie mit Wasser,
+  mit gesättigter Natriumhydrogencarbonatlösung und erneut mit Wasser. Man
+  trocknet über Natriumsulfat und fraktioniert über eine Vigreux-Kolonne.
+
+  #ausbeute[140 g (85 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 155 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4478 #h(2em)
+    $rho_20$ = 1,176 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Bromwasserstoffsäure und Schwefelsäure sind stark ätzend; beim Erwärmen
+  entstehen ätzende Dämpfe. Im Abzug arbeiten, Schutzbrille und Säurehandschuhe
+  tragen. 1-Bromhexan reizt Augen und Atemwege.]
+
+#vorschrift("D.2.5", [1-Iodbutan aus 1-Chlorbutan])[
+  #reaktion(
+    $ "CH" _3"CH" _2"CH" _2"CH" _2"Cl" + "NaI" $,
+    [#text(size: 6.5pt)[Aceton, Rückfluß]],
+    $ "CH" _3"CH" _2"CH" _2"CH" _2"I" + "NaCl" $,
+  )
+
+  #ansatz[
+    92 g (103 mL; 1,0 mol) 1-Chlorbutan, 165 g (1,1 mol) wasserfreies
+    Natriumiodid, 400 mL Aceton.
+  ]
+
+  In einem 1-l-Rundkolben mit Rückflußkühler und Rührer werden Natriumiodid und
+  Aceton vorgelegt; man erhitzt zum Rückfluß, bis das Salz gelöst ist. Dann gibt
+  man das 1-Chlorbutan zu und rührt 6 h unter Rückfluß.
+
+  Man kühlt ab, filtriert ausgeschiedenes Natriumchlorid ab und engt das Filtrat
+  am Rotationsverdampfer ein. Der Rückstand wird in 200 mL Wasser aufgenommen,
+  die organische Phase abgetrennt und über Natriumsulfat getrocknet.
+
+  Die Destillation über eine kurze Kolonne liefert bei 128–131 °C reines
+  1-Iodbutan; es wird in brauner Flasche aufbewahrt.
+
+  #ausbeute[150 g (82 % d. Th.) farblose Flüssigkeit mit süßlichem Geruch.]
+
+  #kenndaten[
+    Sdp. 130,5 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4997 #h(2em)
+    $rho_20$ = 1,617 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Natriumiodid ist gesundheitsschädlich; Aceton ist leicht entzündbar und
+  reizt Augen. 1-Iodbutan zersetzt sich am Licht unter Iodabscheidung — in
+  brauner Flasche, kühl und dunkel lagern.]
+
+*Finkelstein-Reaktion.* Der Austausch von Chlorid gegen Iodid in Aceton ist ein
+S#sub[N]2-Prozess, der durch die Löslichkeitsverhältnisse getrieben wird:
+Natriumchlorid fällt in Aceton aus, Natriumiodid ist löslich. Damit wird das
+Gleichgewicht vollständig auf die Produktseite verschoben. Für Bromide und
+Chloride ist der Austausch weniger günstig, weil die Salzlöslichkeiten ähnlich
+sind.
+
+$ "R–Cl" + "NaI" ->^("Aceton") "R–I" + "NaCl" arrow.b $
 
 === Störungen und ihre Ursachen
 

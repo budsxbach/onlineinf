@@ -575,6 +575,24 @@ nicht aus.
   krebserzeugend und ozonschädigend — wenn möglich durch Dichlormethan ersetzen.
   Das Produkt ist gesundheitsschädlich.]
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Entfärbung der Bromlösung bleibt aus], [zu wenig Brom, Lösungsmittel feucht], [Brom nachdosieren, wasserfrei arbeiten],
+    [Hydrierung stockt], [Katalysator vergiftet (S, Hg), Sauerstoff], [frischen Katalysator, N#sub[2]-Vorspülung],
+    [Diels-Alder liefert Oligomere], [dimerisiertes Cyclopentadien, zu hohe Konzentration], [frisch cracken, verdünnen, kühlen],
+    [Epoxid geht zum Diol], [wäßrige Säure, Übertemperatur], [wasserfreies Lösungsmittel, 0 °C],
+    [Hydroborierung: geringe Ausbeute], [feuchtes THF, verbrauchtes BH#sub[3]], [THF absolutieren, Boran frisch],
+  ),
+  caption: [Typische Störungen bei Additionen und Cycloadditionen.],
+) <tab:stoerungen-addition>
+
 === Aufgaben
 
 - Warum addiert HBr an 3,3,3-Trifluorpropen gegen die Markownikoff-Regel?

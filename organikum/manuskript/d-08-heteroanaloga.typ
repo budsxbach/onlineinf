@@ -397,6 +397,24 @@ verdankt ihren Platz im Organikum der Rolle des Phosphors.
   bleibt als Abfall zurück — nicht in den Abfluss. Ethanol ist leicht
   entzündlich.]
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Imin zerfällt bei der Aufarbeitung], [pH neutral, zu viel Wasser], [wasserfrei arbeiten, direkt reduzieren],
+    [Reduktive Aminierung: sekundäres Amin], [Carbonyl-Überschuß, zu viel H#sub[2]], [Verhältnis 1:1, Druck senken],
+    [Wittig: hoher cis-Anteil], [nicht-stabilisiertes Ylid, protische Lösungsmittel], [Ethanol weglassen, THF verwenden],
+    [Harnstoff: Ammoniakverlust], [zu stark erhitzt], [Temperatur unter 150 °C halten],
+    [Thioharnstoff riecht nach H#sub[2]S], [Zersetzung bei der Isolierung], [nicht übertrocknen, im Abzug lagern],
+  ),
+  caption: [Typische Störungen bei Stickstoff-, Schwefel- und Phosphorverbindungen.],
+) <tab:stoerungen-hetero>
+
 === Aufgaben
 
 - Warum läßt sich Cyclohexanon mit Ammoniak nicht zum Imin umsetzen, mit

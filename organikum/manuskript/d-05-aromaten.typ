@@ -580,6 +580,24 @@ das Diazoniumsalz zersetzt sich sonst unter Stickstoffentwicklung.
   Kontamination sofort mit PEG oder Ethanol abwaschen, nicht mit Wasser.
   Salpetrige Säure und Stickoxide nur im Abzug.]
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Nitrierung: Dinitrobenzol], [Temperatur über 60 °C, Säure zu konzentriert], [unter 55 °C arbeiten, Säure verdünnen],
+    [Diazotierung: Stickstoffentwicklung], [zu hohe Temperatur, Nitritüberschuß], [streng 0–5 °C, Nitrit langsam],
+    [Friedel-Crafts: keine Umsetzung], [AlCl#sub[3] hydrolysiert, Feuchtigkeit], [frisches AlCl#sub[3], wasserfreies Benzol],
+    [Sulfonierung: keine Kristalle], [zu verdünnt, zu warm], [rauchende Säure, Salzwasser-Zugabe],
+    [Grignard setzt nicht an], [Restfeuchte, Säure im Edukt], [wasserfrei destillieren, Mg aktivieren],
+  ),
+  caption: [Typische Störungen bei Reaktionen am Aromaten.],
+) <tab:stoerungen-aromaten>
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber

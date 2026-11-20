@@ -454,6 +454,24 @@ Die Nachweise ersetzen keine Analyse. Ein „negativer" Silberspiegel kann an
 Verunreinigungen liegen; für die Identifikation ist der Schmelzpunkt des
 Derivats oder ein Spektrum erforderlich.
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Ozonolyse: niedrige Ausbeute], [Ozon entweicht, Leck in der Apparatur], [Dichtheit prüfen, Einleitrohr tief],
+    [Permanganat: Filtration stockt], [Braunstein zu fein, zu viel organisches Material], [heiß absaugen, Celite-Zugabe],
+    [PCC: braune Emulsion], [Wasser im Lösungsmittel, zu viel PCC], [DCM trocknen, 1,2 Äquivalente],
+    [Cyclohexanon riecht nach Säure], [Überoxidation, Säurerest], [mit NaHCO#sub[3] neutral waschen],
+    [Überhitzung bei der Ozonolyse], [zu schnelle Ozonzufuhr], [Bad kühlen, Zufuhr drosseln],
+  ),
+  caption: [Typische Störungen bei Oxidationen.],
+) <tab:stoerungen-oxidation>
+
 === Aufgaben
 
 - Warum oxidiert Kaliumpermanganat Toluol zur Benzoesäure, tert-Butylbenzol

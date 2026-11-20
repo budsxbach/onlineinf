@@ -525,6 +525,24 @@ Schotten-Baumann-Acylierung.
   tragen, Hautkontakt sofort vermeiden. Acetylchlorid ist ätzend und raucht
   an feuchter Luft — nur im Abzug dosieren. Die Natronlauge ätzt.]
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Aldol: polymeres Harz], [Base zu stark, zu hohe Temperatur], [verdünnte Lauge, 0 °C],
+    [Perkin: harzige Masse], [über 180 °C, Acetanhydrid verbraucht], [Temperatur halten, Anhydrid nachdosieren],
+    [Veresterung: Gleichgewicht liegt links], [Wasser im Ansatz], [Molekularsieb, Benzol-Wasser-Abspaltung],
+    [Claisen: keine Umsetzung], [Natrium oxidiert, Ethylacetat feucht], [frisches Natrium, Ester über CaCl#sub[2]],
+    [Schotten-Baumann: öliges Produkt], [zu wenig Base, Acetylchlorid-Überschuß], [Base nachgeben, umkristallisieren],
+  ),
+  caption: [Typische Störungen bei Carbonyl-Kondensationen.],
+) <tab:stoerungen-carbonyl>
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber

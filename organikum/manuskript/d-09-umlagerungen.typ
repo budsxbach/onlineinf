@@ -398,6 +398,24 @@ Ketonen — hier hilft die Regel von der Migrationsfähigkeit, aber nicht immer.
 Die Favorskii-Umlagerung ist dagegen eine Spezialität für cyclische
 α-Halogenketone und für die Ringverengung.
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Pinakolon-Ausbeute gering], [Säure zu verdünnt, Edukt verunreinigt], [konz. H#sub[2]SO#sub[4], Pinakol umkristallisieren],
+    [Beckmann: Ringspaltung statt Lactam], [Übertemperatur, zuviel Säure], [130 °C einhalten, P#sub[2]O#sub[5] dosieren],
+    [Hofmann-Abbau: Bromamin-Öl], [Hypobromit alt, pH zu niedrig], [frische Lösung, pH 13],
+    [Fries: o/p-Verhältnis verrutscht], [Temperatur unkontrolliert], [Kühlung, Nitrobenzol als Lösungsmittel],
+    [Claisen-Umlagerung: Ausbeute gering], [Allylether verunreinigt], [Ether über Molsieb lagern],
+  ),
+  caption: [Typische Störungen bei Umlagerungen.],
+) <tab:stoerungen-umlagerungen>
+
 === Aufgaben
 
 - Warum wandert bei der Pinakol-Umlagerung bevorzugt der Phenylrest, bei der

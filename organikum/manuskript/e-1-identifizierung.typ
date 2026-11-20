@@ -206,6 +206,50 @@ klassischen Nachweise dienen der Vorauswahl und der Bestätigung.
   Verunreinigung mit Aceton. Der Fall zeigt, warum Gegenproben nötig sind.
 ]
 
+=== Fehlerquellen und Gegenproben
+
+Die Identifizierung einer unbekannten Verbindung ist ein Ausschlußverfahren.
+Jede Probe hat falsch-positive und falsch-negative Ergebnisse; wer das nicht
+kennt, bestimmt die Verbindung, die er vermutet, statt die, die vorliegt.
+
+#figure(
+  table(
+    columns: (1.4fr, 1.7fr, 1.6fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Probe*], [*falsch positiv*], [*falsch negativ*]),
+    [Beilstein], [Halogen in anorganischer Verunreinigung], [Fluor, sehr
+      schwer flüchtige Halogenide],
+    [Lassaigne], [Nitrat, Carbonat], [Pyridin-, Chinolin-Stickstoff],
+    [Fehling], [α-Hydroxyketone, reduzierende Verunreinigung], [aromatische
+      Aldehyde],
+    [Tollens], [Hydrazine, Phenole], [Aldehyde mit wenig Fläche],
+    [Iodoform], [Aceton, Ethanol in Spuren], [Methylketone in saurer Lösung],
+    [Bromwasser], [leicht oxidierbare Verunreinigung], [sterisch gehinderte
+      Alkene],
+    [DNPH], [Ketone allgemein], [sehr sperrige Ketone],
+    [Lucas], [Allyl-, Benzylalkohole], [Alkohole in verdünnter Lösung],
+  ),
+  caption: [Nachweisreaktionen und ihre typischen Fehlbefunde. Wer nur eine
+    Probe macht, bestimmt die Verunreinigung, nicht die Substanz.],
+) <tab:nachweis-fehler>
+
+*Gegenprobe.* Zu jedem positiven Befund gehört ein Negativbefund an einer
+Vergleichssubstanz: Man führt die Probe parallel mit einer bekannten Verbindung
+derselben Klasse und mit einem Blindwert (nur Lösungsmittel) durch. Erst wenn
+der Befund reproduzierbar ist und der Blindwert negativ bleibt, gilt er.
+
+*Mischprobe statt Schätzung.* Für Feststoffe ist die Mischprobe das stärkste
+Argument: Man mischt die unbekannte Substanz mit der vermuteten und bestimmt den
+Schmelzpunkt. Bleibt er unverändert, ist die Annahme bestätigt; sinkt er, war es
+eine andere Verbindung.
+
+*Systematische Auswertung.* Am Ende steht eine Tabelle mit allen Befunden und
+ihrer Deutung. Widersprüche werden nicht geglättet, sondern erklärt: Eine
+positive Iodoform-Probe bei einem Cyclohexanon ist kein Methylketon, sondern
+eine Verunreinigung mit Aceton — solche Sätze gehören ins Protokoll.
+
 === Aufgaben
 
 - Eine Verbindung ist in Wasser löslich, gibt mit Natriumhydrogencarbonat kein

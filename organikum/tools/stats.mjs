@@ -23,6 +23,14 @@ for (const file of files) {
   rows.push({ datei: file, woerter, vorschriften, abbildungen, tabellen });
 }
 
+const pdf = path.join(ROOT, 'ausgabe', 'organikum-vorschau.pdf');
+let pdfSeiten = null;
+if (fs.existsSync(pdf)) {
+  const buf = fs.readFileSync(pdf, 'latin1');
+  const treffer = buf.match(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)/);
+  if (treffer) pdfSeiten = Number(treffer[1]);
+}
+
 const pad = (s, n) => String(s).padEnd(n);
 console.log(pad('Datei', 44) + pad('Wörter', 9) + pad('Vorschr.', 10) + pad('Abb.', 7) + 'Tab.');
 for (const r of rows) {
@@ -35,4 +43,5 @@ console.log(pad('Summe', 44) + pad(totalWords, 9));
 // auf eine Textseite; Vorschriften und Tabellen brauchen mehr Platz.
 const seiten = Math.round(totalWords / 480);
 console.log(`\nTextmenge entspricht ca. ${seiten} reinen Textseiten.`);
-console.log(`Ziel: 793 Seiten. Noch offen: ca. ${793 - seiten} Seiten.`);
+if (pdfSeiten !== null) console.log(`Gesetztes PDF: ${pdfSeiten} Seiten (Buchformat, inkl. Titelei).`);
+console.log(`Ziel: 793 Seiten. Noch offen: ca. ${793 - (pdfSeiten ?? seiten)} Seiten.`);

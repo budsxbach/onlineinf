@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="44mm" height="54mm" viewBox="0 0 44 54">
+<path d="M 18.00 3.40 L 18.00 0.80" fill="none" stroke="#000" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.00 3.40 L 18.00 0.80" fill="none" stroke="#ffffff" stroke-width="1.90" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.00" cy="3.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="18.00" cy="0.80" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 18.00 1.00 L 26.00 1.00 L 26.00 6.00" fill="none" stroke="#000" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.00 1.00 L 26.00 1.00 L 26.00 6.00" fill="none" stroke="#ffffff" stroke-width="1.90" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.00" cy="1.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="26.00" cy="6.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<rect x="23.60" y="6.00" width="4.80" height="9.00" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 24.00 6.60 l 1.4 7.80 M 25.60 6.60 l 1.4 7.80 M 27.20 6.60 l 1.4 7.80" fill="none" stroke="#000" stroke-width="0.18" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 13.90 26.00 L 4.90 26.00" fill="none" stroke="#000" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 13.90 26.00 L 4.90 26.00" fill="none" stroke="#ffffff" stroke-width="1.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="13.90" cy="26.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="4.90" cy="26.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 22.10 12.00 L 31.10 12.00" fill="none" stroke="#000" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 22.10 12.00 L 31.10 12.00" fill="none" stroke="#ffffff" stroke-width="1.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="22.10" cy="12.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="31.10" cy="12.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 18.00 8.60 L 18.00 29.40" fill="none" stroke="#000" stroke-width="8.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.00 8.60 L 18.00 29.40" fill="none" stroke="#ffffff" stroke-width="7.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.00" cy="8.60" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="18.00" cy="29.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 14.90 10.00 L 21.10 10.00 L 21.10 28.00 L 14.90 28.00 Z" fill="#dedede" stroke="#000" stroke-width="0.0" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 14.90 10.00 L 21.10 10.00 L 21.10 28.00 L 14.90 28.00 Z" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 18.00 5.00 L 18.00 33.00" fill="none" stroke="#000" stroke-width="4.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.00 5.00 L 18.00 33.00" fill="none" stroke="#ffffff" stroke-width="3.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.00" cy="5.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="18.00" cy="33.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 5.00 43.50 L 8.40 52.50 L 27.60 52.50 L 31.00 43.50" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 6.00 46.70 L 30.00 46.70" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 12.00 50.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 18.00 50.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="18.00" cy="41.00" r="7.60" fill="#dedede" stroke="#000" stroke-width="0.0"/>
+<rect x="9.40" y="32.40" width="17.20" height="8.60" fill="#ffffff" stroke="#000" stroke-width="0.0"/>
+<path d="M 10.40 41.00 L 25.60 41.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="18.00" cy="41.00" r="7.60" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 18.00 34.00 L 18.00 26.40" fill="none" stroke="#000" stroke-width="4.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.00 34.00 L 18.00 26.40" fill="none" stroke="#ffffff" stroke-width="3.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.00" cy="34.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="18.00" cy="26.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="31.00" cy="10.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="31.00" y="11.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">1</text>
+<circle cx="31.00" cy="34.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="31.00" y="35.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">2</text>
+</svg>

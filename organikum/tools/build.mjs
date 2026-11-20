@@ -15,6 +15,13 @@ const MAIN = path.join(ROOT, 'vorlage', 'buch.typ');
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
 
 const t0 = Date.now();
+
+// Strukturformeln und Apparatezeichnungen bei Bedarf neu erzeugen
+if (args.includes('--zeichnungen')) {
+  const { execFileSync } = await import('node:child_process');
+  execFileSync('python3', [path.join(ROOT, 'tools', 'strukturen.py')], { stdio: 'inherit' });
+  execFileSync('python3', [path.join(ROOT, 'tools', 'apparate.py')], { stdio: 'inherit' });
+}
 const compiler = NodeCompiler.create({ workspace: ROOT });
 const doc = compiler.compile({ mainFilePath: MAIN, root: ROOT });
 if (doc.hasError()) {

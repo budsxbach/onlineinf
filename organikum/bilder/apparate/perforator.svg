@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="42mm" height="52mm" viewBox="0 0 42 52">
+<path d="M 17.70 9.00 L 23.70 9.00" fill="none" stroke="#000" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 17.70 9.00 L 23.70 9.00" fill="none" stroke="#ffffff" stroke-width="1.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="17.70" cy="9.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="23.70" cy="9.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 14.00 5.60 L 14.00 7.40" fill="none" stroke="#000" stroke-width="7.4" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 14.00 5.60 L 14.00 7.40" fill="none" stroke="#ffffff" stroke-width="6.30" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="14.00" cy="5.60" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="14.00" cy="7.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 11.30 7.00 L 16.70 7.00 L 16.70 6.00 L 11.30 6.00 Z" fill="#dedede" stroke="#000" stroke-width="0.0" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 11.30 7.00 L 16.70 7.00 L 16.70 6.00 L 11.30 6.00 Z" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 14.00 2.00 L 14.00 11.00" fill="none" stroke="#000" stroke-width="4.0" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 14.00 2.00 L 14.00 11.00" fill="none" stroke="#ffffff" stroke-width="2.90" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="14.00" cy="2.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="14.00" cy="11.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 14.00 11.00 L 14.00 18.00" fill="none" stroke="#000" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 14.00 11.00 L 14.00 18.00" fill="none" stroke="#ffffff" stroke-width="3.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<rect x="9.40" y="18.00" width="9.20" height="13.00" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 10.6 24.2 L 17.4 24.2 L 17.4 27.4 L 10.6 27.4 Z" fill="#efefef" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 18.60 20.40 L 24.00 17.00 L 24.00 12.00 L 14.60 12.00" fill="none" stroke="#000" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 18.60 20.40 L 24.00 17.00 L 24.00 12.00 L 14.60 12.00" fill="none" stroke="#ffffff" stroke-width="1.30" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="18.60" cy="20.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="14.60" cy="12.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 4.00 42.00 L 7.40 50.00 L 20.60 50.00 L 24.00 42.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 5.00 45.20 L 23.00 45.20" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 11.00 48.00 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="14.00" cy="40.00" r="6.40" fill="#dedede" stroke="#000" stroke-width="0.0"/>
+<rect x="6.60" y="32.60" width="14.80" height="7.40" fill="#ffffff" stroke="#000" stroke-width="0.0"/>
+<path d="M 7.60 40.00 L 20.40 40.00" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="14.00" cy="40.00" r="6.40" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 14.00 34.20 L 14.00 26.60" fill="none" stroke="#000" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 14.00 34.20 L 14.00 26.60" fill="none" stroke="#ffffff" stroke-width="3.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="14.00" cy="34.20" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="14.00" cy="26.60" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="30.00" cy="22.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="30.00" y="23.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">1</text>
+<circle cx="30.00" cy="40.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="30.00" y="41.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">2</text>
+</svg>

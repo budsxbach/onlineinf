@@ -17,13 +17,16 @@
 // auch nach einzelnen, unabhängig geschriebenen Teilen stimmt.
 #let teil-index(b) = ("A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7).at(b)
 
-#let teil(buchstabe, titel) = [
-  // Zähler auf den Buchstaben-Index setzen; die Überschrift selbst zählt hoch
-  #context counter(heading).update(teil-index(buchstabe) - 1)
-  #counter(figure.where(kind: table)).update(0)
-  #counter(figure.where(kind: image)).update(0)
-  #heading(level: 1)[#titel]
-]
+#let teil(buchstabe, titel) = {
+  // Teilseite ohne Kolumnentitel und ohne Seitenzahl. Der Zähler wird vor der
+  // Ebene-1-Überschrift gesetzt, damit die Kapitel als A.1, B.1, D.3 … zählen.
+  context counter(heading).update(teil-index(buchstabe) - 1)
+  counter(figure.where(kind: table)).update(0)
+  counter(figure.where(kind: image)).update(0)
+  page(header: none, footer: none, numbering: none)[
+    #heading(level: 1)[#titel]
+  ]
+}
 
 #let buch(body) = {
   set document(
@@ -39,9 +42,27 @@
     header: context {
       let p = counter(page).get().first()
       if p <= 12 { return }
+      // Teilseiten (Teilanfang) tragen keine Kolumnentitel
+      let teilseite = query(selector(heading.where(level: 1)).before(here()))
+      if teilseite.len() > 0 {
+        let lp = counter(page).at(teilseite.last().location()).first()
+        if lp == p { return }
+      }
       set text(size: 7.5pt, fill: luma(70))
-      let vorherige = query(selector(heading.where(level: 2)).before(here()))
-      let titel = if vorherige.len() == 0 { [] } else { vorherige.last().body }
+      // Läuft ein Kapitel auf dieser Seite an, trägt der Kolumnentitel dessen Namen
+      let auf_dieser_seite = query(selector(heading.where(level: 2)).after(here()))
+      let kapitel = query(selector(heading.where(level: 2)).before(here()))
+      let startet_hier = auf_dieser_seite.len() > 0
+      if startet_hier {
+        startet_hier = counter(page).at(auf_dieser_seite.first().location()).first() == p
+      }
+      let titel = if startet_hier {
+        auf_dieser_seite.first().body
+      } else if kapitel.len() == 0 {
+        []
+      } else {
+        kapitel.last().body
+      }
       grid(
         columns: (1fr, 1fr),
         align: (left, right),
@@ -53,7 +74,7 @@
       let p = counter(page).get().first()
       if p <= 12 { return }
       set text(size: 8.5pt)
-      align(center)[#p]
+      align(if calc.odd(p) { right } else { left })[#p]
     },
   )
 
@@ -65,7 +86,14 @@
     ligatures: true,
   )
 
-  set par(justify: true, leading: 0.56em, spacing: 0.8em)
+  // Buchsatz: Erstzeileneinzug, kein Durchschuß zwischen Absätzen.
+  // `all: false` läßt den ersten Absatz nach einer Überschrift ohne Einzug.
+  set par(
+    justify: true,
+    leading: 0.56em,
+    spacing: 0.55em,
+    first-line-indent: (amount: 5mm, all: false),
+  )
 
   // --------------------------------------------------------------- Kapitel
   // Teile (Ebene 1) bekommen Buchstaben A, B, C …, die Kapitel darunter eine
@@ -81,24 +109,24 @@
   show heading: it => {
     if it.level == 1 {
       let buchstabe = context teilbuchstabe(counter(heading).at(it.location()).first())
-      block(above: 0pt, below: 14pt)[
-        #v(18pt)
+      block(above: 0pt, below: 20pt)[
+        #v(14pt)
         #text(size: 8.5pt, tracking: 0.28em, fill: luma(60))[TEIL #buchstabe]
         #v(6pt)
         #text(size: 19pt, weight: "bold")[#it.body]
         #v(4pt)
         #line(length: 45%, stroke: 0.9pt)
       ]
-      pagebreak(weak: false)
     } else if it.level == 2 {
-      block(above: 16pt, below: 6pt)[
+      block(above: 17pt, below: 12pt)[
         #context {
           let nr = numbering(it.numbering, ..counter(heading).at(it.location()))
           text(size: 12pt, weight: "bold")[#nr #h(0.5em) #it.body]
         }
       ]
     } else if it.level == 3 {
-      block(above: 11pt, below: 5pt)[
+      set par(first-line-indent: 0pt)
+      block(above: 14pt, below: 11pt)[
         #context {
           if it.numbering == none {
             text(size: 10.2pt, weight: "bold")[#it.body]
@@ -109,7 +137,8 @@
         }
       ]
     } else {
-      block(above: 9pt, below: 4pt)[
+      set par(first-line-indent: 0pt)
+      block(above: 12pt, below: 10pt)[
         #context {
           let nr = numbering(it.numbering, ..counter(heading).at(it.location()))
           text(size: 9.3pt, weight: "bold", style: "italic")[#nr #h(0.5em) #it.body]
@@ -121,8 +150,20 @@
   // --------------------------------------------------------- Abbildungen/Tabellen
   set figure(supplement: [Abb.], gap: 8pt)
   show figure.where(kind: table): set figure(supplement: [Tab.])
+  show figure.where(kind: table): it => {
+    set text(size: 8.6pt, hyphenate: false)
+    set par(justify: false, first-line-indent: 0pt, leading: 0.5em)
+    set table(inset: (x: 5pt, y: 3.4pt), stroke: none)
+    set align(left)
+    it
+  }
+  // Tabellenkopf und -zeilen: feine Linien nur waagerecht, Kopf abgesetzt
+  show table.cell.where(y: 0): set text(weight: "bold")
   // Abbildungen und Tabellen werden getrennt und je Teil gezählt:  Tab. D.3
-  show figure.caption: it => block(above: 3pt, below: 9pt)[
+  show figure.caption: it => block(above: 4pt, below: 7pt, width: 100%)[
+    #set text(size: 8pt, font: ("Libertinus Serif", "DejaVu Serif"))
+    #set par(justify: false)
+    #set align(left)
     #set text(size: 8pt)
     #context {
       let teilnr = query(selector(heading.where(level: 1)).before(it.location())).last()
@@ -136,6 +177,8 @@
     }
   ]
   show figure: set block(breakable: false)
+  // Abbildungen nie oben an eine Seite kleben, wenn darunter kein Text steht
+  show figure.where(kind: image): set block(above: 6pt, below: 6pt)
 
   // ---------------------------------------------------------------- Fußnoten
   set footnote(numbering: "1)")
@@ -160,6 +203,15 @@
   let u = if unten == none { [] } else { unten }
   $arrow(l: 3em, t: #o, b: #u)$
 }
+
+// Absatz mit vorangestelltem Stichwort („Rückfluß." …): kein Einzug
+#let stichwort(titel, body) = block(
+  above: 0.85em,
+  below: 0pt,
+)[
+  #set par(first-line-indent: (amount: 0pt, all: true), spacing: 0pt)
+  *#titel.* #body
+]
 
 // Gefahrenhinweis, am linken Rand markiert
 #let gefahr(body) = block(
@@ -190,7 +242,7 @@
   stroke: (left: 1pt + black),
 )[
   #set par(spacing: 0.55em)
-  #block(below: 5pt)[
+  #block(sticky: true, below: 5pt)[
     #text(size: 8pt, weight: "bold", tracking: 0.06em)[VORSCHRIFT #nr]
     #h(0.7em)
     #text(size: 10.2pt, weight: "bold")[#titel]

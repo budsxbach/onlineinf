@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="88mm" height="58mm" viewBox="0 0 88 58">
+<path d="M 15.00 30.00 L 34.00 30.00" fill="none" stroke="#000" stroke-width="4.0" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 15.00 30.00 L 34.00 30.00" fill="none" stroke="#ffffff" stroke-width="2.90" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="15.00" cy="30.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="34.00" cy="30.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 34.00 30.00 L 34.00 27.50 L 40.00 27.50" fill="none" stroke="#000" stroke-width="4.0" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 34.00 30.00 L 34.00 27.50 L 40.00 27.50" fill="none" stroke="#ffffff" stroke-width="2.90" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="34.00" cy="30.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="40.00" cy="27.50" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 40.00 26.50 L 40.00 22.00 L 52.00 18.00" fill="none" stroke="#000" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 40.00 26.50 L 40.00 22.00 L 52.00 18.00" fill="none" stroke="#ffffff" stroke-width="3.30" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="40.00" cy="26.50" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="52.00" cy="18.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 52.00 18.00 L 78.00 18.00" fill="none" stroke="#000" stroke-width="4.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 52.00 18.00 L 78.00 18.00" fill="none" stroke="#ffffff" stroke-width="3.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 53.00 18.00 L 76.00 18.00" fill="none" stroke="#000" stroke-width="8.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 53.00 18.00 L 76.00 18.00" fill="none" stroke="#ffffff" stroke-width="7.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="53.00" cy="18.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="76.00" cy="18.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 54.3 14.6 L 74.7 14.6 L 74.7 21.4 L 54.3 21.4 Z" fill="#dedede" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 53.00 23.40 L 53.00 27.00" fill="none" stroke="#000" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 53.00 23.40 L 53.00 27.00" fill="none" stroke="#ffffff" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="53.00" cy="23.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="53.00" cy="27.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 76.00 12.60 L 76.00 9.00" fill="none" stroke="#000" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 76.00 12.60 L 76.00 9.00" fill="none" stroke="#ffffff" stroke-width="1.10" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="76.00" cy="12.60" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="76.00" cy="9.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 78.00 18.00 L 81.00 18.00 L 81.00 24.00" fill="none" stroke="#000" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 78.00 18.00 L 81.00 18.00 L 81.00 24.00" fill="none" stroke="#ffffff" stroke-width="1.70" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="78.00" cy="18.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="81.00" cy="24.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 75.50 32.50 L 78.40 25.50 L 78.40 22.50 M 83.60 22.50 L 83.60 25.50 L 86.50 32.50" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 75.50 32.50 L 86.50 32.50" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 78.40 22.50 L 83.60 22.50" fill="none" stroke="#000" stroke-width="0.5" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 77.09 29.35 L 84.91 29.35 L 86.50 32.50 L 75.50 32.50 Z" fill="#dedede" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 77.09 29.35 L 84.91 29.35" fill="none" stroke="#000" stroke-width="0.35" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 4.00 45.50 L 7.40 54.50 L 22.60 54.50 L 26.00 45.50" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 5.00 48.70 L 25.00 48.70" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 11.00 52.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 17.00 52.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="15.00" cy="43.40" r="7.00" fill="#dedede" stroke="#000" stroke-width="0.0"/>
+<rect x="7.00" y="35.40" width="16.00" height="8.00" fill="#ffffff" stroke="#000" stroke-width="0.0"/>
+<path d="M 8.00 43.40 L 22.00 43.40" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="15.00" cy="43.40" r="7.00" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 15.00 37.00 L 15.00 27.40" fill="none" stroke="#000" stroke-width="4.6" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 15.00 37.00 L 15.00 27.40" fill="none" stroke="#ffffff" stroke-width="3.50" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="15.00" cy="37.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="15.00" cy="27.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<path d="M 29.00 45.50 L 32.40 54.50 L 47.60 54.50 L 51.00 45.50" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 30.00 48.70 L 50.00 48.70" fill="none" stroke="#000" stroke-width="0.3" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 36.00 52.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M 42.00 52.50 q 1.5 -1.6 3.0 0 q 1.5 1.6 3.0 0" fill="none" stroke="#000" stroke-width="0.25" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="40.00" cy="43.40" r="7.00" fill="#dedede" stroke="#000" stroke-width="0.0"/>
+<rect x="32.00" y="35.40" width="16.00" height="8.70" fill="#ffffff" stroke="#000" stroke-width="0.0"/>
+<path d="M 33.04 44.10 L 46.96 44.10" fill="none" stroke="#000" stroke-width="0.45" stroke-linejoin="round" stroke-linecap="round"/>
+<circle cx="40.00" cy="43.40" r="7.00" fill="none" stroke="#000" stroke-width="0.5"/>
+<path d="M 40.00 37.00 L 40.00 28.40" fill="none" stroke="#000" stroke-width="4.6" stroke-linejoin="round" stroke-linecap="butt"/>
+<path d="M 40.00 37.00 L 40.00 28.40" fill="none" stroke="#ffffff" stroke-width="3.50" stroke-linejoin="round" stroke-linecap="butt"/>
+<circle cx="40.00" cy="37.00" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="40.00" cy="28.40" r="0.00" fill="none" stroke="#000" stroke-width="0.0"/>
+<circle cx="4.00" cy="47.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="4.00" y="48.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">1</text>
+<circle cx="47.00" cy="47.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="47.00" y="48.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">2</text>
+<circle cx="84.00" cy="7.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="84.00" y="8.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">3</text>
+<circle cx="84.00" cy="30.00" r="2.40" fill="#ffffff" stroke="#000" stroke-width="0.4"/>
+<text x="84.00" y="31.05" font-family="DejaVu Sans, sans-serif" font-size="2.9" text-anchor="middle" fill="#000">4</text>
+</svg>

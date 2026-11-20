@@ -173,6 +173,22 @@ node tools/stats.mjs            # Kennzahlen
 
 ---
 
+## 3a. Arbeitsstand
+
+| Schritt | Stand | Umfang im PDF |
+| --- | --- | --- |
+| 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
+| 1 Gerüst | **fertig** | Teile A–D angelegt, Inhaltsverzeichnis |
+| 2 Teil A | **in Arbeit (ca. 75 %)** | A.1 Hilfsmittel, A.2 Trennverfahren, A.3 Mikromaßstab/Konstanten, A.4 Lagerung/Entsorgung |
+| 3 Teile B, C | offen | — |
+| 4 Teil D | Musterkapitel D.1, D.2 gesetzt | 4 Vorschriften |
+| 5 Teile E–G | offen | — |
+| 6 Feinsatz | offen | — |
+
+Aktuell gesetzt: **24 Seiten** Buchformat (168 × 240 mm), 6.000 Wörter, 17 Apparate-
+Abbildungen, 17 Tabellen, 4 Vorschriften. Kolumnentitel, Teilezählung, Abbildungs-
+und Tabellennumerierung je Teil, Fußnoten, Registervorbereitung laufen.
+
 ## 4. Arbeitsschritte und Aufwand
 
 | # | Schritt | Inhalt | Umfang | Turns |

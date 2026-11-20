@@ -60,25 +60,17 @@
   #line(length: 100%, stroke: 0.7pt)
 ]
 #outline(title: none, depth: 2, indent: auto)
-#pagebreak()
 
 // ------------------------------------------------------------------ Kapitel
 #set page(numbering: "1")
 
+#teil("A", [Einführung in die Laboratoriumstechnik])
 
-= Einführung in die Laboratoriumstechnik
+#include "/manuskript/a-1-hilfsmittel.typ"
+#include "/manuskript/a-2-trennverfahren.typ"
+#include "/manuskript/a-3-mikro-und-konstanten.typ"
 
-#lorem(40)
-
-= Organisch-chemische Literatur. Protokollführung
-
-#lorem(30)
-
-= Einige allgemeine Grundlagen
-
-#lorem(50)
-
-= Organisch-präparativer Teil
+#teil("B", [Organisch-präparativer Teil])
 
 #include "/manuskript/d-01-radikalische-substitution.typ"
 #include "/manuskript/d-02-nukleophile-substitution.typ"

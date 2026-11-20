@@ -251,6 +251,31 @@ zwei Darstellungen mit Ausbeute und Bedingungen, die Originalstelle und die
 Mengen für einen 0,05-mol-Ansatz. Vergleichen Sie, ob die Datenbankangabe mit
 der Originalarbeit übereinstimmt.
 
+*Datenbanken im Überblick.* Die Literaturrecherche beginnt heute
+online; die folgende Übersicht nennt die wichtigsten Werkzeuge und ihre
+Stärken.
+
+#figure(
+  table(
+    columns: (0.9fr, 1.2fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Datenbank*], [*Stärke*], [*Zugang*]),
+    [SciFinder], [Reaktionen, Substanzen, Patente (CAS)], [Lizenz, Uni-Bibliothek],
+    [Reaxys], [Reaktionsdaten, Ausbeuten, Bedingungen], [Lizenz, Uni-Bibliothek],
+    [PubChem], [Eigenschaften, Strukturen, Sicherheitsdaten], [frei],
+    [ChemSpider], [Struktur-Suche, Spektren-Verweise], [frei (eingeschränkt)],
+    [Google Scholar], [Volltext, Zitationsgraph], [frei],
+    [Beilstein/Gmelin (Handbuch)], [klassische Referenzdaten], [Bibliothek, digitalisiert],
+    [CAS Registry], [Substanzidentifikatoren (CAS-Nummern)], [über SciFinder],
+    [SDB-Reihe (GHS/SDB)], [Gefahren, Entsorgung, Erste Hilfe], [frei, Herstellerseiten],
+  ),
+  caption: [Werkzeuge der chemischen Literaturrecherche. Für
+    Grundpraktikum-Aufgaben genügen PubChem, Google Scholar und die
+    Bibliothekskataloge.],
+) <tab:datenbanken>
+
 == Protokollführung
 
 Das Protokoll ist die einzige Spur, die von einem Versuch bleibt. Es wird
@@ -337,6 +362,35 @@ wiederholbar, mit allen Zahlen *vor* dem Versuch.
   Brechungsindex liegt 0,0003 unter dem Literaturwert — die Probe ist rein
   genug für Folgeversuche. Abweichung von der Vorschrift: keine.
 ]
+
+=== Bewertungsraster für Protokolle
+
+Die Protokollbewertung folgt im Praktikum festen Kriterien; das
+folgende Raster dient der Selbstkontrolle vor der Abgabe.
+
+#figure(
+  table(
+    columns: (1fr, auto, 1.4fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Kriterium*], [*Gewicht*], [*Worauf es ankommt*]),
+    [Durchführung], [25 %], [Ansatz, Beobachtungen, Zeiten — reproduzierbar],
+    [Ausbeute und Reinheit], [20 %], [Rechnung gezeigt, Ausbeute in % und g, Nachweis (Smp., DC, IR)],
+    [Literaturbezug], [15 %], [Originalvorschrift zitiert, Abweichungen begründet],
+    [Sicherheit], [15 %], [Gefahrenhinweise beachtet, Entsorgung dokumentiert],
+    [Diskussion], [15 %], [Störungen erklärt, Verbesserungen vorgeschlagen],
+    [Form und Sprache], [10 %], [Vergangenheit, unpersönlich, Einheiten korrekt],
+  ),
+  caption: [Bewertungsraster für Praktikumsprotokolle. Ein Protokoll, das
+    nur die Vorschrift abschreibt, erreicht höchstens die Hälfte der
+    Punkte — die Beobachtungen sind das Eigentliche.],
+) <tab:protokollbewertung>
+
+- Recherchieren Sie die Originalvorschrift zur Pinakol-Umlagerung (D.9.1)
+  und vergleichen Sie sie mit unserer Durchführung.
+- Bewerten Sie ein Musterprotokoll nach dem Raster und begründen Sie jede
+  Abweichung von 100 %.
 
 == Literaturhinweise
 

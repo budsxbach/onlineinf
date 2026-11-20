@@ -89,3 +89,8 @@
 #include "/manuskript/d-07-carbonyle.typ"
 #include "/manuskript/d-08-heteroanaloga.typ"
 #include "/manuskript/d-09-umlagerungen.typ"
+
+#teil("E", [Identifizierung organischer Verbindungen])
+
+#include "/manuskript/e-1-identifizierung.typ"
+#include "/manuskript/e-2-derivate-spektren.typ"

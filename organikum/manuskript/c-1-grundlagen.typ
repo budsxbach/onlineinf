@@ -298,6 +298,40 @@ Schritt paßt.
 - Die Probenentnahme verändert das Volumen; bei kleinen Ansätzen wird
   spektroskopisch in situ gemessen (UV, NMR, Leitfähigkeit).
 
+*Rechenbeispiel: Arrhenius-Auswertung.* Die Hydrolyse von
+Essigsäureethylester in 0,1-m Natronlauge liefert folgende Geschwindig-
+keitskonstanten:
+
+#figure(
+  table(
+    columns: (auto, auto, auto),
+    inset: (x: 8pt, y: 3.4pt),
+    align: (right, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*T (°C)*], [*T (K)*], [*k (L·mol#super[−1]·s#super[−1])*]),
+    [15], [288,2], [0,087],
+    [25], [298,2], [0,150],
+    [35], [308,2], [0,250],
+    [45], [318,2], [0,410],
+  ),
+  caption: [Temperaturabhängigkeit der Esterhydrolyse — typische
+    Meßreihe zur Bestimmung der Aktivierungsenergie.],
+) <tab:arrhenius>
+
+Aus zwei Punkten folgt die Aktivierungsenergie:
+
+$ ln (k_2 \/ k_1) = (E_A) \/ R dot (1 \/ T_1 - 1 \/ T_2) $
+
+Mit $k_1 = 0,087$ bei $T_1 = 288,2 "K"$ und $k_2 = 0,410$ bei
+$T_1 = 318,2 "K"$:
+
+$ E_A = (8,314 "J/(mol·K)" dot ln(4,71)) \/ (1/288,2 - 1/318,2) = 4,8 dot 10^4 "J/mol" = 48 "kJ/mol" $
+
+Das ist ein typischer Wert für zweiatomige Reaktionen in Lösung (50–100
+kJ/mol). Man beachte: die Reaktion verdoppelt ihre Geschwindigkeit alle
+10 °C nur näherungsweise — die Regel gilt für $E_A$ um 50 kJ/mol, nicht
+allgemein.
+
 === Katalyse in der Praxis
 
 Ein Katalysator senkt die Aktivierungsenergie, ohne die Lage des Gleichgewichts
@@ -587,6 +621,39 @@ $ "ee" = (n_R - n_S) \/ (n_R + n_S) dot 100 % $
 
 Ein ee von 98 % bedeutet 99 : 1; ein ee von 90 % bedeutet 95 : 5. Für
 pharmazeutische Wirkstoffe gilt heute ein ee über 99 % als Standard.
+
+*CIP-Regeln am Beispiel.* Die Zuordnung von *R* und *S* folgt den
+Cahn-Ingold-Prelog-Prioritäten: höhere Ordnungszahl zuerst, bei
+Gleichheit die nächsten Atome. Am Beispiel 2-Butanol:
+
+- Zentrum: C-2 mit OH, Propyl, Methyl, H
+- Prioritäten: OH (1) > Propyl (2) > Methyl (3) > H (4)
+- Blick von H weg: 1 → 2 → 3 läuft gegen den Uhrzeigersinn
+  → (*S*)-Butan-2-ol.
+
+Drehen wir die Moleküle im Geiste: Die Projektion nach Fischer ändert
+nichts an der Konfiguration, solange man nur in der Papierfläche dreht;
+zwei Vertauschungen ergeben wieder dieselbe Zuordnung. Wer unsicher ist,
+vertauscht H mit der niedrigsten Priorität und liest das Ergebnis
+umgekehrt.
+
+#figure(
+  table(
+    columns: (1fr, 0.8fr, 1.2fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Verbindung*], [*Konfiguration*], [*Drehung [α]$D^20$*]),
+    [Butan-2-ol], [(*S*)], [−13,5° (rein)],
+    [Butan-2-ol], [(*R*)], [+13,5° (rein)],
+    [Milchsäure], [(*S*) = (−)], [−2,6° (Wasser)],
+    [Milchsäure], [(*R*) = (+)], [+2,6° (Wasser)],
+    [Alanin], [(*S*) = (+)], [+8,5° (Wasser, pH 6)],
+  ),
+  caption: [Zuordnung und Drehung ausgewählter Enantiomere. Das Vorzeichen
+    der Drehung sagt nichts über die Konfiguration — es muß gemessen
+    werden.],
+) <tab:cip-beispiele>
 
 === Konformation und Reaktivität
 
@@ -995,3 +1062,9 @@ TBS (fluorid) und Acetyl (Base).
   Syntheseplanung an Beispielen.
 - *Reichardt, Welton, Solvents and Solvent Effects in Organic Chemistry*. Für
   die Abschätzung von Lösungsmitteleinflüssen.
+- Bestimmen Sie die Konfiguration von (a) 2-Chlorbutan, (b) Glyceraldehyd,
+  (c) 2-Brombutansäure nach den CIP-Regeln.
+- Ein Enantiomerengemisch dreht [α]$D^20$ = +7,0°, die reine Substanz
+  +13,5°. Wie hoch ist der ee?
+- Berechnen Sie $E_A$ aus der Halbwertszeit bei 25 °C (30 min) und
+  45 °C (8 min).

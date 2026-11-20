@@ -182,15 +182,15 @@ node tools/stats.mjs            # Kennzahlen
 | 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 45 %)** | 5 S. Titelei + A.1–A.5, S. 6–24 |
 | 3 B Literatur/Protokoll | **Grundfassung fertig (ca. 55 %)** | B.1–B.9, S. 25–31 |
 | 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 32–48 |
-| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 49–112, 68 Vorschriften |
-| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 113–123 |
-| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 124–130 |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 131–138 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 139–142, Register 206 Stichwörter |
+| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 49–113, 68 Vorschriften |
+| 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 114–124 |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 125–131 |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 132–139 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 140–143, Register 208 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **142 Seiten** Buchformat (168 × 240 mm), 50 440 Wörter, 
-26 Abbildungen, 124 Tabellen, 68 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **143 Seiten** Buchformat (168 × 240 mm), 50 855 Wörter, 
+26 Abbildungen, 126 Tabellen, 68 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF,
 `python3 tools/check-refs.py` zusätzlich die inhaltliche Passung jedes Stichworts.

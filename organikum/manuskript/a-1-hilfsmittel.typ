@@ -123,6 +123,38 @@ Kühlwasserzuflusses steigt der Druck, der Schlauch rutscht ab, und heißes
 Lösungsmittel spritzt aus. Schläuche mit Schlauchschellen sichern, Ablauf frei
 in den Ausguß führen, nie mit dem Mund ansaugen.]
 
+=== Schliffe und Dichtungen
+
+Glasgeräte werden über Normschliffe verbunden; die Bezeichnung NS 29/32 gibt
+Durchmesser und Länge des Schliffes in Millimetern an. Kleinere Schliffe (14/23)
+dienen Thermometern und Mikroaufsätzen, die größeren (45/40) den
+Destillationsköpfen. Ein Schliff hält nur, wenn er sauber, fettarm geschmiert
+und nicht verkantet ist.
+
+#figure(
+  table(
+    columns: (1.2fr, 1.8fr, 1.4fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Verbindung*], [*Einsatz*], [*Dichtung*]),
+    [NS 14/23], [Thermometer, kleine Aufsätze], [dünner Fettfilm],
+    [NS 29/32], [Kolben, Kühler, Standardapparatur], [Ketten- oder Vakuumfett],
+    [NS 45/40], [Destillationsköpfe, große Apparaturen], [Vakuumfett],
+    [Gummiseptum], [Inertgas, Probenahme], [PTFE-beschichtet],
+    [Schlaucholive], [Gas- und Kühlwasserleitungen], [Schlauchklemme],
+  ),
+  caption: [Schliffe, Anschlüsse und ihre Dichtung. Für Vakuum wird festeres
+    Fett verwendet als für Apparaturen unter Atmosphärendruck.],
+) <tab:schliffe>
+
+*Schmieren und Lösen.* Gefettet wird sparsam: ein dünner Film auf dem inneren
+Teil, danach drehend aufsetzen — ein fettsauberer Schluß zeigt zuviel Fett.
+Festsitzende Schliffe löst man mit Heißluft (Fön) oder Schleifenlöser
+(Glycerin mit wenig Kalilauge); wer gleichzeitig drebt und hebelt, sprengt
+das Glas. Zum Abdichten von Schläuchen und Anschlüssen dient PTFE-Band;
+Gummistopfen sind für organische Dämpfe nur kurzfristig geeignet.
+
 === Standardapparaturen für organisch-chemische Reaktionen
 
 Vier Anordnungen decken den größten Teil der präparativen Arbeit ab. Alle
@@ -227,6 +259,30 @@ Die Durchflußmenge stellt man mit einem Nadelventil oder Rotameter ein und
 kontrolliert sie über die Blasenzahl pro Minute. Als Faustregel gelten 2 bis 5
 Blasen pro Sekunde für präparative Ansätze.
 
+=== Arbeiten unter Inertgas
+
+Für wasser- und luftempfindliche Reagenzien (Grignard, Alkalimetalle, viele
+Metallkomplexe) wird die Apparatur mit Stickstoff oder Argon geflutet. Argon
+ist teurer, aber schwerer als Luft und deckt die Oberfläche besser ab;
+Stickstoff aus der Bombe muß über eine Säule mit Kupferkatalysator und
+Molekularsieb von Sauerstoff und Wasser befreit werden.
+
+*Der Vakuum-Inertgas-Zyklus.* Man evakuiert die Apparatur, füllt mit Inertgas
+und wiederholt das dreimal; erst dann gilt die Atmosphäre als inert. Bei
+Schlenkkolben genügt die gleiche Prozedur über den Hahn, an dem Pumpe und
+Gasleitung anschließbar sind.
+
+*Spritzen und Kanülen.* Flüssigkeiten werden mit Spritzen durch ein Septum
+zugeführt. Die Spritze wird vorher dreimal mit Inertgas gespült und mit der
+Kanüle gefüllt, indem man das Gas aus dem Vorratsgefäß ansaugt; beim
+Einleiten gleicht eine zweite, feine Kanüle den Druck aus. Feststoffe füllt
+man unter Gegenstrom oder im Handschuhkasten.
+
+#gefahr[Spritzenkanülen sind Hohlnadeln: sie werden nie abgedeckt, nie in den
+Mund genommen und in dafür vorgesehene Behälter entsorgt. Druckgasflaschen
+stehen gesichert am Stativ, das Ventil zeigt vom Arbeitsplatz weg; der
+Minderdruckregler wird nie mehr als halb geöffnet.]
+
 === Heizen und Kühlen
 
 #figure(
@@ -250,7 +306,7 @@ Blasen pro Sekunde für präparative Ansätze.
 ) <tab:baeder>
 
 Bei Reaktionen, deren Temperatur genau gehalten werden muß, taucht man ein
-Thermometer in das *Bad*, nicht nur in das Reaktionsgemisch: Die Bad temperature
+Thermometer in das *Bad*, nicht nur in das Reaktionsgemisch: Die Badtemperatur
 führt, die Innentemperatur folgt. Differenzen von mehr als 20 K zwischen Bad
 und Inhalt deuten auf mangelnde Wärmeübertragung oder auf eine stark
 endotherme Reaktion hin.
@@ -274,6 +330,26 @@ und poröse Stopfen.
 #stichwort[Überdruck][
   Reaktionen unter Druck (Hydrierungen, Carbonylierungen) werden in Druckautoklaven mit Berstscheibe und Manometer ausgeführt. Die Füllung beträgt höchstens die Hälfte des Autoklavenvolumens; vor dem Öffnen entspannt man langsam und spült mit Inertgas.
 ]
+
+=== Reinigung und Pflege der Glasgeräte
+
+Sauberes Glas ist die Voraussetzung für saubere Produkte. Die Reinigung richtet
+sich nach dem Rückstand: organische Reste gehen in Lösungsmittelbad oder
+Spülmaschine, harzige in warme Lauge, Kalk in verdünnte Salpetersäure, Fett in
+fettlösendes Bad. Nach dem Bad wird gründlich mit Leitungswasser und zuletzt
+destilliertem Wasser gespült.
+
+#gefahr[Piranha-Lauge (konzentrierte Schwefelsäure mit Wasserstoffperoxyd) und
+Chromschwefelsäure lösen auch hartnäckigste Rückstände, sind aber extrem
+ätzend und explosionsgefährlich beim Kontakt mit organischem Material. Sie
+gehören nicht in das Grundpraktikum; wo sie unausweichlich sind, nur in
+geeigneten Abzügen mit Schutzausrüstung ansetzen und niemals mit Ethanol oder
+Aceton nachspülen.]
+
+Gefäßteile werden getrocknet, bevor sie zusammengesetzt werden: im
+Trockenschrank bei 110 °C, mit Heißluft oder über Nacht an der Luft.
+Zusammengesetzte Apparaturen werden vor dem Füllen auf Dichtheit geprüft —
+nicht erst, wenn das Lösungsmittel siedet.
 
 === Die erste Ausrüstung
 

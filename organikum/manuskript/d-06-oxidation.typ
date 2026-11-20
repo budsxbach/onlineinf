@@ -357,6 +357,88 @@ tertiärer aliphatischer. Elektronenziehende Substituenten am Ring beschleunigen
 die Reaktion, weil sie das gebildete Benzylradikal stabilisieren — der
 Hammett-Exponent ist positiv.
 
+*Spaltung von Doppelbindungen: die Ozonolyse.* Ozon addiert sich in
+einer 1,3-dipolaren Cycloaddition zum Molozonid, das zum Ozonid
+umlagert. Die reduktive Aufarbeitung mit Zink/Essigsäure liefert Aldehyde —
+oxidative Bedingungen würden die Carbonsäuren ergeben. Die Ozonolyse ist die
+reinste Methode, um Doppelbindungen präparativ zu öffnen.
+
+#vorschrift("D.6.6", [Heptanal aus 1-Octen])[
+  #reaktion(
+    $ "C" _8"H" _16 $,
+    [#text(size: 6.5pt)[1) O#sub[3], MeOH, −78 °C 2) Zn, Essigsäure]],
+    $ "C" _7"H" _14"O" + "HCHO" $,
+  )
+
+  #ansatz[
+    28 g (35 mL; 0,25 mol) 1-Octen, 150 mL Methanol, 0,30 mol Ozon,
+    30 g Zinkstaub, 40 mL Eisessig.
+  ]
+
+  In einem 500-mL-Dreihalskolben mit Gaseinleitung, Thermometer und
+  Rührer löst man das 1-Octen in 150 mL Methanol und kühlt auf −78 °C
+  (Aceton/Trockeneis). Man leitet Ozon aus einem Generator (2–5 % in
+  Sauerstoff) ein, bis die Lösung eine bleibende Blaufärbung zeigt.
+
+  Anschließend läßt man auf 0 °C erwärmen, gibt 30 g Zinkstaub und 40 mL
+  Eisessig zu und rührt 1 h bei Raumtemperatur. Man filtriert den
+  Zinkrückstand ab, wäscht mit Methanol nach und engt das Filtrat am
+  Rotationsverdampfer ein. Der Rückstand wird im Vakuum destilliert.
+
+  #ausbeute[18 g (65 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 153 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4113 #h(2em)
+    $rho_20$ = 0,82 g·cm#super[−3] #h(2em) $M$ = 114,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Ozon ist giftig und reizend; der Ozongenerator wird nur im Abzug
+  betrieben, Abluft durch Aktivkohle oder Thiosulfat zerstört. Ozonide sind
+  explosionsfähig — niemals zur Trockne einengen, immer reduktiv
+  aufarbeiten. Methanol ist giftig und entzündbar, Zinkstaub kann
+  pyrophor sein.]
+
+*Oxidation von Aromatenseitenketten.* Mit Permanganat in alkalischer
+Suspension lassen sich Alkylgruppen am Aromaten zur Carbonsäure
+durchoxidieren; p-Xylol liefert dabei Terephthalsäure, die als Feststoff
+ausfällt und leicht zu isolieren ist.
+
+#vorschrift("D.6.7", [Terephthalsäure aus p-Xylol])[
+  #reaktion(
+    $ "C" _6"H" _4("CH"_3)_2 $,
+    [#text(size: 6.5pt)[KMnO#sub[4], NaOH, 100 °C]],
+    $ "C" _6"H" _4("COOH")_2 $,
+  )
+
+  #ansatz[
+    27 g (0,25 mol) p-Xylol, 120 g (0,75 mol) Kaliumpermanganat,
+    20 g Natriumhydroxid, 500 mL Wasser.
+  ]
+
+  In einem 1-L-Rundkolben mit Rückflußkühler suspendiert man das
+  Kaliumpermanganat und Natriumhydroxid in 500 mL Wasser, gibt das p-Xylol
+  zu und erhitzt 2 h zum Sieden. Die anfangs violette Lösung entfärbt sich
+  unter Abscheidung von Braunstein.
+
+  Man saugt heiß ab und wäscht den Rückstand mit 2 × 50 mL heißem Wasser.
+  Das Filtrat wird mit konz. Salzsäure auf pH 1 gebracht; Terephthalsäure
+  fällt als weißer Niederschlag aus. Man saugt ab, wäscht mit Wasser und
+  trocknet bei 100 °C.
+
+  #ausbeute[29 g (70 % d. Th.) weißes Pulver.]
+
+  #kenndaten[
+    Schmp. > 300 °C (Zersetzung) #h(2em) unlöslich in kaltem Wasser,
+    löslich in Alkalihydroxid-Lösung #h(2em) $M$ = 166,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Kaliumpermanganat ist ein starkes Oxidationsmittel und färbt alles
+  braun; Handschuhe tragen, Flecken mit Bisulfit entfernen. Die alkalische
+  Suspension spritzt beim Erhitzen leicht über — Siedesteine verwenden.
+  Konz. Salzsäure ätzend; nur im Abzug ansäuern.]
+
 === Nachweisreaktionen und ihre Grenzen
 
 Für die Prüfung, ob eine Oxidation vollständig verlaufen ist, genügen einfache
@@ -394,3 +476,9 @@ Derivats oder ein Spektrum erforderlich.
   nicht. Woher wissen Sie das?
 - Wie würden Sie prüfen, ob die Doppelbindung vollständig umgesetzt ist?
 - Warum wird der Extrakt mit gesättigter Natriumchloridlösung behandelt?
+- Vergleichen Sie die Ozonolyse von 1-Octen unter reduktiver und
+  oxidativer Aufarbeitung. Welche Produkte entstehen jeweils?
+- Warum entfällt bei der Permanganat-Oxidation von p-Xylol keine
+  Stufenoxidation zum Aldehyd?
+- Berechnen Sie den Permanganat-Verbrauch (in Mol) für 0,25 mol p-Xylol
+  und begründen Sie den Überschuß.

@@ -194,6 +194,53 @@ will, wählt den E2-Weg (Base, antiperiplanar) statt der Säurekatalyse.
 präparativ wertvoll, weil sie in einem Schritt ein sauerstoffhaltiges
 Ringsystem aufbaut.
 
+*Milde Dehydratisierung ohne Umlagerung.* Der E2-Weg läßt sich auch ohne starke
+Base gehen: Phosphoroxychlorid überführt den Alkohol in einen
+Dichlorphosphorsäureester, und das Pyridin eliminiert diesen in
+antiperiplanarer Anordnung. Es treten keine Carbeniumionen auf — Wanderungen
+sind ausgeschlossen, und primäre Alkohole funktionieren ebenso wie tertiäre.
+Das Verfahren ist die Methode der Wahl für säureempfindliche Substrate.
+
+#vorschrift("D.3.5", [1-Methylcyclohexen aus 1-Methylcyclohexanol])[
+  #reaktion(
+    $ "1-CH" _3"-C" _6"H" _10"OH" $,
+    [#text(size: 6.5pt)[POCl#sub[3], Pyridin, 70 °C]],
+    $ "1-CH" _3"-C" _6"H" _9 + "HCl" + "HPO" _2"Cl" _2 $,
+  )
+
+  #ansatz[
+    11,4 g (0,1 mol) 1-Methylcyclohexanol, 18,4 g (11 mL; 0,12 mol)
+    Phosphoroxychlorid, 30 mL Pyridin.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rückflußkühler und Tropftrichter werden 30 mL
+  Pyridin vorgelegt und auf 0 °C gekühlt. Unter Rühren tropft man das
+  Phosphoroxychlorid zu (heftige Reaktion!), läßt auf Raumtemperatur kommen und
+  gibt den Alkohol langsam zu. Anschließend erwärmt man 2 h auf 70 °C; die
+  anfangs klare Lösung scheidet dabei Pyridiniumchlorid ab.
+
+  Man kühlt ab, gießt vorsichtig auf 150 mL Eiswasser und trennt die obere
+  organische Phase ab. Die wäßrige Phase wird zweimal mit je 20 mL Petrolether
+  ausgeschüttelt; die vereinigten organischen Phasen werden mit verdünnter
+  Salzsäure (Pyridin entfernen), dann mit Natriumhydrogencarbonatlösung
+  gewaschen, über Natriumsulfat getrocknet und über eine Vigreux-Kolonne
+  destilliert.
+
+  #ausbeute[7,5 g (78 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 110 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4503 #h(2em)
+    $rho_20$ = 0,813 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Phosphoroxychlorid ist hochgiftig, ätzend und raucht an feuchter Luft
+  unter Salzsäurebildung; mit Wasser reagiert es heftig unter Wärmeentwicklung.
+  Es wird nur ins Pyridin getropft, nie umgekehrt und nie in wäßrige Lösungen.
+  Pyridine ist giftig, gesundheitsschädlich und hat einen unangenehmen Geruch —
+  nur im Abzug arbeiten. Die wäßrigen Phasen enthalten Phosphate und
+  Pyridiniumsalze und werden getrennt entsorgt.]
+
 === Alkine: zweifache Eliminierung
 
 Die zweifache Dehydrohalogenierung eines vicinalen Dihalogenids führt zum Alkin.
@@ -344,3 +391,10 @@ die Weiterverarbeitung ungeeignet.
   Begründen Sie die Wahl mit der Regel von Hofmann.
 - Erklären Sie, warum aus *trans*-1,2-Dibromcyclohexan mit Iodid kein Cyclohexen
   entsteht, aus dem *cis*-Isomer dagegen schon.
+- Warum verläuft die Dehydratisierung von 1-Methylcyclohexanol mit
+  POCl#sub[3]/Pyridin ohne Umlagerung, die mit Schwefelsäure dagegen nicht?
+- Warum wird Phosphoroxychlorid ins Pyridin getropft und nicht umgekehrt?
+- 3,3-Dimethylbutan-2-ol wird einmal mit Schwefelsäure, einmal mit
+  POCl#sub[3]/Pyridin umgesetzt. Welche Produkte entstehen jeweils?
+- Ordnen Sie nach der Leichtigkeit der säurekatalysierten Dehydratisierung:
+  1-Butanol, 2-Butanol, 2-Methylpropan-2-ol, 1-Phenylethanol.

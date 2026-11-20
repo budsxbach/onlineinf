@@ -143,6 +143,19 @@ Inversionsexzess beweist keinen S#sub[N]2-Anteil.
   6. Kontrolle: GC des Reaktionsverlaufs, Drehung des Produkts.
 ]
 
+*Zahlenbeispiel: Solvolyse von tert-Butylchlorid.* Die Umsetzung von
+2-Chlor-2-methylpropan in 80-prozentigem Ethanol verläuft nach erster
+Ordnung; bei 25 °C ist $k = 1,5 dot 10^(-3) "s"^(-1)$. Die Halbwertszeit
+
+$ t_(1/2) = (ln 2) \/ k = 0,693 \/ (1,5 dot 10^(-3) "s"^(-1)) = 460 "s" $
+
+beträgt also rund 8 min — und sie ändert sich nicht, wenn man zusätzlich
+Lauge zusetzt. Ein Zweitorversuch mit doppelter Alkylhalogenid-Konzentration
+verdoppelt dagegen die Anfangsgeschwindigkeit. Beides zusammen beweist den
+S#sub[N]1-Weg. Zum Vergleich: die Reaktion von 1-Brombutan mit Iodid in
+Aceton folgt dem Zeitgesetz $v = k dot c("RBr") dot c("I"^(-))$; die
+Halbwertszeit halbiert sich, wenn man die Iodid-Konzentration verdoppelt.
+
 === Reaktionsführung und Reagenzien
 
 Alkohole lassen sich mit den wäßrigen Halogenwasserstoffsäuren, mit
@@ -420,6 +433,85 @@ Eliminierungsprodukt. Für Methylarylether sind Dimethylsulfat oder
 Methyliodid die Reagenzien der Wahl — Dimethylsulfat ist jedoch krebserzeugend
 und wird heute ersetzt.
 
+*SN1 im Labor: tert-Butylbromid.* Tertiäre Alkohole reagieren mit
+Halogenwasserstoffsäuren über den S#sub[N]1-Mechanismus so rasch, daß man
+im Scheidetrichter schütteln kann — kein Heizen, keine Katalysatoren.
+
+#vorschrift("D.2.8", [2-Brom-2-methylpropan aus 2-Methylpropan-2-ol])[
+  #reaktion(
+    $ ("CH"_3)_3"COH" + "HBr" $,
+    [#text(size: 6.5pt)[25 °C, Scheidetrichter]],
+    $ ("CH"_3)_3"CBr" + "H"_2"O" $,
+  )
+
+  #ansatz[
+    37 g (0,50 mol) 2-Methylpropan-2-ol, 100 g (0,60 mol) Bromwasserstoff
+    (48 %ige Lösung).
+  ]
+
+  In einem 250-mL-Scheidetrichter löst man den tert-Butylalkohol in der
+  Bromwasserstoffsäure und schüttelt 15 min kräftig durch. Die Phasen
+  trennen sich rasch; die schwere organische Phase wird abgelassen, einmal
+  mit je 20 mL Wasser und Natriumhydrogencarbonat-Lösung gewaschen und über
+  Calciumchlorid getrocknet.
+
+  Man destilliert über eine Vigreux-Kolonne; die bei 72–73 °C übergehende
+  Fraktion ist reines tert-Butylbromid.
+
+  #ausbeute[52 g (76 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 72–73 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4278 #h(2em)
+    $rho_20$ = 1,22 g·cm#super[−3] #h(2em) $M$ = 137,0 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Bromwasserstoff ist ätzend; nur im Abzug arbeiten, Brille und
+  Handschuhe tragen. tert-Butylbromid ist alkylierend und tränenreizend,
+  leicht entzündbar. Die wäßrige Phase enthält Bromid — getrennt sammeln.]
+
+*SN2 mit Thionylchlorid.* Primäre Alkohole lassen sich mit Thionylchlorid
+in die Chloride überführen; Schwefeldioxid und Chlorwasserstoff entweichen
+und treiben die Reaktion. Gegenüber Salzsäure/Zinkchlorid hat das Verfahren
+den Vorteil, daß keine wäßrige Phase anfällt.
+
+#vorschrift("D.2.9", [1-Chlorbutan aus Butan-1-ol mit Thionylchlorid])[
+  #reaktion(
+    $ "C" _4"H" _9"OH" + "SOCl" _2 $,
+    [#text(size: 6.5pt)[Reflux, 1,5 h]],
+    $ "C" _4"H" _9"Cl" + "SO" _2 + "HCl" $,
+  )
+
+  #ansatz[
+    37 g (46 mL; 0,50 mol) Butan-1-ol, 65 g (40 mL; 0,55 mol)
+    Thionylchlorid, 3 Tropfen Dimethylformamid.
+  ]
+
+  In einem 250-mL-Zweihalskolben mit Rückflußkühler und Tropftrichter wird
+  das Butanol mit einigen Tropfen DMF versetzt; das Thionylchlorid wird so
+  zugetropft, daß die entweichenden Gase (SO#sub[2], HCl) über den Kühler
+  in eine Natronlauge-Falle geleitet werden. Nach dem Zutropfen erhitzt man
+  1,5 h zum Sieden.
+
+  Das Reaktionsgemisch wird vorsichtig in Eiswasser gegossen, die obere
+  organische Phase abgetrennt, mit Natriumhydrogencarbonat-Lösung und
+  Wasser gewaschen, über Calciumchlorid getrocknet und destilliert; der
+  Siedepunkt des Produkts liegt bei 78 °C.
+
+  #ausbeute[37 g (80 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 78 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4021 #h(2em)
+    $rho_20$ = 0,89 g·cm#super[−3] #h(2em) $M$ = 92,6 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Thionylchlorid ist ätzend und raucht an feuchter Luft; nur im
+  Abzug tropfenweise dosieren. Die entweichenden Gase SO#sub[2] und HCl
+  müssen vollständig in die Laugefalle geleitet werden — kein
+  Rückflußkühler ohne Gasableitung. 1-Chlorbutan ist leicht entzündbar und
+  gesundheitsschädlich.]
+
 === Störungen und ihre Ursachen
 
 *Keine Umsetzung.* Bei zu geringer Säurekonzentration bleibt das Gleichgewicht
@@ -463,3 +555,10 @@ Natriumsulfat.
   umgesetzt. Welcher Mechanismus läuft jeweils, und was ändert sich am
   Produkt?
 - Warum läuft die Finkelstein-Reaktion in Aceton und nicht in Wasser?
+- Leiten Sie das Zeitgesetz der Solvolyse von tert-Butylchlorid aus den
+  Meßwerten her: Die Reaktion ist nach 8 min zur Hälfte umgesetzt, nach
+  16 min zu drei Vierteln — welche Ordnung folgt daraus?
+- Warum gelingt die Umsetzung von Butan-1-ol mit rauchender Salzsäure nur
+  schlecht, die mit Thionylchlorid dagegen gut?
+- Berechnen Sie die Ausbeute in mol-%, wenn aus 0,50 mol tert-Butanol
+  52 g tert-Butylbromid entstehen.

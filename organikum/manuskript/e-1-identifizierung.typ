@@ -121,6 +121,48 @@ im Lösungsmittel vorgetäuscht werden. Ein Nachweis ist erst dann verwertbar,
 wenn er mit einer Gegenprobe (bekannte Substanz) und einer Blindprobe
 (Lösungsmittel) verglichen wurde.
 
+=== Dünnschichtchromatographie als Nachweis
+
+Die DC ist in A.2.8 als Trennverfahren beschrieben; für die Identifizierung
+hat sie eine eigene Aufgabe: Der Vergleich mit einer authentischen Probe auf
+derselben Platte. Ein Rf-Wert allein beweist nichts — er hängt von Platte,
+Kammer, Sättigung und Laufmittel ab. Beweiskraft hat erst die *Mischspur*:
+Probe, Referenz und ein Gemisch beider werden nebeneinander aufgetragen.
+
+- Gleiche Rf-Werte und gleiche Fleckenfarbe in allen drei Spuren: die
+  Verbindung ist mit hoher Wahrscheinlichkeit identisch.
+- Der Mischfleck ist geteilt oder verschmiert: die Substanzen sind
+  verschieden, auch wenn die Rf-Werte übereinstimmen.
+- Die Probe zeigt Begleitflecken: sie ist unrein; die Identifizierung gelingt
+  erst nach Reinigung.
+
+#figure(
+  table(
+    columns: (1.5fr, 1.7fr, 1.4fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Detektionsmittel*], [*Zielgruppe*], [*Farbe des Flecks*]),
+    [UV 254 nm (F#sub[254]-Platte)], [konjugierte Systeme], [dunkel auf Leuchtuntergrund],
+    [Jodkammer], [allgemein, C=C, Aromaten], [braun, verflüchtigt sich],
+    [Ninhydrin], [Amine, Aminosäuren], [violett],
+    [2,4-Dinitrophenylhydrazin], [Aldehyde, Ketone], [gelb bis orange],
+    [Kaliumpermanganat-Tauchlösung], [ungesättigt, oxidierbar], [gelb auf braun],
+    [Eisen(III)-chlorid], [Phenole], [violett bis blau],
+    [Anisaldehyd/Schwefelsäure], [Terpene, Steroide, allgemein], [mehrfarbig nach Erhitzen],
+  ),
+  caption: [Detektionsmittel der DC und ihre Zielgruppen. Die Reagenzien werden
+    nach dem Lauf aufgesprüht oder getaucht; die Farbe ist Teil der
+    Identifizierung.],
+) <tab:dc-detektion>
+
+*Praxis.* Die Kammer wird mit Filterpapier gesättigt, damit die Luft mit
+Laufmittel gesättigt ist und die Front gleichmäßig läuft. Aufgetragen wird
+wenig: Überladene Spuren laufen geschmiert und geben falsche Rf-Werte. Der
+ideale Rf-Bereich liegt bei 0,2–0,5; für den Vergleich mit Literaturwerten
+muß die Bedingung exakt reproduzierbar sein, deshalb notiert man Platte,
+Laufmittelgemisch und Temperatur.
+
 === Herstellung von Derivaten
 
 Derivate sind der klassische Beweis: Eine Verbindung wird in eine kristalline
@@ -257,3 +299,8 @@ eine Verunreinigung mit Aceton — solche Sätze gehören ins Protokoll.
 - Warum ist die Beilstein-Probe für Fluor unzuverlässig?
 - Sie haben 50 mg einer unbekannten Verbindung. Stellen Sie die Reihenfolge der
   Untersuchungen auf und begründen Sie, welche Probe Sie zuerst machen.
+- Zwei Substanzen zeigen auf einer DC-Platte denselben Rf-Wert. Warum genügt
+  das nicht für die Identifizierung, und wie machen Sie weiter?
+- Ihre Probe liefert nach Ninhydrin keinen Flecken, nach Jodkammer einen
+  braunen. Was folgern Sie?
+- Warum muß die DC-Kammer vor dem Lauf gesättigt werden? Was passiert sonst?

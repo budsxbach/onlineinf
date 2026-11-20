@@ -236,6 +236,66 @@ Polysiloxan-Phase. Die GC ist analytisch; präparativ werden Proben von 0,1 bis
 Stoffe. Die Trennung erfolgt an feinen Kieselgelteilchen (3–10 µm) unter
 Drücken von 50 bis 400 bar.
 
+=== Die chromatographische Reinigung in der Praxis
+
+Die Chromatographie ist im Praktikum die Methode der Wahl, wenn Destillation und
+Kristallisation versagen: bei hitzeempfindlichen, bei isomerengemischen und bei
+sehr polaren Substanzen. Drei Verfahren sind gebräuchlich.
+
+#figure(
+  table(
+    columns: (1.3fr, 1.4fr, 1.5fr, 1.3fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Verfahren*], [*Trennung nach*], [*typische Probe*], [*Maßstab*]),
+    [Säulenchromatographie], [Adsorption], [0,1–10 g], [präparativ],
+    [Dünnschichtchromatographie], [Adsorption], [1–10 µg], [analytisch],
+    [Gaschromatographie], [Siedepunkt/Polarität], [1–10 µL], [analytisch],
+    [HPLC], [Polarität, chiral], [1–100 µg], [analytisch],
+    [Ionenaustausch], [Ladung], [Salze, Proteine], [präparativ],
+  ),
+  caption: [Chromatographische Verfahren und ihre Einsatzbereiche.],
+) <tab:chrom-verfahren>
+
+*Säulenchromatographie.* Man füllt Kieselgel 60 (0,063–0,200 mm) in
+Petrolether/Essigsäureethylester als Slurry in die Säule, setzt das in wenig
+Lösungsmittel gelöste Gemisch auf und eluiert mit dem Laufmittel. Die
+Trennleistung hängt an vier Größen:
+
+- *Korngröße*: feineres Material trennt besser, läuft aber langsamer.
+- *Säulenlänge*: Die Auflösung wächst mit der Wurzel der Länge; verdoppelte Länge
+  bringt 40 % mehr Auflösung.
+- *Laufmittel*: Das Elutionsmittel wird so gewählt, daß der Zielstoff bei
+  R#sub[f] 0,3–0,4 läuft. Ein R#sub[f] von 0,9 trennt nicht, ein R#sub[f] von 0,1
+  kostet Zeit und Lösungsmittel.
+- *Aufgabemenge*: 1 g Substanz auf 30–50 g Kieselgel; mehr führt zu überlappenden
+  Zonen.
+
+*Dünnschichtchromatographie.* Die DC ist das Kontrollinstrument für jede
+chromatographische Trennung und für jede Reaktionskontrolle. Man trägt die Probe
+mit einer Kapillare 1 cm über dem unteren Rand auf, entwickelt in einer
+gesättigten Kammer bis 1 cm unter den oberen Rand und detektiert mit
+UV-Licht (254 nm, Fluoreszenzlöschung) oder mit einem Tauchreagenz
+(Kaliumpermanganat, Cer(IV)-sulfat, Iod).
+
+$ R_f = "Laufstrecke der Substanz" \/ "Laufstrecke des Laufmittels" $
+
+*Präparative DC.* Für Mengen bis 100 mg wird die Trennung auf einer
+präparativen Platte (20 × 20 cm, 1 mm Schicht) durchgeführt. Die Zonen werden
+unter UV markiert, abgeschabt und mit Lösungsmittel extrahiert. Das Verfahren ist
+schnell, aber teuer und für empfindliche Substanzen ungeeignet.
+
+*Gaschromatographie.* Für flüchtige Verbindungen (bis etwa 300 °C Siedepunkt)
+ist die GC das schnellste Verfahren. Man arbeitet mit einer Kapillarsäule
+(30 m, 0,25 mm Innendurchmesser, 5 % Phenylmethylsilikon) und einem
+Flammenionisationsdetektor. Die Auswertung erfolgt über die Retentionszeit
+(Identifizierung) und die Peakfläche (Quantifizierung).
+
+*Fehlerquellen.* Die häufigsten Fehler sind zu viel Probe (überladene Säule),
+zu polares Laufmittel (keine Trennung), fehlende Äquilibrierung der Kammer
+(schiefe Fronten) und zu schnelles Auftragen (breite Zonen).
+
 === Ausbeute und Reinheit
 
 Die Ausbeute wird in Prozent der Theorie angegeben (% d. Th.). Sie bezieht sich

@@ -160,6 +160,56 @@ $ [alpha]_D^20 = alpha \/ (l dot c) $
 mit l in dm und c in g·mL⁻¹. Die Angabe erfolgt mit Lösungsmittel, da die
 Drehung stark vom Medium abhängt.
 
+=== Molmasse und Elementaranalyse
+
+*Molmasse aus der Gefrierniedrigung.* Löst man eine Substanz in einem
+Lösungsmittel, sinkt dessen Schmelzpunkt proportional zur Molalität:
+
+$ Delta T = K_k dot m quad "mit" quad m = n_"Stoff" \/ m_"Lösungsmittel" $
+
+Die kryoskopische Konstante $K_k$ beträgt für Wasser 1,86, für Benzol 5,12, für
+Campher 39,7 K·kg·mol⁻¹. Campher eignet sich deshalb für kleine Mengen
+(Rast-Methode): 2–5 mg Substanz in 50 mg Campher, Schmelzpunkt vor und nach dem
+Mischen.
+
+Ein Beispiel: 4,0 mg Substanz in 50 mg Campher senken den Schmelzpunkt von
+178 °C auf 168 °C. Dann ist $Delta T = 10$ K, $m = 10 \/ 39,7 = 0,252$
+mol·kg⁻¹, und mit $m_"Lösungsmittel" = 5,0 dot 10^(-5)$ kg folgt
+$n = 1,26 dot 10^(-5)$ mol, also $M = 4,0 dot 10^(-3) \/ 1,26 dot 10^(-5) = 317$
+g·mol⁻¹.
+
+*Elementaranalyse.* Die Verbrennung im Sauerstoffstrom liefert CO#sub[2],
+H#sub[2]O und N#sub[2]; aus deren Massen ergeben sich die Massenanteile von C, H
+und N. Der Rest ist Sauerstoff (oder Halogen, das separat bestimmt wird).
+
+$ "C-Anteil" = m_("CO"_2) dot 12,011 \/ 44,009 \/ m_"Einwaage" dot 100 % $
+
+*Summenformel und Unsättigungsgrad.* Aus den Massenanteilen und der Molmasse
+ergibt sich die Summenformel; der Unsättigungsgrad folgt aus
+
+$ I = (2 C + 2 - H + N - X) \/ 2 $
+
+mit C, H, N, X als Anzahl der Atome. Ein $I$ von 4 bedeutet vier Ringe oder
+Doppelbindungen — bei einem Aromaten mit einer Carbonylgruppe ist das der
+Normalfall.
+
+#figure(
+  table(
+    columns: (1.5fr, auto, auto, auto),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Substanz*], [*C in %*], [*H in %*], [*O in %*]),
+    [Benzoesäure], [68,84], [4,95], [26,21],
+    [Essigsäure], [40,00], [6,71], [53,29],
+    [Acetanilid], [71,09], [6,71], [11,84],
+    [Zimtsäure], [72,96], [5,44], [21,60],
+    [Nitrobenzol], [58,54], [4,09], [25,98],
+  ),
+  caption: [Theoretische Elementarzusammensetzung. Die Abweichung einer
+    Messung sollte unter 0,3 % absolut liegen.],
+) <tab:elementaranalyse>
+
 === Spektroskopische Methoden
 
 Für die Strukturaufklärung sind vier Verfahren Standard. Sie ergänzen sich:

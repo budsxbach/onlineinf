@@ -261,6 +261,22 @@ dem besseren Bestimmtheitsmaß gibt die Ordnung an.
     erster Ordnung.],
 ) <tab:kinetik-daten>
 
+*Durchrechnung.* Aus der Steigung von $ln c$ gegen $t$ folgt direkt die
+Geschwindigkeitskonstante: $k = 0,0505$ min⁻¹. Damit ist die Halbwertszeit
+$t_(1\/2) = ln 2 \/ k = 13,7$ min, und 90 % Umsatz sind nach
+$t = ln 10 \/ k = 45,6$ min erreicht — die letzte Zeile der Tabelle bestätigt
+das (bei 50 min restieren 8 %). Für die Vorschrift heißt das: Eine Stunde
+Reaktionsdauer genügt, anderthalb Stunden bringen nichts mehr.
+
+*Reaktion zweiter Ordnung.* Zur Kontrolle dieselbe Rechnung für einen Fall
+zweiter Ordnung: Die Veresterung von Essigsäure mit Methanol (pseudo-zweite
+Ordnung) liefert $1\/c$ gegen $t$ als Gerade. Zwei Punkte genügen:
+$c = 1,00$ mol·L⁻¹ bei $t = 0$ und $c = 0,50$ mol·L⁻¹ bei $t = 90$ min. Dann ist
+$k = (1\/0,50 - 1\/1,00) \/ 90 = 0,011$ L·mol⁻¹·min⁻¹, die Halbwertszeit
+$t_(1\/2) = 1 \/ (k dot c_0) = 91$ min. Der Unterschied zur ersten Ordnung ist
+präparativ wichtig: Die Halbwertszeit verdoppelt sich, wenn man die
+Anfangskonzentration halbiert.
+
 *Temperaturabhängigkeit.* Aus zwei Messungen bei verschiedenen Temperaturen
 lassen sich Aktivierungsenergie und präexponentieller Faktor berechnen:
 
@@ -309,6 +325,18 @@ Schwermetalle (Pb, Hg, S-Verbindungen bei Pd), durch Polymerisation auf der
 Oberfläche oder durch Blockierung der Poren. Bei Hydrierungen zeigt sich das als
 plötzlich abbrechende Wasserstoffaufnahme; Abhilfe: frischer Katalysator,
 Lösungsmittelwechsel, Filtration über Aktivkohle.
+
+=== Aufgaben
+
+- Eine Reaktion erster Ordnung hat $k = 2,5 dot 10^(-3)$ min⁻¹. Nach welcher
+  Zeit sind 95 % umgesetzt? Wie lange dauert eine Halbwertszeit?
+- Aus einer Meßreihe erhält man in der Auftragung $1\/c$ gegen $t$ eine Gerade
+  mit der Steigung 0,024 L·mol⁻¹·min⁻¹. Berechnen Sie $k$ und die
+  Halbwertszeit bei $c_0 = 0,5$ mol·L⁻¹.
+- Warum läßt sich die Ordnung nicht aus der Reaktionsgleichung ablesen?
+  Erläutern Sie am Beispiel der Hydrolyse eines Esters in Natronlauge.
+- Eine Reaktion läuft bei 20 °C zehnmal schneller als bei 10 °C. Wie groß ist
+  die Aktivierungsenergie näherungsweise?
 
 == Säure-Base-Reaktionen
 

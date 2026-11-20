@@ -263,6 +263,58 @@ Phosphoroxychlorid; für die Nucleotidsynthese verwendet man Phosphoramidite.
   caption: [Schwefel- und Phosphoranaloga der Carbonylverbindungen.],
 ) <tab:heteroanaloga>
 
+*Carbonsäureamide.* Amide entstehen aus Carbonsäuren und Ammoniak über die
+Ammoniumsalze, die beim Erhitzen Wasser abspalten, oder aus Säurechloriden mit
+Ammoniak. Sie sind die Ausgangsverbindungen für Nitrile (Dehydratisierung mit
+P#sub[2]O#sub[5] oder SOCl#sub[2]) und für den Hofmann-Abbau (D.9).
+
+$ "R–COCl" + 2 "NH" _3 -> "R–CONH" _2 + "NH" _4"Cl" $
+
+#vorschrift("D.8.4", [Harnstoff aus Ammoniumcyanat])[
+  #reaktion(
+    $ "NH" _4"OCN" $,
+    [#text(size: 6.5pt)[60–90 °C, Wasser]],
+    $ "(NH" _2")" _2"CO" $,
+  )
+
+  #ansatz[
+    76 g (1,0 mol) Kaliumcyanat, 70 g (1,0 mol) Ammoniumchlorid, 300 mL Wasser.
+  ]
+
+  In einem 1-l-Becherglas werden Kaliumcyanat und Ammoniumchlorid in 250 mL
+  Wasser gelöst; man erwärmt die Lösung 30 min auf 60 °C. Es entsteht zunächst
+  Ammoniumcyanat, das sich langsam zu Harnstoff umlagert.
+
+  Man dampft die Lösung auf 100 mL ein, kühlt auf 0 °C und saugt den Harnstoff
+  ab. Das Filtrat enthält Kaliumchlorid; es wird verworfen.
+
+  Das Rohprodukt wird aus Ethanol umkristallisiert (1 g in 10 mL).
+
+  #ausbeute[48 g (80 % d. Th.) farblose Nadeln.]
+
+  #kenndaten[
+    Schmp. 133 °C #h(2em) Zers. > 150 °C (Biuret) #h(2em)
+    Löslichkeit in Wasser: 108 g in 100 mL (20 °C)
+  ]
+]
+
+#gefahr[Kaliumcyanat ist gesundheitsschädlich und reizt Haut und Augen; beim
+  Ansäuern entsteht Cyanatsäure, die zu CO#sub[2] und NH#sub[3] zerfällt — nicht
+  ansäuern. Harnstoff ist nicht als Gefahrstoff eingestuft, zersetzt sich aber
+  beim Erhitzen über 150 °C zu Biuret und Ammoniak.]
+
+*Wöhler-Synthese.* Die Umlagerung von Ammoniumcyanat zu Harnstoff (1828) war der
+erste Fall, in dem eine Verbindung aus der belebten Natur aus einem anorganischen
+Salz hergestellt wurde. Aus heutiger Sicht ist die Reaktion eine
+nucleophile Addition des Ammoniaks an die Cyanatsäure; das Zwischenprodukt ist
+ein Carbaminsäureamid, das zum Harnstoff tautomerisiert.
+
+*Isocyanate und Carbamate.* Isocyanate entstehen aus Aminen und Phosgen oder aus
+Acylaziden (Curtius, D.9). Mit Alkoholen geben sie Carbamate (Urethane), mit
+Aminen Harnstoffe, mit Wasser instabile Carbaminsäuren, die zu Amin und CO#sub[2]
+zerfallen. Diese Reaktivität ist die Grundlage der Polyurethan-Herstellung und
+der Boc-Schutzgruppe, die als *tert*-Butylcarbamat des Amins vorliegt.
+
 === Aufgaben
 
 - Warum läßt sich Cyclohexanon mit Ammoniak nicht zum Imin umsetzen, mit
@@ -272,3 +324,9 @@ Phosphoroxychlorid; für die Nucleotidsynthese verwendet man Phosphoramidite.
   funktioniert.
 - Formulieren Sie die Synthese von N-Methylbenzylamin aus Benzaldehyd und
   Methylamin.
+- Warum lagert sich Ammoniumcyanat zu Harnstoff um, Ammoniumthiocyanat dagegen
+  zu Thioharnstoff — und nicht zu einem Isothiocyanat?
+- Erklären Sie die unterschiedliche Reaktivität von Carbonsäureamiden und
+  Carbonsäureestern gegenüber Nucleophilen.
+- Ein Amin soll mit einer Boc-Gruppe geschützt werden. Welches Reagenz wählen
+  Sie, und wie wird die Gruppe wieder entfernt?

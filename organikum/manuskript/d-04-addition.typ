@@ -193,6 +193,47 @@ gesundheitsschädlich; Dämpfe nicht einatmen.]
 die Hydrierung des Lösungsmittels oder des Katalysators („Überhydrierung") und
 eine schlechte Ausbeute.
 
+*Selektivität der Hydrierung.* Nicht alles, was Wasserstoff aufnehmen kann,
+tut es auch: Bei Raumtemperatur hydriert Pd/C aktivierte Doppelbindungen,
+nicht aber Carbonsäuregruppen und nur unter Druck den Aromatenring. Die
+folgende Vorschrift zeigt das — die Doppelbindung der Zimtsäure verschwindet,
+die Carbonsäure bleibt.
+
+#vorschrift("D.4.3", [Hydrozimtsäure aus Zimtsäure])[
+  #reaktion(
+    $ "C" _6"H" _5"CH=CHCOOH" + "H" _2 $,
+    [#text(size: 6.5pt)[Pd/C, Ethanol, RT]],
+    $ "C" _6"H" _5"CH" _2"CH" _2"COOH" $,
+  )
+
+  #ansatz[
+    14,8 g (0,10 mol) Zimtsäure, 0,3 g Palladium-Kohle (5 %),
+    80 mL Ethanol.
+  ]
+
+  In einem 250-mL-Hydrierkolben mit Magnetrührer und Gaseinleitung wird die
+  Zimtsäure in 80 mL Ethanol gelöst, der Katalysator zugegeben und die
+  Apparatur dreimal mit Wasserstoff gespült. Man hydriert bei Normaldruck und
+  Raumtemperatur; die berechnete Menge Wasserstoff (2,24 L) ist nach etwa
+  60 min aufgenommen.
+
+  Man filtriert über Celite, wäscht mit 20 mL Ethanol nach und engt das
+  Filtrat am Rotationsverdampfer ein. Der Rückstand wird aus
+  Petrolether/Wasser umkristallisiert.
+
+  #ausbeute[13 g (87 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 47 °C #h(2em) unlöslich in kaltem Wasser, löslich in Ethanol
+    #h(2em) $M$ = 150,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Wasserstoff ist extrem entzündbar und bildet mit Luft ein explosives
+  Gemisch; keine Zündquellen, Abzug, Apparatur erden. Palladium-Kohle ist
+  trocken selbstentzündlich — feucht halten und nach dem Versuch in Wasser
+  geben. Zimtsäure reizt die Atemwege; Ethanol ist leicht entzündbar.]
+
 === Hydroborierung
 
 Diboran addiert *syn* und *anti-Markownikoff* an Alkene. Die anschließende
@@ -250,7 +291,7 @@ Präparativ wichtig:
 - Die *endo*-Regel gilt für bicyclische Produkte: Das kinetisch bevorzugte
   Produkt hat die Substituenten unter dem Ring.
 
-#vorschrift("D.4.3", [Bernsteinsäureanhydrid aus Maleinsäureanhydrid und Ethen])[
+#vorschrift("D.4.4", [Bernsteinsäureanhydrid aus Maleinsäureanhydrid und Ethen])[
   #reaktion(
     $ "C" _4"H" _2"O" _3 + "H" _2"C=CH" _2 $,
     [#text(size: 6.5pt)[150 °C, 20 bar]],
@@ -287,7 +328,7 @@ gelöst: Maleinsäureanhydrid hydrolysiert schnell zu Maleinsäure (Schmp. 130 �
 Bernsteinsäureanhydrid langsam. Der Schmelzpunkt des Rohprodukts zeigt, ob
 Ausgangsmaterial zurückgeblieben ist.
 
-#vorschrift("D.4.4", [2-Brompropan aus Propen])[
+#vorschrift("D.4.5", [2-Brompropan aus Propen])[
   #reaktion(
     $ "CH" _3"CH=CH" _2 + "HBr" $,
     [#text(size: 6.5pt)[25 °C, ohne Peroxid]],
@@ -323,7 +364,7 @@ Ausgangsmaterial zurückgeblieben ist.
   Bromwasserstoff ist ätzend und giftig; nur im Abzug, Abgas durch Natronlauge
   leiten. 2-Brompropan ist leicht entzündbar und reizt die Atemwege.]
 
-#vorschrift("D.4.5", [Octan-1-ol aus 1-Octen durch Hydroborierung])[
+#vorschrift("D.4.6", [Octan-1-ol aus 1-Octen durch Hydroborierung])[
   #reaktion(
     $ "CH" _3("CH" _2")" _5"CH=CH" _2 $,
     [#text(size: 6.5pt)[1. BH#sub[3]·THF, 2. H#sub[2]O#sub[2]/NaOH]],
@@ -413,7 +454,7 @@ terminalen Alkinen aus (Silberacetylid, Kupferacetylid); die Fällung ist der
 klassische Nachweis und zugleich ein Reinigungsschritt — interne Alkine fallen
 nicht aus.
 
-#vorschrift("D.4.6", [1,1,2,2-Tetrabromethan aus Acetylen])[
+#vorschrift("D.4.7", [1,1,2,2-Tetrabromethan aus Acetylen])[
   #reaktion(
     $ "HC≡CH" + 2 "Br" _2 $,
     [#text(size: 6.5pt)[CCl#sub[4], 0–10 °C]],
@@ -468,3 +509,10 @@ nicht aus.
 - Erklären Sie, warum die Hydroborierung eines terminalen Alkens zum
   anti-Markownikoff-Alkohol führt, die Addition von Wasser dagegen zum
   Markownikoff-Produkt.
+- Warum wird bei der Hydrierung der Zimtsäure nur die Doppelbindung
+  hydriert, nicht die Carbonsäuregruppe?
+- Wieviel Wasserstoff (in Litern bei Normaldruck) verbraucht die Hydrierung
+  von 0,25 mol Zimtsäure? Vergleichen Sie mit der Hydrierung von 0,25 mol
+  Cyclohexen.
+- Ein Kollege hydriert „nach Augenmaß" und läßt 3 h einlaufen. Welche
+  Nebenreaktionen sind zu erwarten?

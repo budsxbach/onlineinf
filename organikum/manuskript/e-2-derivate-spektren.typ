@@ -100,7 +100,7 @@ deshalb immer unter gleichen Bedingungen gemessen wie die Referenz.
 
 === NMR-Spektroskopie
 
-Das #super[1]H-NMR-Spektrum liefert drei Informationen auf einmal: chemische
+Die Kernresonanzspektroskopie (#super[1]H-NMR) liefert drei Informationen auf einmal: chemische
 Verschiebung (Umgebung), Integral (Anzahl) und Aufspaltung (Nachbarschaft). Für
 die Identifizierung einer einfachen Verbindung genügt oft die Kombination
 dieser drei Angaben.

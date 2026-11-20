@@ -196,8 +196,8 @@ Hinweise gelten für die im Buch verwendeten Stoffe.
 
 === Metallorganische Reagenzien
 
-*Grignard-Reagenzien* (RMgX) entstehen aus Magnesiumspänen und Alkylhalogenid in
-absolutem Ether oder THF. Sie sind starke Basen und Nucleophile; sie reagieren
+*Grignard-Reagenzien* (RMgX) entstehen bei der Metallierung von
+Alkylhalogeniden mit Magnesiumspänen in absolutem Ether oder THF. Sie sind starke Basen und Nucleophile; sie reagieren
 mit Wasser, Alkoholen, Carbonylen, Estern, Nitrilen und mit Sauerstoff.
 
 - Vorbereitung: Magnesiumspäne mit Iod anätzen, Ether absolut, Stickstoff,

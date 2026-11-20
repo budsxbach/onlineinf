@@ -95,7 +95,8 @@ einzuschätzen.
 
 === Schmelzpunkt
 
-Der Schmelzpunkt wird in einer Kapillare im Schmelzpunktapparat bestimmt. Man
+Der Schmelzpunkt wird in einer Kapillare im Schmelzpunktapparat bestimmt; bei
+reinen Stoffen ist er mit dem Gefrierpunkt identisch. Man
 füllt die Substanz 2–3 mm hoch ein, erwärmt mit 2 K·min⁻¹ und notiert Beginn
 und Ende des Schmelzens. Reine Stoffe schmelzen auf 0,5–1 K; Verunreinigungen
 senken den Schmelzpunkt und verbreitern den Bereich.
@@ -162,7 +163,8 @@ Drehung stark vom Medium abhängt.
 
 === Molmasse und Elementaranalyse
 
-*Molmasse aus der Gefrierniedrigung.* Löst man eine Substanz in einem
+*Molmasse aus der Gefrierniedrigung (Gefrierpunktserniedrigung,
+Kryoskopie).* Löst man eine Substanz in einem
 Lösungsmittel, sinkt dessen Schmelzpunkt proportional zur Molalität:
 
 $ Delta T = K_k dot m quad "mit" quad m = n_"Stoff" \/ m_"Lösungsmittel" $

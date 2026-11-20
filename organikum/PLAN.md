@@ -192,7 +192,8 @@ node tools/stats.mjs            # Kennzahlen
 Aktuell gesetzt: **123 Seiten** Buchformat (168 × 240 mm), 41 400 Wörter,
 26 Abbildungen, 106 Tabellen, 48 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
-`python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF.
+`python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF,
+`python3 tools/check-refs.py` zusätzlich die inhaltliche Passung jedes Stichworts.
 
 **Nächste Schritte, in dieser Reihenfolge:**
 

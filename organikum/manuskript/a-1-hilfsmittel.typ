@@ -302,7 +302,7 @@ Minderdruckregler wird nie mehr als halb geöffnet.]
     [Methanol/Trockeneis], [−78], [Dewargefäß, Methanol vorher trocknen],
     [flüssiger Stickstoff], [−196], [nur mit Dewar und Schutzbrille, nie in geschlossene Gefäße],
   ),
-  caption: [Temperaturbäder und Kältemischungen.],
+  caption: [Temperaturbäder, Kältemittel und Kältemischungen.],
 ) <tab:baeder>
 
 Bei Reaktionen, deren Temperatur genau gehalten werden muß, taucht man ein
@@ -333,7 +333,7 @@ und poröse Stopfen.
 
 === Reinigung und Pflege der Glasgeräte
 
-Sauberes Glas ist die Voraussetzung für saubere Produkte. Die Reinigung richtet
+Sauberes Glas ist die Voraussetzung für saubere Produkte. Die Glasreinigung richtet
 sich nach dem Rückstand: organische Reste gehen in Lösungsmittelbad oder
 Spülmaschine, harzige in warme Lauge, Kalk in verdünnte Salpetersäure, Fett in
 fettlösendes Bad. Nach dem Bad wird gründlich mit Leitungswasser und zuletzt

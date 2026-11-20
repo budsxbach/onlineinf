@@ -151,8 +151,8 @@ mäßig; für Mengen über 5 g ist Umkristallisieren meist wirtschaftlicher.
 
 === Extraktion
 
-*Flüssig/flüssig.* Ein Stoff verteilt sich zwischen zwei nicht mischbaren
-Lösungsmitteln nach dem Verteilungskoeffizienten
+*Flüssig/flüssig.* Ein Stoff verteilt sich in einem Zweiphasensystem aus zwei
+nicht mischbaren Lösungsmitteln nach dem Verteilungskoeffizienten
 
 $ K = c_"org" \/ c_"H"_2"O" $
 
@@ -226,6 +226,11 @@ Aktive Kohle zum Entfärben kann sich nach dem Trocknen selbst entzünden.]
 *Trocknen von Flüssigkeiten.* Man setzt ein Trockenmittel zu, schwenkt um und
 beobachtet, ob es verklumpt. Klumpt es, wird abfiltriert und frisches
 Trockenmittel zugesetzt, bis es rieselfähig bleibt.
+
+*Gefriertrocknung.* Wasserhaltige, hitzeempfindliche Substanzen (Naturstoffe,
+Enzyme, Fermente) werden lyophilisiert: Die Probe wird tiefgefroren und das
+Eis im Vakuum sublimiert. Die Struktur bleibt erhalten, das Pulver ist
+unbegrenzt haltbar und leicht wieder löslich.
 
 #figure(
   table(

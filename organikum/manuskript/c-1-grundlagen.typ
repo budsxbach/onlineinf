@@ -844,8 +844,8 @@ kein Syntheseweg.
 
 === Mehrstufige Synthesen planen
 
-Eine Synthese mit mehr als drei Stufen ist ein Problem der Reihenfolge, nicht der
-Reaktionen. Drei Fragen bestimmen die Planung:
+Eine Mehrstufensynthese mit mehr als drei Stufen ist ein Problem der
+Reihenfolge, nicht der Reaktionen. Drei Fragen bestimmen die Planung:
 
 - *Welche Stufe ist die kritische?* Sie bestimmt die Ausbeute und wird zuerst
   geplant.

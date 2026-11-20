@@ -131,7 +131,7 @@ primär > methyl).
     Gruppe bestimmt das Produkt.],
 ) <tab:baeyer-villiger>
 
-#vorschrift("D.6.3", [Benzaldehyd aus Benzylalkohol mit PCC])[
+#vorschrift("D.6.2", [Benzaldehyd aus Benzylalkohol mit PCC])[
   #reaktion(
     $ "C" _6"H" _5"CH" _2"OH" $,
     [#text(size: 6.5pt)[PCC, CH#sub[2]Cl#sub[2], 25 °C]],
@@ -211,7 +211,7 @@ Maleinsäureanhydrid oxidiert; Naphthalin mit Chromsäure zu Phthalsäureanhydri
 Anthracen zu Anthrachinon. Die Reaktionen laufen über Ringöffnung oder über
 chinoiden Zwischenstufen.
 
-#vorschrift("D.6.2", [Phthalsäureanhydrid aus Naphthalin])[
+#vorschrift("D.6.3", [Phthalsäureanhydrid aus Naphthalin])[
   #reaktion(
     $ "C" _10"H" _8 $,
     [#text(size: 6.5pt)[V#sub[2]O#sub[5], 350 °C, O#sub[2]]],
@@ -244,49 +244,56 @@ chinoiden Zwischenstufen.
   kann Asthma auslösen; Staub vermeiden, im Abzug arbeiten. Vanadiumpentoxid
   ist giftig und steht im Verdacht, krebserzeugend zu sein.]
 
-#vorschrift("D.6.4", [Benzoesäure aus Toluol])[
+#vorschrift("D.6.4", [Adipinsäure aus Cyclohexanol])[
   #reaktion(
-    $ "C" _6"H" _5"CH" _3 $,
-    [#text(size: 6.5pt)[KMnO#sub[4], H#sub[2]O, Rückfluß]],
-    $ "C" _6"H" _5"COOH" $,
+    $ "C" _6"H" _11"OH" $,
+    [#text(size: 6.5pt)[HNO#sub[3] (65 %), V#sub[2]O#sub[5], 80 °C]],
+    $ "HOOC–(CH" _2")" _4"–COOH" $,
   )
 
   #ansatz[
-    46 g (50 mL; 0,5 mol) Toluol, 160 g (1,0 mol) Kaliumpermanganat,
-    800 mL Wasser, 10 g Natriumhydroxid.
+    100 g (1,0 mol) Cyclohexanol, 500 g (7,7 mol) Salpetersäure (65 %),
+    1 g Ammoniumvanadat.
   ]
 
-  In einem 2-l-Dreihalskolben mit Rührer und Rückflußkühler werden Toluol,
-  Natriumhydroxid und 600 mL Wasser vorgelegt und zum Rückfluß erhitzt. Man
-  trägt das Kaliumpermanganat in Portionen so ein, daß die Reaktion in Gang
-  bleibt, und spült mit den restlichen 200 mL Wasser nach.
+  In einem 2-l-Dreihalskolben mit Rührer, Thermometer, Tropftrichter und
+  absteigender Destillation werden 400 mL Salpetersäure vorgelegt, mit
+  Ammoniumvanadat versetzt und auf 60 °C erwärmt.
 
-  Man erhitzt 4 h unter Rückfluß, bis die violette Farbe verschwunden ist und
-  sich Braunstein abgesetzt hat. Überschüssiges Permanganat wird mit wenig
-  Ethanol zerstört.
+  Man tropft das Cyclohexanol so zu, daß die Temperatur 80 °C nicht übersteigt;
+  die Reaktion ist stark exotherm und setzt nitrose Gase frei. Nach beendeter
+  Zugabe erhitzt man 1 h auf 90 °C und destilliert dabei das Wasser teilweise ab.
 
-  Man läßt abkühlen, filtriert den Braunstein ab und wäscht ihn mit heißem
-  Wasser. Das Filtrat wird im Vakuum auf 300 mL eingeengt, mit Salzsäure
-  kongosauer gestellt und gekühlt. Die ausgeschiedene Benzoesäure wird
-  abgesaugt und aus Wasser umkristallisiert.
+  Man kühlt auf 10 °C, saugt die ausgeschiedene Adipinsäure ab, wäscht mit
+  eiskaltem Wasser und trocknet. Zur Reinigung wird aus Wasser umkristallisiert
+  (1 g in 8 mL).
 
-  #ausbeute[49 g (80 % d. Th.) farblose Blättchen.]
+  #ausbeute[112 g (77 % d. Th.) farblose Kristalle.]
 
   #kenndaten[
-    Schmp. 122 °C #h(2em) Sdp. 249 °C (1013 hPa)
+    Schmp. 152 °C #h(2em) Sdp. 337 °C (Zers.) #h(2em)
+    Säuregehalt > 99 %
   ]
 ]
 
-#gefahr[Kaliumpermanganat ist stark oxidierend und ätzend; Kontakt mit
-  brennbaren Stoffen (Papier, Ethanol in größeren Mengen) kann Brand auslösen.
-  Beim Ansäuern entsteht Chlor — im Abzug arbeiten. Toluol ist
-  gesundheitsschädlich und entzündbar.]
+#gefahr[Salpetersäure ist stark ätzend und stark oxidierend; bei der Reaktion
+  entstehen nitrose Gase (NO#sub[x]), die zu Lungenödem führen können — nur im
+  Abzug und mit Gaswaschflasche arbeiten. Cyclohexanol ist gesundheitsschädlich
+  und entzündbar. Die Reaktion kann durchgehen; Kühlung und langsame Zugabe sind
+  Pflicht. Nitrose Gase niemals in die Raumluft leiten.]
 
-*Seitenkettenoxidation.* Die Reaktion ist der Standardweg zu aromatischen
-Carbonsäuren. Voraussetzung ist ein benzylischer Wasserstoff: Toluol,
-Ethylbenzol und Isopropylbenzol werden oxidiert, tert-Butylbenzol nicht. Die
-Kette wird dabei bis zum Carboxyl abgebaut, unabhängig von ihrer Länge — aus
-Ethylbenzol entsteht ebenfalls Benzoesäure.
+*Ringöffnung.* Die Oxidation von Cyclohexanol führt über Cyclohexanon und
+Cyclohexenon; die Doppelbindung wird oxidativ gespalten, und beide Enden werden
+zum Carboxyl oxidiert. Salpetersäure ist das klassische Reagenz; heute wird
+industriell mit Luft und Cobalt-Katalysator gearbeitet. Adipinsäure ist die
+Ausgangsverbindung für Nylon-6,6.
+
+*Seitenkettenoxidation.* Für aromatische Carbonsäuren ist die Oxidation der
+Seitenkette der Standardweg (Vorschrift D.5.4). Voraussetzung ist ein
+benzylischer Wasserstoff: Toluol, Ethylbenzol und Isopropylbenzol werden
+oxidiert, tert-Butylbenzol nicht. Die Kette wird dabei bis zum Carboxyl
+abgebaut, unabhängig von ihrer Länge — aus Ethylbenzol entsteht ebenfalls
+Benzoesäure.
 
 *Milder: Wasserstoffperoxid und Natriumhypochlorit.* Für empfindliche Substrate
 ersetzt man Permanganat durch Natriumhypochlorit (NaOCl) mit einem

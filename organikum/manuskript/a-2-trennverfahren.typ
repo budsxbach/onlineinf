@@ -61,6 +61,51 @@ Fraktion an.
     Seitenabgangs.],
 ) <fig:destillation>
 
+=== Azeotrope und Schleppmittel
+
+Ein Azeotrop ist ein Gemisch, das bei konstanter Zusammensetzung und Temperatur
+siedet; durch einfache Destillation läßt es sich nicht weiter trennen. Man
+unterscheidet *heteroazeotrope* Gemische (zwei flüssige Phasen im Destillat)
+und *homogene* Azeotrope.
+
+#figure(
+  table(
+    columns: (1.7fr, auto, auto, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gemisch*], [*Sdp. °C*], [*Anteil*], [*Typ*]),
+    [Wasser/Ethanol], [78,2], [95,6 % EtOH], [homogen],
+    [Wasser/Butanol], [92,7], [57,5 % BuOH], [heterogen],
+    [Wasser/Toluol], [84,1], [80,6 % Toluol], [heterogen],
+    [Wasser/Essigsäureethylester], [70,4], [91,5 % Ester], [heterogen],
+    [Ethanol/Cyclohexan], [64,9], [45 % Cyclohexan], [heterogen],
+    [Wasser/Diethylether], [34,2], [98,7 % Ether], [heterogen],
+    [Chloroform/Aceton], [64,5], [80 % Chloroform], [homogen],
+    [Wasser/Salzsäure], [108,6], [20,2 % HCl], [homogen],
+  ),
+  caption: [Azeotrope mit präparativer Bedeutung. Heteroazeotrope lassen sich
+    durch Phasentrennung im Destillat überwinden.],
+) <tab:azeotrope>
+
+*Entfernen von Wasser durch Schleppmittel.* Für Reaktionen, die Wasser freisetzen
+(Veresterung, Acetalbildung, Enamin-Synthese), wird das Wasser als Heteroazeotrop
+mit Toluol oder Cyclohexan ausgetragen. Man erhitzt am Wasserabscheider, in dem
+sich das Destillat trennt; das organische Lösungsmittel läuft in den Kolben
+zurück, das Wasser bleibt in der Vorlage. Der Umsatz wird erst vollständig, wenn
+kein Wasser mehr abgeschieden wird.
+
+*Entwässern von Ethanol.* Der klassische Weg führt über das ternäre Azeotrop
+Wasser/Benzol/Ethanol (64,9 °C); wegen der Cancerogenität des Benzols wird heute
+Cyclohexan oder Toluol verwendet. Absolutiert wird im Praktikum mit
+Magnesiumspänen (Grignard-Methode) oder über Molekularsieb 3 Å.
+
+*Trennung eines Azeotrops.* Drei Möglichkeiten: Zugabe eines Schleppmittels,
+das ein neues, günstiger gelegenes Azeotrop bildet; Druckwechseldestillation
+(das Azeotrop verschiebt sich mit dem Druck); oder ein Trennverfahren, das nicht
+auf dem Dampfdruck beruht (Extraktion, Adsorption, Pervaporation). Die
+Zugabe eines Salzes (Aussalzen) verschiebt die Lage des Azeotrops ebenfalls.
+
 === Wasserdampfdestillation
 
 Mit Wasserdampf lassen sich Substanzen schonend aus Gemischen austreiben, die
@@ -309,3 +354,38 @@ auf das *unterschüssige* Edukt. Vor der Bilanzierung prüft man die Reinheit:
 Weicht der Schmelzpunkt um mehr als 2 K ab oder liegt er tiefer als der
 Literaturwert, ist das Produkt verunreinigt und muß umkristallisiert oder
 destilliert werden.
+
+*Berechnung.* Die theoretische Ausbeute folgt aus dem unterschüssigen Edukt;
+man rechnet in Mol, nicht in Gramm. Ein Beispiel: 10,0 g (0,108 mol) Cyclohexanol
+werden mit 85-prozentiger Phosphorsäure dehydratisiert. Cyclohexen hat
+$M = 82,1$ g·mol⁻¹, die Theorie beträgt also $0,108 dot 82,1 = 8,87$ g. Bei
+78 % Ausbeute erhält man 6,9 g, entsprechend
+$6,9 \/ 0,81 = 8,5$ mL.
+
+*Reinheit prüfen.* Der Schmelzpunkt einer reinen Substanz ist scharf und
+reproduzierbar; eine Verunreinigung senkt ihn und verbreitert das Intervall.
+Zwei weitere Kriterien: die *Schmelzpunktsspanne* (Differenz zwischen Beginn und
+Ende des Schmelzens — bei reiner Substanz unter 1 K) und der Vergleich mit einer
+Mischprobe: Gibt man die vermutete Substanz zu und der Schmelzpunkt bleibt
+unverändert, war die Annahme richtig.
+
+#figure(
+  table(
+    columns: (1.6fr, auto, auto, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Befund*], [*Schmp.-Spanne*], [*Mischprobe*], [*Deutung*]),
+    [scharf, Literaturwert], [< 1 K], [unverändert], [rein],
+    [scharf, zu niedrig], [< 1 K], [sinkt], [falsche Substanz],
+    [unscharf, zu niedrig], [> 2 K], [sinkt], [verunreinigt],
+    [unscharf, zu hoch], [> 2 K], [—], [Zersetzung],
+  ),
+  caption: [Deutung von Schmelzpunktbefunden. Erst die Mischprobe entscheidet
+    zwischen Verunreinigung und falscher Substanz.],
+) <tab:schmp-deutung>
+
+*Wann welche Methode.* Für Flüssigkeiten ist die Destillation die erste Wahl,
+für Feststoffe die Umkristallisation, für kleine Mengen und Empfindliches die
+Chromatographie. Wer die drei Verfahren beherrscht, kommt mit fast jeder
+Aufarbeitung zurecht — und erkennt, wann eine vierte Methode nötig ist.

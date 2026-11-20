@@ -141,7 +141,7 @@ Nachweis, nicht der Darstellung.
     eignen sich zur Identifizierung, die Siedepunkte zur Reinheitskontrolle.],
 ) <tab:aromaten-kenndaten>
 
-#vorschrift("D.5.4", [p-Nitrotoluol aus Toluol])[
+#vorschrift("D.5.2", [p-Nitrotoluol aus Toluol])[
   #reaktion(
     $ "C" _6"H" _5"CH" _3 + "HNO" _3 $,
     [#text(size: 6.5pt)[H#sub[2]SO#sub[4], 40 °C]],
@@ -227,7 +227,7 @@ Tetrafluoroborat, die Hydrolyse einfach Wasser.
     praktischen Bedeutung.],
 ) <tab:diazonium>
 
-#vorschrift("D.5.2", [Brombenzol aus Anilin])[
+#vorschrift("D.5.3", [Brombenzol aus Anilin])[
   #reaktion(
     $ "C" _6"H" _5"NH" _2 + "NaNO" _2 + "HBr" $,
     [#text(size: 6.5pt)[0–5 °C, dann CuBr]],
@@ -288,7 +288,7 @@ zu Nitroso- und Nitroverbindungen. Beide Reaktionen sind präparativ nutzbar, ab
 auch die Ursache für Verfärbungen bei der Lagerung; deshalb werden Phenole unter
 Stickstoff und im Dunkeln aufbewahrt.
 
-#vorschrift("D.5.3", [Benzoesäure aus Toluol])[
+#vorschrift("D.5.4", [Benzoesäure aus Toluol])[
   #reaktion(
     $ "C" _6"H" _5"CH" _3 $,
     [#text(size: 6.5pt)[KMnO#sub[4], H#sub[2]O, 100 °C]],

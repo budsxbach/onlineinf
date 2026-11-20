@@ -356,6 +356,47 @@ Aminen Harnstoffe, mit Wasser instabile Carbaminsäuren, die zu Amin und CO#sub[
 zerfallen. Diese Reaktivität ist die Grundlage der Polyurethan-Herstellung und
 der Boc-Schutzgruppe, die als *tert*-Butylcarbamat des Amins vorliegt.
 
+*Phosphor als C=C-Baumeister: die Wittig-Reaktion.* Phosphor-Ylide
+setzen Carbonylverbindungen in Alkene um — mit präziser Position der
+Doppelbindung. Die Reaktion gehört zu den wichtigsten C=C-Knüpfungen und
+verdankt ihren Platz im Organikum der Rolle des Phosphors.
+
+#vorschrift("D.8.6", [trans-Stilben aus Benzaldehyd])[
+  #reaktion(
+    $ "C" _6"H" _5"CHO" + "Ph"_3"P=CHC"_6"H" _5 $,
+    [#text(size: 6.5pt)[NaOEt, Ethanol, 78 °C]],
+    $ "C" _6"H" _5"CH=CHC"_6"H" _5 + "Ph"_3"P=O" $,
+  )
+
+  #ansatz[
+    26 g (25 mL; 0,25 mol) Benzaldehyd, 97 g (0,25 mol)
+    Benzyltriphenylphosphoniumchlorid, 200 mL Ethanol,
+    6 g (0,26 mol) Natrium in 50 mL Ethanol.
+  ]
+
+  In einem 500-mL-Rundkolben mit Rückflußkühler löst man das Phosphoniumsalz
+  in 200 mL Ethanol und tropft die frisch bereitete Natriumethanolat-Lösung
+  zu; die orangefarbene Ylid-Lösung entsteht sofort. Man tropft den
+  Benzaldehyd zu und erhitzt 2 h zum Sieden.
+
+  Nach dem Abkühlen saugt man das auskristallisierte Stilben ab, wäscht mit
+  kaltem Ethanol und trocknet. Die Mutterlauge wird eingeengt und der
+  Rückstand aus Ethanol umkristallisiert.
+
+  #ausbeute[23 g (65 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 124 °C (trans-Isomer) #h(2em) löslich in Chloroform, Benzol
+    #h(2em) $M$ = 180,3 g·mol#super[−1] #h(2em)
+    Das cis-Isomer (Schmp. 5–6 °C) entsteht nur in Spuren.
+  ]
+]
+
+#gefahr[Natriumethanolat ist ätzend; Natrium nur in kleinen Stücken und mit
+  trockener Zange. Benzaldehyd reizt die Schleimhäute. Triphenylphosphinoxid
+  bleibt als Abfall zurück — nicht in den Abfluss. Ethanol ist leicht
+  entzündlich.]
+
 === Aufgaben
 
 - Warum läßt sich Cyclohexanon mit Ammoniak nicht zum Imin umsetzen, mit
@@ -376,3 +417,8 @@ der Boc-Schutzgruppe, die als *tert*-Butylcarbamat des Amins vorliegt.
 - Warum darf die Schmelze beim Thioharnstoff nicht über 180 °C erhitzt werden?
 - Ein Thiourea-Derivat soll als Schwermetall-Reagenz eingesetzt werden. Welche
   Strukturmerkmale sind dafür entscheidend?
+- Erklären Sie, warum die Wittig-Reaktion mit nicht-stabilisierten Yliden
+  bevorzugt das cis-Isomer liefert — und warum hier das trans-Isomer
+  überwiegt.
+- Vergleichen Sie Wittig-Reaktion und McMurry-Kupplung für die Synthese von
+  Stilben.

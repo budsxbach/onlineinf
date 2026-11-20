@@ -273,6 +273,48 @@ um. Die Reaktion ist die klassische Synthese von Benzidin und war lange Zeit
 die Grundlage der Azofarbstoff-Industrie; wegen der Krebsgefahr der Benzidine
 wird sie heute nur noch in geschlossenen Anlagen durchgeführt.
 
+*Fries-Umlagerung.* Phenolester lagern in Gegenwart von
+Aluminiumchlorid zu Hydroxyarylketonen um; das Ortho/Para-Verhältnis hängt
+von der Temperatur ab. Die Umlagerung ist eine der klassischen Methoden zur
+Herstellung von Hydroxyketonen.
+
+#vorschrift("D.9.6", [2'-Hydroxyacetophenon aus Phenylacetat])[
+  #reaktion(
+    $ "C" _6"H" _5"OOCCH"_3 $,
+    [#text(size: 6.5pt)[AlCl#sub[3], 25 °C, dann 80 °C]],
+    $ "C" _6"H" _4("OH")"COCH"_3 $,
+  )
+
+  #ansatz[
+    34 g (30 mL; 0,25 mol) Phenylacetat, 35 g (0,26 mol)
+    Aluminiumchlorid, 100 mL Nitrobenzol.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rührer und Thermometer suspendiert man das
+  Aluminiumchlorid in 100 mL Nitrobenzol und tropft das Phenylacetat bei
+  25 °C zu. Man rührt 4 h bei Raumtemperatur, erwärmt anschließend 2 h auf
+  80 °C und gießt dann auf 200 g Eis mit 50 mL konz. Salzsäure.
+
+  Die Nitrobenzol-Phase wird mit Wasserdampf destilliert; das
+  Ortho-Isomer (2'-Hydroxyacetophenon) geht mit dem Dampf über, das
+  Para-Isomer bleibt im Rückstand. Das Destillat wird mit Ether
+  ausgeschüttelt, über Natriumsulfat getrocknet und im Vakuum destilliert.
+
+  #ausbeute[15 g (45 % d. Th.) ölige Flüssigkeit (Ortho-Produkt).]
+
+  #kenndaten[
+    Sdp. 213 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5580 #h(2em)
+    $rho_20$ = 1,13 g·cm#super[−3] #h(2em)
+    $M$ = 136,2 g·mol#super[−1] #h(2em)
+    Para-Isomer: Schmp. 109–111 °C, nicht dampfflüchtig.
+  ]
+]
+
+#gefahr[Aluminiumchlorid ist ätzend und raucht an feuchter Luft; Nitrobenzol
+  ist giftig (Methämoglobin!) und wassergefährdend — nur im Abzug arbeiten,
+  Abwässer getrennt sammeln. Phenylacetat reizt die Haut. Der Dampfstrom
+  muß unterbrochen werden, wenn das Destillat ölig übergeht.]
+
 === Baeyer-Villiger- und Favorskii-Umlagerung
 
 *Baeyer-Villiger-Oxidation.* Ketone werden von Peroxycarbonsäuren zu Estern
@@ -393,3 +435,7 @@ Die Favorskii-Umlagerung ist dagegen eine Spezialität für cyclische
   entscheidend ist die Stereospezifität — bei Beckmann und Claisen ist sie
   vollständig, bei Pinakol und Baeyer-Villiger nur statistisch.
 ]
+- Begründen Sie, warum bei der Fries-Umlagerung bei Raumtemperatur das
+  Ortho-Produkt, bei höherer Temperatur das Para-Produkt überwiegt.
+- Vergleichen Sie die Fries- mit der Claisen-Umlagerung (D.9.4): Was ist
+  das Gemeinsame, was der Unterschied?

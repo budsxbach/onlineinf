@@ -175,23 +175,36 @@ node tools/stats.mjs            # Kennzahlen
 
 ## 3a. Arbeitsstand
 
-| Schritt | Stand | Umfang im PDF |
+| Teil | Stand | Umfang im PDF |
 | --- | --- | --- |
 | 0 Vorlage, Pipeline, Layoutprobe | **fertig** | — |
-| 1 Gerüst | **fertig** | Teile A–D angelegt, Inhaltsverzeichnis |
-| 2 Teil A | **Grundfassung fertig (ca. 75 %)** | A.1 Hilfsmittel, A.2 Trennverfahren, A.3 Mikromaßstab, A.4 Physikalische Eigenschaften, A.5 Lagerung/Entsorgung |
-| 3 Teile B, C | **Grundfassung fertig** | B.1–B.8 (Literatur, Nomenklatur, Recherche, Protokoll), C.1–C.9 (Reaktionstypen, Energetik, Kinetik, Säure-Base, Substituenten, MO, Stereochemie, Syntheseplanung) |
-| 4 Teil D | Musterkapitel D.1, D.2 gesetzt | 4 Vorschriften |
-| 5 Teile E–G | offen | — |
-| 6 Feinsatz | offen | — |
+| 1 Gerüst | **fertig** | Teile A–H angelegt, Inhaltsverzeichnis |
+| 2 A Laboratoriumstechnik | **Grundfassung fertig (ca. 75 %)** | A.1–A.5, 36 S. |
+| 3 B Literatur/Protokoll | **Grundfassung fertig** | B.1–B.8, 5 S. |
+| 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 55 %)** | C.1–C.9, 13 S. |
+| 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 10 %)** | D.1–D.9, 30 S., 17 Vorschriften |
+| 6 E Identifizierung | **Grundfassung fertig (ca. 30 %)** | E.1–E.2, 6 S. |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 30 %)** | F.1–F.2, 6 S. |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 30 %)** | G.1–G.3, 5 S. |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, 4 S. |
+| 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **42 Seiten** Buchformat (168 × 240 mm), 11.100 Wörter, 24 Abbildungen,
-31 Tabellen, 4 Vorschriften. Kolumnentitel, Teilezählung, Abbildungs- und
-Tabellennumerierung je Teil, Fußnoten und Registervorbereitung laufen.
+Aktuell gesetzt: **90 Seiten** Buchformat (168 × 240 mm), 26 400 Wörter,
+26 Abbildungen, 46 Tabellen, 17 Vorschriften. Kolumnentitel, Teilezählung,
+Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen.
 
-Offen in B/C vor dem Feinsatz: Ausbau auf das Seitenbudget (B 16 → ca. 16 S. erreicht,
-C 46 → ca. 14 S. gesetzt). Für C fehlen noch Beispiele zu Mehrstufen-Synthesen,
-Übungsaufgaben am Kapitelende und die Vertiefung der Kinetik.
+**Nächste Schritte, in dieser Reihenfolge:**
+
+1. Teil D auf Tiefe bringen: je Kapitel 3–6 weitere Vorschriften, Kenndaten-
+   tabellen, Störungen und Aufgaben. D ist das Rückgrat des Buches und macht
+   rund die Hälfte des Zielumfangs aus (430 von 793 Seiten).
+2. Teil C von 13 auf 46 Seiten ausbauen (Kinetik mit Zahlenbeispielen,
+   Stereochemie mit Projectionen, Syntheseplanung mit Mehrstufenbeispielen).
+3. Teil A auf das Budget 118 Seiten ergänzen (Apparatezeichnungen, Tabellen).
+4. Teile E–H auf Budget bringen (E 62, F 55, G 55, H 28).
+
+Der Fortschritt wird über `node tools/stats.mjs` laufend gemessen; die Zahl am
+Ende der Ausgabe nennt die noch fehlenden Seiten bis 793.
 
 ## 4. Arbeitsschritte und Aufwand
 

@@ -1,7 +1,12 @@
 # Organikum — Buchprojekt
 
 Eigenständig erstelltes Lehrbuch der präparativen organischen Chemie im Zuschnitt
-eines Grundpraktikums (Teile A–G, ~200 Arbeitsvorschriften, Anhänge, Register).
+eines Grundpraktikums (Teile A–H, ~200 Arbeitsvorschriften, Anhänge, Register).
+
+Teile: A Laboratoriumstechnik · B Literatur und Protokollführung · C Allgemeine
+Grundlagen · D Präparativer Teil · E Identifizierung · F Reagenzien und
+Arbeitstechnik · G Gefahrstoffe und Sicherheit · H Anhang (Abkürzungen,
+Konstanten, Register).
 
 * Plan und Arbeitsstand: [PLAN.md](PLAN.md)
 * Layoutprobe: `ausgabe/organikum-vorschau.pdf`
@@ -11,7 +16,10 @@ eines Grundpraktikums (Teile A–G, ~200 Arbeitsvorschriften, Anhänge, Register
 ```bash
 npm install                 # Typst-Compiler als Node-Paket
 python3 tools/strukturen.py # Strukturformeln aus data/strukturen.json (RDKit)
+python3 tools/apparate.py   # Apparatezeichnungen
+python3 tools/schemata.py   # Schemata (Energieprofile, Stereochemie, Hammett …)
 node tools/build.mjs        # PDF nach ausgabe/organikum-vorschau.pdf
+node tools/build.mjs --zeichnungen  # zusätzlich alle SVGs neu erzeugen
 node tools/stats.mjs        # Wörter, Vorschriften, Seitenprognose
 ```
 

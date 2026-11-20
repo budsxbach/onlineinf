@@ -1,0 +1,223 @@
+// ============================================================================
+//  F  Reagenzien, Lösungsmittel und Arbeitsmethoden
+// ============================================================================
+
+#import "/vorlage/layout.typ": *
+
+== Lösungsmittel und ihre Reinigung
+
+Das Lösungsmittel entscheidet über den Verlauf einer Reaktion oft stärker als das
+Reagenz. Es bestimmt die Polarität des Mediums, die Nucleophilie der Anionen, die
+Lage von Gleichgewichten und die Geschwindigkeit der Phasentrennung. Deshalb
+beginnt jede Vorschrift mit der Angabe des Lösungsmittels — und jede Reinigung
+eines Lösungsmittels mit der Frage, wofür es gebraucht wird.
+
+=== Eigenschaften und Auswahl
+
+#figure(
+  table(
+    columns: (1.5fr, auto, auto, auto, auto, 1.3fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, right, right, right, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Lösungsmittel*], [*Sdp./°C*], [*ε*], [*ρ*], [*E#sub[T]*], [*Klasse*]),
+    [n-Hexan], [69], [1,9], [0,66], [31], [unpolar],
+    [Cyclohexan], [81], [2,0], [0,78], [33], [unpolar],
+    [Toluol], [111], [2,4], [0,87], [34], [aromatisch],
+    [Ether], [35], [4,3], [0,71], [34], [aprotisch],
+    [Dichlormethan], [40], [8,9], [1,33], [41], [aprotisch, chloriert],
+    [Chloroform], [61], [4,8], [1,49], [39], [aprotisch, chloriert],
+    [Essigsäureethylester], [77], [6,0], [0,90], [38], [aprotisch],
+    [Aceton], [56], [20,7], [0,79], [42], [aprotisch, polar],
+    [Dimethylformamid], [153], [36,7], [0,94], [43], [aprotisch, polar],
+    [Dimethylsulfoxid], [189], [46,7], [1,10], [45], [aprotisch, polar],
+    [Acetonitril], [82], [37,5], [0,78], [46], [aprotisch, polar],
+    [Ethanol], [78], [24,3], [0,79], [51], [protisch],
+    [Methanol], [65], [32,6], [0,79], [55], [protisch],
+    [Wasser], [100], [78,4], [1,00], [63], [protisch],
+  ),
+  caption: [Lösungsmittel für die präparative Arbeit. ε = Dielektrizitätskonstante,
+    ρ = Dichte in g·cm⁻³, E#sub[T] = Dimroth-Reichardt-Parameter (Polarität).],
+) <tab:loesungsmittel>
+
+Für die Auswahl gelten drei Regeln:
+
+- *Polare Reaktionen brauchen polare Lösungsmittel.* S#sub[N]2 mit Anionen läuft
+  in DMSO oder DMF um Größenordnungen schneller ab als in Methanol.
+- *Prothische Lösungsmittel stören Anionen.* Sie solvatisieren über
+  Wasserstoffbrücken und machen das Nucleophil „unbeweglich“.
+- *Unpolare Lösungsmittel trennen schlecht.* Salze bleiben ungelöst, die
+  Reaktion findet an der Phasengrenze statt — ein Fall für Phasentransfer.
+
+=== Trocknung
+
+Wasser ist der häufigste Störfaktor. Für die Trocknung gibt es vier Wege:
+
+- *chemisch*: Natriumsulfat (schwach), Magnesiumsulfat (mittel),
+  Calciumchlorid (stark, aber bindet Alkohole), Phosphorpentoxid (sehr stark,
+  für Kohlenwasserstoffe und Halogenide).
+- *destillativ*: azeotrope Entfernung mit Toluol oder Benzol (Wasserabscheider).
+- *physikalisch*: Molekularsieb 3 Å oder 4 Å, im Trockenschrank regenerierbar.
+- *metallorganisch*: Natrium/Benzophenon für Ether und THF, Kalium für
+  Toluol; die blaue Farbe des Benzophenon-Ketyls zeigt Wasserfreiheit an.
+
+#figure(
+  table(
+    columns: (1.5fr, auto, 1.6fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Trockenmittel*], [*Restwassergehalt*], [*Einschränkung*]),
+    [Natriumsulfat], [hoch], [billig, für präparative Zwecke ausreichend],
+    [Magnesiumsulfat], [mittel], [Standard für Extrakte],
+    [Calciumchlorid], [niedrig], [bindet Alkohole und Amine],
+    [Kaliumcarbonat], [mittel], [für Alkohole und Ketone],
+    [Phosphorpentoxid], [sehr niedrig], [für Kohlenwasserstoffe, aggressiv],
+    [Molekularsieb 4 Å], [sehr niedrig], [regenerierbar, für Lösungsmittel],
+    [Natrium/Benzophenon], [sehr niedrig], [nur für Ether, THF, Toluol],
+  ),
+  caption: [Trockenmittel und ihre Grenzen. Die Auswahl richtet sich nach der
+    Empfindlichkeit des Produkts, nicht nach dem erreichbaren Minimum.],
+) <tab:trockenmittel>
+
+=== Peroxide und ihre Entfernung
+
+Ether, THF, Dioxan und Isopropanol bilden bei Lagerung an Luft Peroxide. Diese
+sind explosives Gefahrgut und stören Radikalreaktionen. Man prüft mit
+Kaliumiodid-Stärke-Papier oder mit Eisen(II)-thiocyanat-Lösung (Rotfärbung) und
+entfernt Peroxide durch Ausschütteln mit Eisen(II)-sulfatlösung oder
+Aluminiumoxid.
+
+#gefahr[Peroxidhaltige Ether dürfen nicht destilliert werden — beim Einengen
+können sie sich aufkonzentrieren und detonieren. Vor jeder Destillation prüfen;
+Lagergefäße mit Datum versehen und nach sechs Monaten verwerfen. Natriumreste
+in Ether nie mit Wasser in Berührung bringen.]
+
+=== Absolutierung
+
+Für Reaktionen mit metallorganischen Reagenzien, mit Alkalimetallen oder mit
+Lewis-Säuren braucht man wasserfreie Lösungsmittel (< 50 ppm Wasser). Die
+Absolutierung erfolgt durch
+
+- *Destillation über Trockenmittel* (Calciumhydrid für Amine und DMSO),
+- *Destillation über Natrium/Benzophenon* (Ether, THF, Toluol),
+- *Lagerung über Molekularsieb* (Methanol, Acetonitril),
+- *käufliche Absolutlösungsmittel* (AcroSeal, SureSeal) für kleine Mengen.
+
+Die Wasserbestimmung erfolgt nach Karl Fischer oder, im Praktikum, über die
+Trübung beim Versetzen mit Toluol (azeotrope Destillation).
+
+=== Rückgewinnung und Entsorgung
+
+Lösungsmittel werden getrennt gesammelt: halogeniert (Dichlormethan, Chloroform,
+Tetrachlorkohlenstoff), nicht halogeniert (Ether, Toluol, Aceton, Alkohole),
+Wasser (wäßrige Phasen). Die Rückgewinnung durch Destillation lohnt sich ab
+etwa 5 L, im Praktikum meist nicht; die getrennte Sammlung ist Pflicht.
+
+#figure(
+  table(
+    columns: (1.6fr, 1.4fr, 1.6fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Abfallgruppe*], [*Beispiele*], [*Behandlung*]),
+    [Halogenierte Lösungsmittel], [DCM, CHCl#sub[3]], [Verbrennung, Sonderabfall],
+    [Nicht halogeniert], [Ether, Toluol, Aceton], [Destillation oder Verbrennung],
+    [Wäßrige Säuren], [HCl, H#sub[2]SO#sub[4]], [Neutralisieren, Abwasser],
+    [Wäßrige Basen], [NaOH, Ammoniak], [Neutralisieren, Abwasser],
+    [Schwermetallsalze], [Cr, Hg, Cu], [Fällen, Sonderabfall],
+    [Cyanide], [KCN, CuCN], [Oxidation mit Hypochlorit],
+  ),
+  caption: [Abfallgruppen im organischen Praktikum. Die Reihenfolge folgt der
+    Gefährlichkeit, nicht der Menge.],
+) <tab:abfall>
+
+== Reagenzien und ihre Handhabung
+
+Manche Reagenzien sind so reaktiv, daß sie eigene Regeln verlangen. Die folgenden
+Hinweise gelten für die im Buch verwendeten Stoffe.
+
+=== Metallorganische Reagenzien
+
+*Grignard-Reagenzien* (RMgX) entstehen aus Magnesiumspänen und Alkylhalogenid in
+absolutem Ether oder THF. Sie sind starke Basen und Nucleophile; sie reagieren
+mit Wasser, Alkoholen, Carbonylen, Estern, Nitrilen und mit Sauerstoff.
+
+- Vorbereitung: Magnesiumspäne mit Iod anätzen, Ether absolut, Stickstoff,
+  langsames Zutropfen, Kühlung.
+- Konzentrationsbestimmung: Titration mit sec-Butanol und 1,10-Phenanthrolin als
+  Indikator (Farbumschlag farblos → rotbraun).
+- Handhabung: Spritze oder Kanüle, Septum, kein Kontakt mit Luft.
+
+*Organolithium-Verbindungen* (n-BuLi, t-BuLi, LDA) sind noch stärker basisch. Sie
+werden bei −78 °C gehandhabt, in absolutem Ether oder THF, unter Argon.
+
+#gefahr[Grignard- und Lithiumreagenzien entzünden sich an Luft und zersetzen sich
+mit Wasser unter Feuererscheinung. Niemals mit Wasser löschen; mit trockenem
+Sand oder Kohlendioxid ersticken. In kleinen Mengen arbeiten, Spritzen und
+Kanülen bereithalten, Sicherheitsbrille und Gesichtsschutz tragen.]
+
+=== Oxidations- und Reduktionsmittel
+
+*Hydride.* Natriumborhydrid ist mild, in Alkoholen löslich und für Aldehyde und
+Ketone geeignet; Lithiumaluminiumhydrid ist stärker und reduziert auch
+Carbonsäuren, Ester und Nitrile; Diisobutylaluminiumhydrid (DIBAL-H) reduziert
+Ester bei −78 °C zum Aldehyd.
+
+$ "R–COOR'" ->^("DIBAL-H, −78 °C") "R–CHO" $
+
+*Chinone und Peroxide.* DDQ und Chloranil sind Hydridacceptoren; m-CPBA und
+Peressigsäure sind Epoxidierungsmittel. Peroxide sind schlagempfindlich und
+müssen kühl und dunkel gelagert werden.
+
+#gefahr[Lithiumaluminiumhydrid reagiert mit Wasser und Alkoholen unter
+Wasserstoffentwicklung und Entzündung; Reste niemals mit Wasser oder Alkohol
+zersetzen, sondern mit Ethylacetat und dann mit gesättigter
+Natriumsulfatlösung. Natriumborhydrid ist weniger gefährlich, entwickelt aber
+ebenfalls Wasserstoff.]
+
+=== Säuren und Basen
+
+*Konzentrierte Säuren* werden zum Verdünnen in Wasser gegeben, nie umgekehrt.
+*Schwefelsäure* ist oxidierend und verkohlt Organisches; *Salpetersäure* ist
+stark oxidierend und bildet mit organischen Stoffen explosive Gemische;
+*Perchlorsäure* darf nie mit organischen Stoffen in Kontakt kommen (Explosion).
+
+*Basen.* Natriumhydroxid und Kaliumhydroxid sind hygroskopisch und ätzend; sie
+werden in Plätzchen oder als Maßlösung gehandhabt. Natriumamid und
+Kalium-t-butoxid sind starke Basen, die unter Feuchtigkeitsausschluß gelagert
+werden.
+
+=== Katalysatoren
+
+*Palladium auf Kohle* ist in trockenem Zustand selbstentzündlich, wenn es
+Wasserstoff ausgesetzt wird; es wird feucht gehandhabt und nach Gebrauch in
+Wasser gegeben. *Raney-Nickel* ist pyrophor; es wird unter Wasser aufbewahrt
+und darf nicht trocken werden. *Platin(IV)-oxid* (Adams-Katalysator) wird als
+Suspension eingesetzt.
+
+#figure(
+  table(
+    columns: (1.6fr, 1.5fr, 1.5fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Reagenz*], [*Gefahr*], [*Schutzmaßnahme*]),
+    [Pd/C], [selbstentzündlich], [feucht halten, erden],
+    [Raney-Nickel], [pyrophor], [unter Wasser, nie trocken],
+    [m-CPBA], [schlagempfindlich], [kühl, dunkel, kleine Mengen],
+    [Diazomethan], [toxisch, explosiv], [nur in situ, Abzug],
+    [Osmiumtetroxid], [sehr giftig, flüchtig], [Abzug, Handschuhe, kleine Mengen],
+    [Phosgen], [sehr giftig], [geschlossenes System],
+    [Natriumazid], [toxisch, explosiv mit Schwermetallen], [kein Kupfer, kein Blei],
+  ),
+  caption: [Besonders gefährliche Reagenzien und ihre Handhabung.],
+) <tab:gefaehrliche-reagenzien>
+
+=== Aufgaben
+
+- Warum läuft die S#sub[N]2-Reaktion von Butylchlorid mit Kaliumiodid in Aceton
+  schneller ab als in Ethanol, obwohl Aceton weniger polar ist?
+- Sie brauchen absoluten Ether für eine Grignard-Reaktion. Beschreiben Sie die
+  Absolutierung und die Prüfung auf Wasserfreiheit.
+- Ein Ethervorrat ist fünf Jahre alt. Was prüfen Sie, bevor Sie ihn verwenden?

@@ -94,3 +94,15 @@
 
 #include "/manuskript/e-1-identifizierung.typ"
 #include "/manuskript/e-2-derivate-spektren.typ"
+
+#teil("F", [Reagenzien, Lösungsmittel und Arbeitstechnik])
+
+#include "/manuskript/f-1-reagenzien.typ"
+
+#teil("G", [Gefahrstoffe, Sicherheit und Erste Hilfe])
+
+#include "/manuskript/g-1-sicherheit.typ"
+
+#teil("H", [Anhang])
+
+#include "/manuskript/h-anhang.typ"

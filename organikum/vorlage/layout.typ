@@ -15,7 +15,7 @@
 
 // Teilanfang: Buchstabe wird über einen Zähler gesetzt, damit die Numerierung
 // auch nach einzelnen, unabhängig geschriebenen Teilen stimmt.
-#let teil-index(b) = ("A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7).at(b)
+#let teil-index(b) = ("A": 1, "B": 2, "C": 3, "D": 4, "E": 5, "F": 6, "G": 7, "H": 8).at(b)
 
 #let teil(buchstabe, titel) = {
   // Teilseite ohne Kolumnentitel und ohne Seitenzahl. Der Zähler wird vor der

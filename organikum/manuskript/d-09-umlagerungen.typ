@@ -206,15 +206,155 @@ laufen konzertiert ab.
 Carbonyl um. Die Reaktion ist die Grundlage der Synthese von
 Allylverbindungen und von Naturstoffen (z. B. Chorismat-Umlagerung).
 
+$ "CH" _2"=CH–CH" _2"–O–CH=CH" _2 ->^(140 "°C") "CH" _2"=CH–CH" _2"–CH" _2"–CHO" $
+
+Der Übergangszustand ist ein sechsgliedriger Sessel; die Bindung zwischen C-3
+und C-3' wird geknüpft, während die Sauerstoff-Kohlenstoff-Bindung bricht. Weil
+der Übergangszustand sesselartig ist, verläuft die Umlagerung stereospezifisch:
+Die Konfiguration an C-1 und C-3 bleibt erhalten, und die neue Doppelbindung
+entsteht *E*-selektiv.
+
+*Substituenteneffekte.* Alkylgruppen in 2- oder 6-Position beschleunigen die
+Umlagerung, weil sie im Übergangszustand die Enolform stabilisieren; bei
+2,6-disubstituierten Allylvinylethern sinkt die Reaktionstemperatur auf 80 °C.
+Das *decarboxylierende Claisen* (Allyl-β-ketoester + Base) läuft schon bei
+Raumtemperatur über ein Enolat.
+
+*Aromatische Claisen-Umlagerung.* Allylphenylether lagern beim Erhitzen auf
+200 °C zum *ortho*-Allylphenol um; die Reaktion ist der klassische Zugang zu
+Allylphenolen und Eugenol-Derivaten. Bei besetzter *ortho*-Position wandert die
+Allylgruppe weiter zum *para*-Produkt („abnormale" Claisen-Umlagerung).
+
+#vorschrift("D.9.4", [o-Allylphenol aus Allylphenylether])[
+  #reaktion(
+    $ "C" _6"H" _5"–O–CH" _2"–CH=CH" _2 $,
+    [#text(size: 6.5pt)[200 °C, 3 h]],
+    $ "2-HO–C" _6"H" _4"–CH" _2"–CH=CH" _2 $,
+  )
+
+  #ansatz[
+    134 g (1,0 mol) Allylphenylether, 200 mL Decalin.
+  ]
+
+  In einem 500-ml-Dreihalskolben mit Rührer, Rückflußkühler und Innenthermometer
+  wird der Ether in Decalin vorgelegt und unter Stickstoff auf 200 °C erhitzt.
+  Man rührt 3 h bei dieser Temperatur; die Reaktion wird dünnschicht-
+  chromatographisch verfolgt (Kieselgel, Petrolether/Essigsäureethylester 9:1).
+
+  Man kühlt ab und destilliert das Decalin im Vakuum ab. Der Rückstand wird in
+  200 mL Essigsäureethylester aufgenommen, mit 2-prozentiger Natronlauge
+  gewaschen, getrocknet und fraktioniert.
+
+  #ausbeute[104 g (78 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 220 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5380 #h(2em)
+    $rho_20$ = 1,028 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Allylphenylether ist gesundheitsschädlich und entzündbar. Decalin ist
+  entzündbar und wirkt reizend; bei 200 °C steht die Apparatur unter
+  Druckgefahr — geschlossene Anlage, Rückflußkühler mit Kühlung, kein
+  Erhitzen im geschlossenen Gefäß. o-Allylphenol reizt die Haut.]
+
 *Cope-Umlagerung.* Ein 1,5-Dien lagert sich zu einem isomeren 1,5-Dien um. Die
 Reaktion ist thermisch erlaubt und verläuft mit hoher Stereoselektivität;
 die *anionische Oxy-Cope*-Variante (mit Kaliumhydrid) führt zum
-δ,ε-ungesättigten Alkohol.
+δ,ε-ungesättigten Alkohol. Weil das Alkoxid den Übergangszustand über eine
+enolatartige Struktur stabilisiert, genügt für die Oxy-Cope-Umlagerung schon
+Raumtemperatur — ein präparativer Vorteil, der in Naturstoffsynthesen genutzt
+wird.
+
+$ "CH" _2"=CH–CH" _2"–CH(OR)–CH" _2"–CH=CH" _2 -> "CH" _2"=CH–CH" _2"–CO–CH" _2"–CH" _2"–CH=CH" _2 $
 
 *Benzidin-Umlagerung.* Hydrazobenzol lagert sich in Säure zu 4,4'-Diaminobiphenyl
 um. Die Reaktion ist die klassische Synthese von Benzidin und war lange Zeit
 die Grundlage der Azofarbstoff-Industrie; wegen der Krebsgefahr der Benzidine
 wird sie heute nur noch in geschlossenen Anlagen durchgeführt.
+
+=== Baeyer-Villiger- und Favorskii-Umlagerung
+
+*Baeyer-Villiger-Oxidation.* Ketone werden von Peroxycarbonsäuren zu Estern
+oxidiert; dabei wandert eine Alkylgruppe vom Carbonylkohlenstoff zum
+Peroxidsauerstoff. Die Reaktion ist die einzige präparativ bedeutsame
+Insertion eines Sauerstoffs in eine Kohlenstoff-Kohlenstoff-Bindung.
+
+$ "R–CO–R'" + "R''CO" _3"H" -> "R–CO–O–R'" + "R''CO" _2"H" $
+
+Die Migrationsfähigkeit folgt der Fähigkeit, im Übergangszustand eine
+Elektronenpaar-Bindung zum Carbonylkohlenstoff zu lösen: tertiär > sekundär >
+Phenyl > primär > Methyl. Bei cyclischen Ketonen entsteht ein Lacton; aus
+Cyclohexanon erhält man ε-Caprolacton, das Monomer für Polycaprolacton.
+
+#figure(
+  table(
+    columns: (1.6fr, 1.6fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Keton*], [*Produkt*], [*Typ*]),
+    [Cyclohexanon], [ε-Caprolacton], [Lacton],
+    [Cyclopentanon], [δ-Valerolacton], [Lacton],
+    [Acetophenon], [Phenylacetat], [Ester],
+    [Benzophenon], [Phenylbenzoat], [Ester],
+    [Methylisopropylketon], [Isopropylacetat], [Ester],
+    [Methyl-tert-butylketon], [tert-Butylacetat], [Ester],
+  ),
+  caption: [Produkte der Baeyer-Villiger-Oxidation. Bei unsymmetrischen Ketonen
+    wandert die besser stabilisierte Gruppe; im letzten Beispiel tert-Butyl.],
+) <tab:baeyer-villiger>
+
+#vorschrift("D.9.5", [ε-Caprolacton aus Cyclohexanon])[
+  #reaktion(
+    $ "C" _6"H" _10"O" + "CH" _3"CO" _3"H" $,
+    [#text(size: 6.5pt)[CH#sub[2]Cl#sub[2], 25 °C]],
+    $ "C" _6"H" _10"O" _2 + "CH" _3"COOH" $,
+  )
+
+  #ansatz[
+    98 g (1,0 mol) Cyclohexanon, 190 g (1,5 mol) 32-prozentige Peressigsäure,
+    300 mL Dichlormethan, 20 g wasserfreies Natriumacetat.
+  ]
+
+  In einem 1-l-Dreihalskolben mit Rührer, Thermometer und Tropftrichter werden
+  Cyclohexanon, Natriumacetat und Dichlormethan vorgelegt und auf 20 °C gekühlt.
+  Man tropft die Peressigsäure so zu, daß die Temperatur 30 °C nicht übersteigt.
+
+  Nach beendeter Zugabe rührt man 2 h bei 25 °C; die Reaktion wird durch
+  Iodometrie auf Restperoxid geprüft. Man wäscht mit Wasser, dann mit
+  gesättigter Natriumcarbonatlösung bis zur neutralen Reaktion und trocknet
+  über Magnesiumsulfat.
+
+  Das Lösungsmittel wird abdestilliert und das Lacton im Vakuum fraktioniert.
+
+  #ausbeute[96 g (84 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 96 °C (5 hPa) #h(2em) $n_D^20$ = 1,4630 #h(2em)
+    $rho_20$ = 1,070 g·cm#super[−3]
+  ]
+]
+
+#gefahr[Peressigsäure ist stark oxidierend, ätzend und explosionsgefährlich in
+  höheren Konzentrationen; nur die verdünnte Lösung verwenden, keinen Kontakt
+  mit Metallpulvern oder brennbaren Stoffen. Cyclohexanon und Dichlormethan sind
+  entzündbar bzw. gesundheitsschädlich. Peroxide niemals bis zur Trockne
+  eindampfen.]
+
+*Favorskii-Umlagerung.* α-Halogenketone werden von Basen zu Carbonsäuren
+umgelagert: Ein Cyclopropanon-Intermediat wird nucleophil angegriffen, der Ring
+öffnet sich unter Wanderung. Die Reaktion ist der beste Weg zu gesättigten
+Carbonsäuren mit verzweigtem Skelett, etwa von α,α-Dialkylketonen.
+
+$ "R" _2"C(Cl)–CO–R'" + 3 "NaOH" -> "R" _2"CH–COONa" + "2 NaCl" + "H" _2"O" $
+
+*Präparative Bewertung.* Die Baeyer-Villiger-Oxidation ist mild, billig und
+skaliert gut; sie wird industriell für Caprolacton und für Lactone aus
+Cyclododecanon genutzt. Ihre Grenze ist die Selektivität bei unsymmetrischen
+Ketonen — hier hilft die Regel von der Migrationsfähigkeit, aber nicht immer.
+Die Favorskii-Umlagerung ist dagegen eine Spezialität für cyclische
+α-Halogenketone und für die Ringverengung.
 
 === Aufgaben
 
@@ -225,3 +365,31 @@ wird sie heute nur noch in geschlossenen Anlagen durchgeführt.
   Isomer entsteht.
 - Erklären Sie den Unterschied zwischen Hofmann-Abbau und Decarboxylierung
   hinsichtlich der Stereochemie.
+- Formulieren Sie den Mechanismus der Baeyer-Villiger-Oxidation am Beispiel
+  von Acetophenon und begründen Sie, warum Phenyl und nicht Methyl wandert.
+- Welches Produkt entsteht bei der Baeyer-Villiger-Oxidation von
+  4-tert-Butylcyclohexanon? Berücksichtigen Sie die Konformation des
+  Übergangszustands.
+- Ein Allylphenylether mit besetzter *ortho*-Position wird auf 200 °C erhitzt.
+  Erklären Sie, warum das *para*-Produkt entsteht, und skizzieren Sie den Weg
+  über die zweite [3,3]-Umlagerung.
+- Vergleichen Sie Claisen- und Cope-Umlagerung hinsichtlich Substrat,
+  Triebkraft und Temperaturbedarf. Warum genügt bei der anionischen
+  Oxy-Cope-Variante Raumtemperatur?
+- Geben Sie für die Favorskii-Umlagerung von 2-Chlorcyclohexanon das Produkt an
+  und erklären Sie, warum Ringverengung und nicht Ringöffnung eintritt.
+- Ordnen Sie die folgenden Gruppen nach ihrer Migrationsfähigkeit bei der
+  Pinakol-Umlagerung: Wasserstoff, Phenyl, Methyl, tert-Butyl, Cyclohexyl.
+- Warum ist die Beckmann-Umlagerung stereospezifisch, die Pinakol-Umlagerung
+  dagegen nicht in jedem Fall? Nennen Sie ein Gegenbeispiel.
+
+#block(above: 10pt, below: 8pt, inset: (x: 8pt, y: 6pt), stroke: (left: 2pt + black), fill: luma(246))[
+  *Was Sie aus diesem Kapitel mitnehmen sollten.* Eine Umlagerung ordnet man
+  nach dem wandernden Zentrum ein: Carbeniumion (Wagner-Meerwein, Pinakol,
+  Beckmann), Nitren (Hofmann, Curtius, Schmidt), Peroxid (Baeyer-Villiger)
+  oder konzertiert (Claisen, Cope). In allen Fällen gilt dieselbe Faustregel:
+  Die Gruppe wandert, die am besten ein positives Zentrum stabilisieren kann
+  oder die im cyclischen Übergangszustand am günstigsten liegt. Präparativ
+  entscheidend ist die Stereospezifität — bei Beckmann und Claisen ist sie
+  vollständig, bei Pinakol und Baeyer-Villiger nur statistisch.
+]

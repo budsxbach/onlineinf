@@ -274,6 +274,48 @@ Produkte in besserer Ausbeute, ist aber giftig und teuer.
     Fällen Ausdruck des Mechanismus.],
 ) <tab:sauerstoffaddition>
 
+*Präparative Epoxidierung.* Peroxycarbonsäuren übertragen ihren Sauerstoff
+auf das Alken; die Konfiguration der Doppelbindung bleibt erhalten
+(syn-Addition). Für die Praxis genügt eine handelsübliche
+meta-Chlorperbenzoesäure; die entstehende Säure fällt als Feststoff aus und
+stört die Aufarbeitung kaum.
+
+#vorschrift("D.4.8", [Cyclohexenoxid aus Cyclohexen])[
+  #reaktion(
+    $ "C" _6"H" _10 + "R-CO"_3"H" $,
+    [#text(size: 6.5pt)[m-CPBA, CH#sub[2]Cl#sub[2], 0–20 °C]],
+    $ "C" _6"H" _10"O" + "RCO"_2"H" $,
+  )
+
+  #ansatz[
+    20,5 g (25 mL; 0,25 mol) Cyclohexen, 44 g (0,25 mol)
+    meta-Chlorperbenzoesäure (77 %), 150 mL Dichlormethan.
+  ]
+
+  In einem 500-mL-Rundkolben mit Magnetrührer und Eisbad löst man die
+  Perbenzoesäure in 150 mL Dichlormethan und kühlt auf 0 °C. Das Cyclohexen
+  wird tropfenweise zugegeben, wobei die Temperatur unter 10 °C bleiben
+  soll. Man läßt auf Raumtemperatur erwärmen und rührt 3 h nach; dabei
+  scheidet sich meta-Chlorbenzoesäure als Niederschlag ab.
+
+  Man saugt ab, wäscht das Filtrat nacheinander mit Natriumsulfit-,
+  Natriumhydrogencarbonat-Lösung und Wasser und trocknet über Magnesiumsulfat.
+  Das Lösungsmittel wird am Rotationsverdampfer entfernt, der Rückstand im
+  Vakuum destilliert.
+
+  #ausbeute[18 g (73 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 129 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4520 #h(2em)
+    $rho_20$ = 0,97 g·cm#super[−3] #h(2em) $M$ = 98,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[meta-Chlorperbenzoesäure ist ein organisches Peroxid: explosionsfähig
+  beim Trocknen oder Erwärmen, nur feucht wägen, niemals anhäufen.
+  Dichlormethan ist krebserzeugend; nur im Abzug arbeiten. Cyclohexenoxid ist
+  reizend und leicht flüchtig — dicht verschließen.]
+
 === Cycloadditionen
 
 Die Diels-Alder-Reaktion ist eine [4+2]-Cycloaddition zwischen einem Dien und
@@ -290,6 +332,46 @@ Präparativ wichtig:
   Dienophil-Seite: Maleinsäureanhydrid, Acrolein, Chinone).
 - Die *endo*-Regel gilt für bicyclische Produkte: Das kinetisch bevorzugte
   Produkt hat die Substituenten unter dem Ring.
+
+*Präparatives Beispiel.* Die [4+2]-Cycloaddition von Cyclopentadien an
+Maleinsäureanhydrid verläuft in Ether bei Raumtemperatur und liefert
+beinahe quantitativ das *endo*-Addukt — die kinetisch bevorzugte
+Anordnung, die man in jedem Lehrbuch der Pericyclen findet.
+
+#vorschrift("D.4.9", [endo-Norbornen-cis-5,6-dicarbonsäureanhydrid])[
+  #reaktion(
+    $ "C" _5"H" _6 + "C" _4"H" _2"O" _3 $,
+    [#text(size: 6.5pt)[Ether, 0–20 °C]],
+    $ "C" _9"H" _8"O" _3 $,
+  )
+
+  #ansatz[
+    33 g (42 mL; 0,50 mol) Cyclopentadien (frisch destilliert),
+    49 g (0,50 mol) Maleinsäureanhydrid, 120 mL Diethylether.
+  ]
+
+  Man löst das Maleinsäureanhydrid in 120 mL Ether in einem 250-mL-Kolben
+  mit Magnetrührer und Eisbad und tropft das frisch durch Cracken von
+  Dicyclopentadien gewonnene Cyclopentadien bei 0–5 °C zu. Man läßt auf
+  Raumtemperatur erwärmen und rührt 30 min nach; das Addukt kristallisiert
+  in weißen Blättchen aus.
+
+  Man saugt ab, wäscht mit je 10 mL kaltem Ether und trocknet im
+  Exsikkator. Zur Reinigung wird aus Essigester umkristallisiert.
+
+  #ausbeute[60 g (67 % d. Th.) weiße Kristalle.]
+
+  #kenndaten[
+    Schmp. 164–165 °C (endo) #h(2em) löslich in Aceton, Chloroform
+    #h(2em) $M$ = 178,2 g·mol#super[−1] #h(2em)
+    DC (Kieselgel/Essigester): $R_f$ = 0,45.
+  ]
+]
+
+#gefahr[Cyclopentadien ist leicht entzündbar, flüchtig und übelriechend;
+  frisch destilliert verwenden, nur im Abzug. Maleinsäureanhydrid ist ätzend
+  und wassergefährdend. Diethylether bildet Peroxide — vor Gebrauch prüfen,
+  keine Zündquellen.]
 
 #vorschrift("D.4.4", [Bernsteinsäureanhydrid aus Maleinsäureanhydrid und Ethen])[
   #reaktion(
@@ -516,3 +598,11 @@ nicht aus.
   Cyclohexen.
 - Ein Kollege hydriert „nach Augenmaß" und läßt 3 h einlaufen. Welche
   Nebenreaktionen sind zu erwarten?
+- Ordnen Sie die folgenden Reaktionen den Reaktionsarten Addition,
+  Cycloaddition, elektrophile Addition zu: Ozonisierung von 1-Octen,
+  Diels-Alder von Cyclopentadien und Maleinsäureanhydrid, Bromierung von
+  Cyclohexen.
+- Warum entsteht bei der Epoxidierung von (Z)-2-Buten ausschließlich das
+  cis-Epoxid? Zeichnen Sie den Übergangszustand.
+- Die Ausbeute der Diels-Alder-Reaktion sinkt, wenn man das Cyclopentadien
+  nicht frisch destilliert. Woran liegt das?

@@ -184,6 +184,86 @@ Schmelzpunkte getrennt: p-Nitrotoluol (52 °C) kristallisiert aus, o-Nitrotoluol
 (−4 °C) bleibt flüssig. Wer die Ausbeute maximieren will, arbeitet mit
 Lösungsmittelkristallisation statt mit Destillation.
 
+*Sulfonierung.* Mit rauchender Schwefelsäure bringt man die
+Sulfogruppe in den Ring; die Reaktion ist reversibel und eignet sich als
+Schutzgruppe für die para-Stellung. Das Produkt fällt beim Eingießen in
+Salzwasser als Natriumsalz aus.
+
+#vorschrift("D.5.7", [Benzolsulfonsäure aus Benzol])[
+  #reaktion(
+    $ "C" _6"H" _6 + "SO" _3 $,
+    [#text(size: 6.5pt)[rauchende H#sub[2]SO#sub[4], 25 °C]],
+    $ "C" _6"H" _5"SO" _3"H" $,
+  )
+
+  #ansatz[
+    78 g (100 mL; 1,0 mol) Benzol, 80 g rauchende Schwefelsäure
+    (65 % SO#sub[3]).
+  ]
+
+  In einem 500-mL-Rundkolben mit Rührer und Eisbad tropft man die rauchende
+  Schwefelsäure unter Rühren zum Benzol; die Temperatur steigt auf 25 °C.
+  Man rührt 1 h bei Raumtemperatur nach und gießt die klare Lösung vorsichtig
+  auf 300 g Eis. Die ausgefallene Benzolsulfonsäure wird mit 50 mL
+  gesättigter Natriumchlorid-Lösung versetzt und abgesaugt.
+
+  Zur Reinigung kristallisiert man aus verdünnter Salzsäure um.
+
+  #ausbeute[130 g (82 % d. Th.) farblose Blättchen.]
+
+  #kenndaten[
+    Schmp. 50–51 °C #h(2em) sehr hygroskopisch, löslich in Wasser und Ethanol
+    #h(2em) $M$ = 158,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Rauchende Schwefelsäure ist hochätzend und raucht; nur im Abzug
+  tropfenweise dosieren, Schutzschleier und Handschuhe. Benzol ist
+  krebserzeugend — Ersatzstoffe wie Toluol erwägen. Das Eingießen in Eis
+  erfolgt langsam unter Rühren, damit nicht überschäumt.]
+
+*Friedel-Crafts-Acylierung.* Aluminiumchlorid aktiviert das Säurechlorid
+zu einem Acylium-Ion, das den Aromaten angreift. Wichtig: Im Gegensatz zur
+Alkylierung läuft die Acylierung ohne Umlagerung ab und stoppt nach einer
+Substitution, weil das Ketone die Aktivierung des Rings herabsetzt.
+
+#vorschrift("D.5.8", [Acetophenon aus Benzol])[
+  #reaktion(
+    $ "C" _6"H" _6 + "CH"_3"COCl" $,
+    [#text(size: 6.5pt)[AlCl#sub[3], 25 °C]],
+    $ "C" _6"H" _5"COCH"_3 + "HCl" $,
+  )
+
+  #ansatz[
+    78 g (100 mL; 1,0 mol) Benzol, 40 g (0,50 mol) Acetylchlorid,
+    70 g (0,52 mol) Aluminiumchlorid.
+  ]
+
+  In einem 250-mL-Dreihalskolben mit Rückflußkühler, Tropftrichter und
+  Gaseinleitung versetzt man das Benzol unter Rühren und Kühlen mit dem
+  Aluminiumchlorid und tropft das Acetylchlorid so zu, daß die Temperatur
+  25 °C nicht überschreitet. Das entweichende Chlorwasserstoff wird in eine
+  Natronlauge-Falle geleitet. Man rührt 1 h bei Raumtemperatur nach.
+
+  Das Reaktionsgemisch wird auf 200 g Eis mit 50 mL konz. Salzsäure
+  gegossen, die organische Phase abgetrennt, zweimal mit Wasser gewaschen,
+  mit Natriumhydrogencarbonat-Lösung neutralisiert und über Magnesiumsulfat
+  getrocknet. Nach dem Abdestillieren des Benzols wird im Vakuum
+  destilliert.
+
+  #ausbeute[45 g (75 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 202 °C (1013 hPa) #h(2em) $n_D^20$ = 1,5342 #h(2em)
+    $rho_20$ = 1,03 g·cm#super[−3] #h(2em) $M$ = 120,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Aluminiumchlorid ist ätzend und raucht an feuchter Luft — schnell
+  wägen, gut verschließen. Acetylchlorid ist ätzend und rauchend. Benzol ist
+  krebserzeugend; der Aufbau steht im Abzug. Chlorwasserstoff nicht
+  einatmen.]
+
 === Nucleophile aromatische Substitution
 
 Ein Nucleophil greift einen Aromaten nur an, wenn die Elektronendichte niedrig
@@ -458,6 +538,48 @@ $ "Ph–Br" ->^("Mg, Et"_2"O") "Ph–MgBr" ->^("CO"_2", dann H"_3"O"^+) "Ph–CO
   Salzsäure ist ätzend.]
 
 
+*Über das Diazoniumsalz.* Anilin läßt sich über das Diazoniumsalz in eine
+Vielzahl von Verbindungen überführen; die wäßrige Hydrolyse liefert Phenol.
+Die Schlüsselreaktion, die Diazotierung, muß streng bei 0–5 °C erfolgen —
+das Diazoniumsalz zersetzt sich sonst unter Stickstoffentwicklung.
+
+#vorschrift("D.5.9", [Phenol aus Anilin über das Diazoniumsalz])[
+  #reaktion(
+    $ "C" _6"H" _5"NH"_2 $,
+    [#text(size: 6.5pt)[1) NaNO#sub[2], HCl, 0–5 °C 2) 60 °C]],
+    $ "C" _6"H" _5"OH" $,
+  )
+
+  #ansatz[
+    23 g (0,25 mol) Anilin, 18 g (0,26 mol) Natriumnitrit, 60 mL
+    konz. Salzsäure, 100 mL Wasser.
+  ]
+
+  Das Anilin wird in 60 mL konz. Salzsäure und 100 mL Wasser gelöst und im
+  Eis-Salz-Bad auf 0 °C gekühlt. Die Nitritlösung (18 g in 30 mL Wasser)
+  tropft man so zu, daß die Temperatur 5 °C nicht überschreitet; der
+  Jodid-Stärke-Nachweis muß positiv bleiben. Man rührt 15 min nach.
+
+  Anschließend erwärmt man im Wasserbad langsam auf 60–70 °C, bis die
+  Stickstoffentwicklung beendet ist, und destilliert das Phenol mit
+  Wasserdampf. Das Destillat wird mit Chloroform ausgeschüttelt, die
+  organische Phase über Natriumsulfat getrocknet und das Lösungsmittel
+  entfernt.
+
+  #ausbeute[12 g (50 % d. Th.) farblose Kristalle.]
+
+  #kenndaten[
+    Schmp. 41 °C #h(2em) Sdp. 182 °C #h(2em) löslich in Wasser, Ethanol,
+    Chloroform #h(2em) $M$ = 94,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Diazoniumsalze sind explosionsfähig, wenn sie trocken werden — niemals
+  einengen oder isolieren, stets in wäßriger Lösung und unter 5 °C halten.
+  Phenol ist giftig und ätzend (Hautverbrennungen); Handschuhe und Brille,
+  Kontamination sofort mit PEG oder Ethanol abwaschen, nicht mit Wasser.
+  Salpetrige Säure und Stickoxide nur im Abzug.]
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber
@@ -473,3 +595,8 @@ $ "Ph–Br" ->^("Mg, Et"_2"O") "Ph–MgBr" ->^("CO"_2", dann H"_3"O"^+) "Ph–CO
 - p-Nitrotoluol soll zu p-Toluidin reduziert werden. Übertragen Sie den
   Ansatz von D.5.5 und berechnen Sie die Mengen für 0,2 mol.
 - Warum wird das Ende der Reduktion an verschwundenen Öltröpfchen erkannt?
+- Erklären Sie, warum die Sulfonierung reversibel ist und wie man das zur
+  para-Selektivität nutzt.
+- Warum gelingt die Friedel-Crafts-Acylierung an Aminobenzol nicht?
+- Berechnen Sie die theoretische Ausbeute der Diazotierung von 0,25 mol
+  Anilin und vergleichen Sie mit der erhaltenen Menge Phenol.

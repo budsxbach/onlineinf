@@ -681,6 +681,27 @@ Kristallisation trennen. Drei Wege führen zum Ziel:
   Polysaccharidphase.
 - *Enzymatische Racematspaltung*: selektive Umsetzung eines Enantiomers.
 
+*Enantiomerenüberschuß (ee).* Für die Praxis zählt nicht nur der Drehsinn,
+sondern die Zusammensetzung. Der Enantiomerenüberschuß gibt an, wieviel eines
+Enantiomers im Überschuß vorliegt:
+
+$ e e = (n_R - n_S) \/ (n_R + n_S) dot 100 " %" $
+
+Er läßt sich direkt aus der spezifischen Drehung bestimmen:
+ee = (α#sub[gemessen] / α#sub[rein]) · 100 %. *Beispiel:* (R)-2-Butanol dreht
+rein mit +13,5° (Natrium-D-Linie, 20 °C). Eine Probe dreht +6,7°; dann ist
+ee = 50 %, und die Probe enthält 75 % (R) und 25 % (S). Ein Racemat dreht
+nicht — die Nulllage ist aber keine Reinheitsgarantie, denn eine Beimengung
+nicht drehender Substanzen liefert ebenfalls α = 0.
+
+*Diastereomere Verhältnisse (de).* Bei der Aldolreaktion entstehen *syn*- und
+*anti*-Diastereomere; ihr Verhältnis wird als de angegeben, 85 : 15 entspricht
+de = 70 %. Diastereomere lassen sich gaschromatographisch oder
+NMR-spektroskopisch quantifizieren; Enantiomere nur über eine chirale Umgebung
+(chirale GC-Phase, NMR mit Shift-Reagenz, Derivatisierung mit enantiomerenreinem
+Hilfsstoff). Wer eine stereoselektive Vorschrift auswertet, bestimmt deshalb
+immer zuerst, ob es sich um Enantiomere oder Diastereomere handelt.
+
 *Stereoselektivität und Stereospezifität.* Stereoselektiv bedeutet, daß ein
 Produkt bevorzugt entsteht; stereospezifisch, daß der Reaktionsweg die
 Konfiguration bestimmt. Die S#sub[N]2-Reaktion ist stereospezifisch (Umkehr),

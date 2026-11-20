@@ -54,6 +54,15 @@ Diese vier Forderungen erfüllt in der Praxis eine kleine Gruppe von Reagenzien.
 - Der Schmelzpunkt des Derivats und der Mischschmelzpunkt mit einem authentischen
   Präparat müssen übereinstimmen.
 
+*Derivatisierung im Mikromaßstab.* Für die Identifizierung genügen 20–50 mg
+Substanz. Man löst in 0,5 mL Ethanol, gibt das Reagenz (20 % Überschuß) zu und
+erwärmt kurz. Entsteht kein Niederschlag, wird eingeengt und mit einem Tröpfchen
+Wasser angesetzt; ölige Ausscheidungen werden mit einem Glasstab gerieben, bis
+sie kristallisieren. Nach 15 min im Eisbad wird abgesaugt, mit wenig kaltem
+Lösungsmittel gewaschen und aus Ethanol/Wasser umkristallisiert. Ein Derivat,
+das auch nach mehreren Versuchen als Öl anfällt, taugt nicht — man wechselt das
+Reagenz (z. B. vom Oxim zum Semicarbazon).
+
 === IR-Spektroskopie in der Identifizierung
 
 Das IR-Spektrum ist schnell, zerstörungsfrei und billig. Für die Organik sind
@@ -154,6 +163,63 @@ Molekülion und zwei Schlüsselfragmenten.
 1:1 (⁷⁹Br : ⁸¹Br). Damit ist die Anwesenheit dieser Halogene im Massenspektrum
 sofort erkennbar — ein Vorteil gegenüber der Elementaranalyse.
 
+*Charakteristische Verluste.* Die Differenz zwischen Molekülion und Fragment
+verrät die Abgangsgruppe. Die folgenden Verluste sind so häufig, daß sie im
+Zweifelsfall zuerst geprüft werden.
+
+#figure(
+  table(
+    columns: (auto, auto, 2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (right, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Verlust*], [*Fragment*], [*Hinweis auf*]),
+    [1], [H], [Aldehyd, Alkin],
+    [15], [CH#sub[3]], [Methylgruppe],
+    [18], [H#sub[2]O], [Alkohol, Aldoxim],
+    [28], [CO, C#sub[2]H#sub[4]], [Phenol, Ethylester],
+    [29], [CHO, C#sub[2]H#sub[5]], [Aldehyd, Ethylgruppe],
+    [31], [OCH#sub[3]], [Methylester],
+    [43], [C#sub[3]H#sub[7], CH#sub[3]CO], [Propyl, Acetyl],
+    [44], [CO#sub[2]], [Carbonsäureester, Anhydrid],
+    [45], [OC#sub[2]H#sub[5], COOH], [Ethylester, Carbonsäure],
+    [77], [C#sub[6]H#sub[5]], [Phenylrest],
+  ),
+  caption: [Charakteristische Massenverluste und ihre Zuordnung. Mehrere passende
+    Verluste zusammen sind aussagekräftiger als einer allein.],
+) <tab:ms-verluste>
+
+=== UV-Spektren und optische Drehung
+
+Das UV-Spektrum spielt für die Identifizierung eine Nebenrolle, ist aber schnell
+gemessen. Konjugierte Doppelbindungen und Aromaten zeigen Banden zwischen 200
+und 300 nm; die Verschiebung bei Substituenten (auxochrome Gruppen) ist
+charakteristisch. Ein reines Alkan zeigt im UV nichts — die Probe ist dann
+entweder gesättigt oder die Konzentration zu gering.
+
+#figure(
+  table(
+    columns: (1.7fr, auto, auto, 1.8fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Chromophor*], [*λ*], [*ε*], [*Beispiel*]),
+    [C=C], [175–195], [5000], [Ethen],
+    [C=O (n→π\*)], [270–290], [15], [Aceton],
+    [Aromaten], [250–280], [200], [Benzol (Banden)],
+    [konjugiertes Diens], [215–245], [10 000], [Butadien],
+    [Nitrogruppe], [270–280], [15], [Nitrobenzol],
+  ),
+  caption: [UV-Banden einfacher Chromophoren (λ in nm). ε ist der molare
+    dekadische Extinktionskoeffizient.],
+) <tab:uv>
+
+*Optische Drehung.* Für chirale Verbindungen ist die spezifische Drehung
+$[alpha]_D^20$ eine Konstante wie der Schmelzpunkt. Gemessen wird im
+Polarimeter bei 20 °C mit der Natrium-D-Linie; angegeben werden Konzentration
+(g/100 mL) und Lösungsmittel. Eine racemische Probe dreht nicht — die Prüfung
+auf optische Reinheit ist damit in zwei Minuten erledigt.
+
 === Kombinierte Auswertung
 
 Ein Beispiel: Eine unbekannte Verbindung gibt im IR eine starke Bande bei
@@ -176,3 +242,13 @@ Verbindung Acetophenon: Carbonyl + Methylketon + Phenyl + Molmasse 120.
 - Ein Massenspektrum zeigt ein Molekülion bei m/z 122 mit einem 1:1-Muster bei
   m/z 122 und 124. Welches Halogen ist enthalten, und wie viele C-Atome sind
   wahrscheinlich vorhanden?
+- Eine Flüssigkeit zeigt im IR eine breite Bande bei 3350 cm⁻¹, im MS ein
+  Molekülion bei m/z 60 und einen Verlust von 18. Die Substanz dreht die
+  Ebene des polarisierten Lichts nicht. Schlussfolgerung?
+- Ordnen Sie zu: Acetaldehyd, Essigsäure, Anilin, 1-Butanol — anhand der
+  folgenden Daten: (a) δ 9,8 als Singulett; (b) sehr breite OH-Bande und
+  δ 12 im NMR; (c) zwei NH-Banden im IR bei 3300–3500; (d) breite OH-Bande,
+  Molekülion m/z 74.
+- Ein Derivat schmilzt bei 162–163 °C, der Literaturwert für das vermutete
+  Semicarbazon liegt bei 163 °C, die Mischprobe schmilzt bei 148–156 °C. Was
+  folgen Sie daraus, und wie gehen Sie weiter vor?

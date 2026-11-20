@@ -84,6 +84,61 @@ Alken braucht, wählt die Base nach diesem Kriterium, nicht nach dem Preis.
     das Substrat, entscheidet über das Produkt.],
 ) <tab:saytzeff>
 
+#figure(
+  table(
+    columns: (1.1fr, 1.2fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Bedingung*], [*Hauptprodukt*], [*Beispiel*]),
+    [kleine Base (EtO#super[−], OH#super[−])], [Saytzeff: mehrfach substituiert], [2-Buten aus 2-Brombutan],
+    [sperrige Base (KOtBu)], [Hofmann: wenig substituiert], [1-Buten aus 2-Brombutan],
+    [quartäres Ammoniumhydroxid], [Hofmann, E1cB-artig], [1-Buten (≥ 90 %)],
+    [hohe Temperatur, Gasphase], [Saytzeff, thermodynamisch], [2-Buten (cis/trans)],
+  ),
+  caption: [Saytzeff- und Hofmann-Produkte im Überblick. Die Base entscheidet,
+    nicht das Substrat.],
+) <tab:eliminierung-regio>
+
+*Präparatives Beispiel: die Hofmann-Eliminierung.* Kalium-tert-butanolat ist
+zu sperrig, um das innerständige Proton zu erfassen; es greift das
+terminal-ständige an und liefert überwiegend 1-Buten — ein Produkt, das die
+Säure-Dehydratisierung so nicht gibt.
+
+#vorschrift("D.3.6", [1-Buten aus 2-Brombutan])[
+  #reaktion(
+    $ "CH"_3"CHBrCH"_2"CH"_3 $,
+    [#text(size: 6.5pt)[KOtBu, tBuOH, 50 °C]],
+    $ "CH"_2"=CHCH"_2"CH"_3 $,
+  )
+
+  #ansatz[
+    27 g (0,20 mol) 2-Brombutan, 25 g (0,22 mol) Kalium-tert-butanolat,
+    100 mL tert-Butanol.
+  ]
+
+  In einem 250-mL-Rundkolben mit Destillaufsatz, Thermometer und
+  Kühlvorlage wird das tert-Butanolat in tert-Butanol vorgelegt und auf
+  50 °C erwärmt. Das 2-Brombutan wird tropfenweise zugegeben; das
+  entstehende 1-Buten destilliert laufend über und wird in einer mit
+  Eis gekühlten Vorlage aufgefangen.
+
+  Nach 2 h destilliert man noch bis 40 °C nach. Das Destillat wird zweimal
+  mit je 20 mL Wasser gewaschen und über Calciumchlorid getrocknet; die
+  Reinigung erfolgt über eine Tieftemperaturdestillation.
+
+  #ausbeute[8,7 g (62 % d. Th.) farblose, leicht flüchtige Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. −6 °C (1013 hPa) #h(2em) Flammpunkt −80 °C #h(2em)
+    $M$ = 56,1 g·mol#super[−1] #h(2em) GC: 1-Buten ≥ 90 % neben 2-Buten.
+  ]
+]
+
+#gefahr[1-Buten ist extrem entzündbar (Flammpunkt unter −20 °C); Vorlage in
+  Eis, keine Zündquellen, nur im Abzug arbeiten. Kalium-tert-butanolat ist
+  ätzend und feuchtigkeitsempfindlich. 2-Brombutan ist alkylierend.]
+
 === Stereochemie der E2-Eliminierung
 
 Die E2-Eliminierung verlangt eine antiperiplanare Anordnung von Proton und
@@ -241,6 +296,48 @@ Das Verfahren ist die Methode der Wahl für säureempfindliche Substrate.
   nur im Abzug arbeiten. Die wäßrigen Phasen enthalten Phosphate und
   Pyridiniumsalze und werden getrennt entsorgt.]
 
+*Umweg über die Pyrolyse.* Wo die Säure versagt — primäre Alkohole
+eliminieren schlecht —, hilft die Esterpyrolyse (E#sub[i]-Mechanismus):
+Der Ester wird in der Gasphase über einem erhitzten Rohr gespalten, die
+Säure bleibt flüssig und stört nicht. Die Reaktion ist *syn*-stereospezifisch
+und eignet sich auch für empfindliche Substrate.
+
+#vorschrift("D.3.7", [Cyclohexen aus Essigsäurecyclohexylester])[
+  #reaktion(
+    $ "C" _6"H" _11"OOCCH"_3 $,
+    [#text(size: 6.5pt)[450 °C, Gasphase]],
+    $ "C" _6"H" _10 + "CH"_3"COOH" $,
+  )
+
+  #ansatz[
+    57 g (0,40 mol) Essigsäurecyclohexylester; Glaskugeln als Füllung des
+    Pyrolyserohrs.
+  ]
+
+  Die Esterpyrolyse läuft in einem 30-cm-Glasrohr (Innendurchmesser 2 cm),
+  das mit Glaskugeln gefüllt und im Elektrofen auf 450 °C erhitzt wird;
+  man tropft den Ester
+  aus einem Tropftrichter so zu, daß er in der Gasphase durch das Rohr
+    streicht. Das Destillat sammelt sich in einer Eis gekühlten Vorlage und
+  trennt sich in zwei Schichten: oben Cyclohexen, unten Essigsäure.
+
+  Die obere Phase wird abgetrennt, mit Natriumhydrogencarbonat-Lösung
+  neutral gewaschen, über Calciumchlorid getrocknet und über eine
+  Vigreux-Kolonne destilliert.
+
+  #ausbeute[21 g (65 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 83 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4465 #h(2em)
+    $rho_20$ = 0,81 g·cm#super[−3] #h(2em) $M$ = 82,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Das Pyrolyserohr steht unter hoher Temperatur — Berührungen
+  vermeiden, Apparatur nur im Abzug aufbauen. Die Dämpfe von Cyclohexen und
+  Ester sind leicht entzündbar; keine Zündquellen, Vorlage kühlen. Der
+  Aufbau muß druckfrei sein, damit kein Ester in den heißen Ofen gelangt.]
+
 === Alkine: zweifache Eliminierung
 
 Die zweifache Dehydrohalogenierung eines vicinalen Dihalogenids führt zum Alkin.
@@ -383,6 +480,24 @@ die Weiterverarbeitung ungeeignet.
     Brechungsindex und Dichte als Kriterium.],
 ) <tab:alkene>
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Viel Substitutionsprodukt (Ether)], [zu hohe Temperatur, wäßrige Phase], [wasserfrei arbeiten, Temperatur senken],
+    [1-Buten-Anteil zu gering], [Base zu wenig sperrig], [frisches KOtBu, tert-Butanol wasserfrei],
+    [Cyclohexen farbig / polymer], [Überhitzung, Sauerstoff], [450 °C einhalten, unter N#sub[2] destillieren],
+    [Druckanstieg bei der Pyrolyse], [Rohr verstopft, zu schnelle Zugabe], [Zugabe drosseln, Rohr wechseln],
+    [Niedrige Ausbeute bei der Dehydratisierung], [zu wenig Säure, Wasser im Ansatz], [Säure nachdosieren, Edukt trocknen],
+  ),
+  caption: [Typische Störungen bei Eliminierungen.],
+) <tab:stoerungen-eliminierung>
+
 === Aufgaben
 
 - Warum liefert die Dehydratisierung von 3,3-Dimethylbutan-2-ol ein anderes
@@ -398,3 +513,10 @@ die Weiterverarbeitung ungeeignet.
   POCl#sub[3]/Pyridin umgesetzt. Welche Produkte entstehen jeweils?
 - Ordnen Sie nach der Leichtigkeit der säurekatalysierten Dehydratisierung:
   1-Butanol, 2-Butanol, 2-Methylpropan-2-ol, 1-Phenylethanol.
+- Vergleichen Sie die Produktspektren der Dehydratisierung von 2-Butanol
+  und der E2-Eliminierung von 2-Brombutan mit KOtBu. Welche Regeln
+  entscheiden?
+- Warum ist die Esterpyrolyse *syn*-stereospezifisch? Zeichnen Sie den
+  sechsgliedrigen Übergangszustand.
+- Ein Student erhält bei der Hofmann-Eliminierung nur 30 % 1-Buten.
+  Nennen Sie drei mögliche Ursachen.

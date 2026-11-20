@@ -185,12 +185,12 @@ node tools/stats.mjs            # Kennzahlen
 | 5 D Präparativer Teil | **alle 9 Kapitel gesetzt (ca. 15 %)** | D.1–D.9, S. 47–95, 47 Vorschriften |
 | 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 96–104 |
 | 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 105–110 |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 111–116 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 117–120, Register 159 Stichwörter |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 111–117 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 118–121, Register 162 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **120 Seiten** Buchformat (168 × 240 mm), 40 500 Wörter,
-26 Abbildungen, 105 Tabellen, 47 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **121 Seiten** Buchformat (168 × 240 mm), 40 800 Wörter,
+26 Abbildungen, 106 Tabellen, 47 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF.
 

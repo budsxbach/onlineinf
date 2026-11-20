@@ -244,6 +244,39 @@ unterschiedlich.
 Reihenfolge. Wer einen Fettbrand mit Wasser löscht, erzeugt eine Stichflamme.
 Wer einen Metallbrand mit Wasser löscht, erzeugt Wasserstoff.
 
+=== Störungen und Störfälle
+
+Die meisten Laborunfälle sind keine Katastrophen, sondern kleine Störungen,
+die falsch beantwortet werden. Die Reihenfolge ist immer dieselbe: Menschen
+schützen, Gefahr begrenzen, dann melden. Wer unsicher ist, räumt den Abzug
+und holt Hilfe — das ist nie ein Fehler.
+
+#figure(
+  table(
+    columns: (1.5fr, 2.2fr, 1.5fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Sofortmaßnahme*], [*Nachsorge*]),
+    [Säure oder Lauge verschüttet], [Bindemittel von außen nach innen aufstreuen, nicht in den Abfluß], [Reste sammeln, Fläche mit Wasser nachspülen],
+    [Brom verschüttet], [Abzug voll auf, mit Natriumthiosulfatlösung oder Bindemittel bedecken], [Fläche lüften, Flecken mit Ascorbinsäure],
+    [Lösungsmittel verschüttet], [Zündquellen fern, Bindemittel (kein Wasser bei leichten LM)], [Kanister sammeln, lüften],
+    [Quecksilber ausgelaufen], [Perlen mit Spachtel sammeln, Schwefelpulver aufstreuen], [Spalten und Reste fachgerecht entsorgen],
+    [Gasleitung oder Schlauch undicht], [Ventil schließen, nicht schalten, Fenster und Abzug öffnen], [Anlage prüfen lassen, melden],
+    [Kühlwasser ausgefallen], [Heizung aus, Reaktion abbrechen oder kühlen], [Apparatur überwachen, Störung melden],
+    [Stromausfall], [Heizquellen aus, Hähne schließen, Abzug notlüften], [Anlagen kontrolliert wieder in Betrieb nehmen],
+    [Druckanstieg im Gefäß], [Ins Abzug bringen, Hahn öffnen, kühlen — nie am Stopfen drehen], [Ursache klären, Gefäß prüfen],
+    [Unbekannte Substanz verschüttet], [Nicht berühren, Bereich absperren, Personal informieren], [Identität klären lassen, dann reinigen],
+  ),
+  caption: [Störungsszenarien im Labor und die richtige Reihenfolge der
+    Maßnahmen. Im Zweifel gilt: abbrechen, abräumen, melden.],
+) <tab:stoerfaelle>
+
+*Meldung und Dokumentation.* Jede Störung mit Personenschaden, Gefahrstoffaustritt
+oder Feuer wird dem Laborleiter gemeldet und im Verbandbuch eingetragen — auch
+dann, wenn nichts passiert zu sein scheint. Nur aus dokumentierten Beinahe-Fällen
+lassen sich Gefährdungsbeurteilungen verbessern.
+
 === Entsorgung
 
 Abfälle werden getrennt gesammelt und gekennzeichnet. Die häufigsten Fehler sind
@@ -275,3 +308,6 @@ Einleiten von Schwermetallsalzen in den Abfluß.
 - Warum darf man eine Säure nicht mit Natronlauge auf der Haut neutralisieren?
 - Ordnen Sie die folgenden Stoffe den Lagergruppen zu: Aceton, Kaliumnitrat,
   Natriumcyanid, Schwefelsäure, Brom.
+- Ein Kühlwasserschlauch reißt während einer Rückflußreaktion mit Ether. Skizzieren Sie die ersten drei Handgriffe.
+- Warum wird Brom nicht mit Wasser weggespült, sondern mit Thiosulfatlösung behandelt?
+- Nach einem Quecksilberaustritt riecht der Raum nach nichts. Warum ist trotzdem Handlungsbedarf gegeben?

@@ -235,6 +235,81 @@ Produkt als Katalysator wirkt. Typisch für Oxidationsreaktionen mit
 Permanganat und für manche Veresterungen. Die Beobachtung „es passiert lange
 nichts, dann plötzlich alles" ist ein Hinweis darauf.
 
+=== Auswertung kinetischer Messungen
+
+Wer im Praktikum eine Reaktionsgeschwindigkeit bestimmt, hat selten mehr als
+eine Handvoll Meßpunkte. Für die Auswertung genügt meist die Auftragung
+$ln c$ gegen $t$ (Ordnung 1) oder $1\/c$ gegen $t$ (Ordnung 2); die Gerade mit
+dem besseren Bestimmtheitsmaß gibt die Ordnung an.
+
+#figure(
+  table(
+    columns: (auto, 1.3fr, auto, 1.3fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*t/min*], [*c/mol·L⁻¹*], [*ln (c/c₀)*], [*1/c in L·mol⁻¹*]),
+    [0], [0,100], [0,000], [10,0],
+    [10], [0,061], [−0,494], [16,4],
+    [20], [0,037], [−0,995], [27,0],
+    [30], [0,022], [−1,514], [45,5],
+    [40], [0,014], [−1,966], [71,4],
+    [50], [0,008], [−2,526], [125],
+  ),
+  caption: [Meßreihe einer Hydrolyse. Die Auftragung $ln c$ gegen $t$ ist linear
+    (Steigung −0,0505 min⁻¹), die Auftragung $1\/c$ nicht — die Reaktion ist
+    erster Ordnung.],
+) <tab:kinetik-daten>
+
+*Temperaturabhängigkeit.* Aus zwei Messungen bei verschiedenen Temperaturen
+lassen sich Aktivierungsenergie und präexponentieller Faktor berechnen:
+
+$ ln (k_2 \/ k_1) = -E_A \/ R dot (1\/T_2 - 1\/T_1) $
+
+Ein Beispiel: $k_1 = 1,0 dot 10^(-3)$ s⁻¹ bei 300 K, $k_2 = 4,3 dot 10^(-3)$ s⁻¹
+bei 310 K. Dann ist $ln 4,3 = 1,46$, und mit $1\/300 - 1\/310 = 1,075 dot 10^(-4)$
+K⁻¹ folgt $E_A = 1,46 dot 8,314 \/ 1,075 dot 10^(-4) approx 113$ kJ·mol⁻¹ — ein
+Wert, der zu einer Reaktion mit Bindungsspaltung im geschwindigkeitsbestimmenden
+Schritt paßt.
+
+*Fehlerquellen bei der Auswertung*
+
+- Der Startzeitpunkt ist unbekannt (Aufheizzeit, Mischen). Bei schnellen
+  Reaktionen wird die Zeit ab Zugabe des letzten Reagenzes gemessen, nicht ab
+  dem Beginn des Mischens.
+- Die Temperatur muß konstant sein; ein Wasserbad mit ± 0,5 K genügt für die
+  Praxis, ein Thermostat mit ± 0,05 K für kinetische Messungen.
+- Die Probenentnahme verändert das Volumen; bei kleinen Ansätzen wird
+  spektroskopisch in situ gemessen (UV, NMR, Leitfähigkeit).
+
+=== Katalyse in der Praxis
+
+Ein Katalysator senkt die Aktivierungsenergie, ohne die Lage des Gleichgewichts
+zu verschieben. Für die präparative Arbeit sind vier Formen wichtig:
+
+#figure(
+  table(
+    columns: (1.4fr, 1.4fr, 1.9fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Form*], [*Beispiel*], [*Wirkung*]),
+    [Säurekatalyse], [H#sub[2]SO#sub[4] bei Veresterung], [Protonierung des Carbonyls],
+    [Basenkatalyse], [NaOH bei Aldolkondensation], [Deprotonierung zum Enolat],
+    [Übergangsmetall], [Pd/C bei Hydrierung], [Aktivierung von H#sub[2] und Substrat],
+    [Phasentransfer], [Tetrabutylammoniumbromid], [Transport von Anionen in die organische Phase],
+    [Biokatalyse], [Lipase bei Veresterung], [enantioselektiv, milde Bedingungen],
+  ),
+  caption: [Katalyseformen und ihre Wirkung. Die Wahl entscheidet über
+    Selektivität und Aufarbeitung.],
+) <tab:katalyse>
+
+*Vergiftung und Desaktivierung.* Katalysatoren verlieren ihre Wirkung durch
+Schwermetalle (Pb, Hg, S-Verbindungen bei Pd), durch Polymerisation auf der
+Oberfläche oder durch Blockierung der Poren. Bei Hydrierungen zeigt sich das als
+plötzlich abbrechende Wasserstoffaufnahme; Abhilfe: frischer Katalysator,
+Lösungsmittelwechsel, Filtration über Aktivkohle.
+
 == Säure-Base-Reaktionen
 
 Der pK#sub[a]-Wert beschreibt die Stärke einer Säure in Wasser. In der
@@ -408,6 +483,95 @@ in der Originalliteratur nachzuschlagen sind.
 Benzoesäuren mit Methanol gilt die Reihenfolge der Ausbeuten: H 95 %, CH₃ 70 %,
 Cl 65 %, NO₂ 55 %, i-C₃H₇ 20 %, t-C₄H₉ 5 %. Der Einfluß eines einzigen
 Nachbaratoms übertrifft jeden elektronischen Effekt.
+
+=== Chirurgische Trennung von Enantiomeren
+
+Für die präparative Arbeit ist die Frage entscheidend, ob ein Racemat vorliegt
+und wie es getrennt wird. Drei Verfahren stehen zur Verfügung:
+
+#figure(
+  table(
+    columns: (1.4fr, 1.4fr, 1.8fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Verfahren*], [*Prinzip*], [*Beispiel*]),
+    [Diastereomerenbildung], [Salzbildung mit chiraler Base/Säure], [Brucin mit rac-Säure],
+    [Chirale Chromatographie], [unterschiedliche Wechselwirkung], [Amylose-Phase, HPLC],
+    [Enzymatische Spaltung], [selektive Umsetzung], [Lipase, Acetylierung],
+    [Kristallisation], [kongruente Schmelze], [Bildung von Konglomeraten],
+    [Kinetische Racematspaltung], [unterschiedliche Reaktionsgeschwindigkeit], [Sharpless-Epoxidierung],
+  ),
+  caption: [Verfahren zur Trennung von Enantiomeren. Die Auswahl richtet sich
+    nach Maßstab und Empfindlichkeit der Verbindung.],
+) <tab:racemat>
+
+*Diastereomerenbildung im Detail.* Man setzt das Racemat mit einem
+enantiomerenreinen Hilfsstoff um, der ein Salz oder ein kovalentes Derivat
+bildet. Die beiden entstehenden Diastereomere haben unterschiedliche
+Schmelzpunkte und Löslichkeiten und lassen sich daher kristallisieren. Nach der
+Trennung wird der Hilfsstoff zurückgewonnen.
+
+$ "rac-RCOOH" + "(R)-Base" -> "(R,R)-Salz" + "(S,R)-Salz" $
+
+*Berechnung der Ausbeute.* Bei einer Racemattrennung ist die maximale Ausbeute
+50 % des eingesetzten Materials, wenn ein Enantiomer gebraucht wird. Wird das
+andere Enantiomer racemisiert und erneut eingesetzt, steigt die Gesamtausbeute auf
+über 80 % — ein Verfahren, das in der Industrie Standard ist.
+
+*Enantiomerenüberschuß.* Der ee-Wert berechnet sich aus dem Verhältnis der
+Enantiomere:
+
+$ "ee" = (n_R - n_S) \/ (n_R + n_S) dot 100 % $
+
+Ein ee von 98 % bedeutet 99 : 1; ein ee von 90 % bedeutet 95 : 5. Für
+pharmazeutische Wirkstoffe gilt heute ein ee über 99 % als Standard.
+
+=== Konformation und Reaktivität
+
+Die Gestalt eines Moleküls entscheidet mit über seine Reaktivität. Vier Fälle
+sind präparativ bedeutsam:
+
+- *Cyclohexan-Konformation*: Substituenten stehen axial oder äquatorial; die
+  äquatoriale Lage ist um 7,6 kJ·mol⁻¹ (CH₃) günstiger. Bei der E2-Eliminierung
+  muß die Abgangsgruppe axial stehen — deshalb reagiert *trans*-1,2-Dibromcyclohexan
+  anders als das *cis*-Isomer.
+- *Anomerer Effekt*: In Pyranosen ist die axiale Stellung eines Heteroatoms
+  bevorzugt, weil die antibindende Wechselwirkung mit dem Ring-Sauerstoff
+  günstiger ist. Folge: α-Glucoside sind stabiler als β-Glucoside.
+- *Gauche-Effekt*: Elektronegative Substituenten stehen bevorzugt gauche
+  zueinander (1,2-Difluorethan).
+- *Wasserstoffbrücken*: Intramolekulare Brücken fixieren eine Konformation und
+  verändern die Reaktivität (z. B. Salicylsäure, Enole).
+
+#figure(
+  table(
+    columns: (1.5fr, auto, 2.3fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Substituent*], [*A-Wert in kJ·mol⁻¹*], [*Bemerkung*]),
+    [F], [0,25], [klein, wenig gehindert],
+    [CH#sub[3]], [7,3], [Standardfall],
+    [CH#sub[2]CH#sub[3]], [7,5], [kaum größer],
+    [i-C#sub[3]H#sub[7]], [9,0], [deutlich gehindert],
+    [t-C#sub[4]H#sub[9]], [> 20], [praktisch immer äquatorial],
+    [OCH#sub[3]], [2,5], [klein, aber elektronisch wirksam],
+    [OH], [2,1], [Wasserstoffbrücken möglich],
+  ),
+  caption: [A-Werte (freie Enthalpie der Konformationsänderung am Cyclohexan).
+    Der A-Wert ist das praktische Maß für die sterische Größe eines
+    Substituenten.],
+) <tab:a-werte>
+
+=== Aufgaben
+
+- Zeichnen Sie die beiden Sesselkonformationen von *cis*- und *trans*-4-tert-Butylcyclohexanol
+  und geben Sie an, welche Form jeweils überwiegt.
+- Ein Racemat hat einen ee von 96 %. Wieviel Prozent des Materials sind das
+  (S)-Enantiomer, wenn das (R)-Enantiomer im Überschuß vorliegt?
+- Warum ist die templatgesteuerte Synthese in der Natur so erfolgreich, obwohl
+  sie nur mit schwachen Wechselwirkungen arbeitet?
 
 == Zur Behandlung der Reaktivität
 
@@ -649,6 +813,91 @@ Chemie und auf die Monographien von Corey und Warren zur Syntheseplanung
 verwiesen. Wer im Praktikum eine unbekannte Verbindung darstellen soll, plant
 zuerst die *Reinigung* — ein Syntheseweg ohne tragfähige Aufarbeitung ist
 kein Syntheseweg.
+
+=== Mehrstufige Synthesen planen
+
+Eine Synthese mit mehr als drei Stufen ist ein Problem der Reihenfolge, nicht der
+Reaktionen. Drei Fragen bestimmen die Planung:
+
+- *Welche Stufe ist die kritische?* Sie bestimmt die Ausbeute und wird zuerst
+  geplant.
+- *In welcher Reihenfolge werden die funktionellen Gruppen eingeführt?* Erst die
+  reaktiven, dann die empfindlichen; Schutzgruppen so spät wie möglich.
+- *Wo wird gereinigt?* Nach jeder Stufe, die ein unreines Zwischenprodukt
+  liefert — oder nach mehreren, wenn die Zwischenprodukte stabil sind.
+
+Beispiel: 2,4-Dinitrophenylhydrazin aus 2,4-Dinitrochlorbenzol und Hydrazin.
+Zwei Stufen, beide gut dokumentiert, Gesamtausbeute über 60 %. Die kritische
+Stufe ist die zweite (Hydrazin ist toxisch, das Produkt schwer löslich).
+
+*Ausbeutebilanz.* Bei fünf Stufen mit je 80 % Ausbeute bleiben 33 % der
+theoretischen Gesamtausbeute. Bei je 60 % bleiben 7,8 %. Deshalb gilt: Eine
+Stufe unter 60 % ist ein Planungsfehler, nicht ein Pech.
+
+#figure(
+  table(
+    columns: (auto, auto, auto, auto),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (center, center, center, center),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Stufen*], [*60 %*], [*80 %*], [*95 %*]),
+    [1], [60 %], [80 %], [95 %],
+    [2], [36 %], [64 %], [90 %],
+    [3], [22 %], [51 %], [86 %],
+    [5], [7,8 %], [33 %], [77 %],
+    [8], [1,7 %], [17 %], [66 %],
+  ),
+  caption: [Gesamtausbeute in Abhängigkeit von Stufenzahl und Einzelausbeute.
+    Die Tabelle ist das wichtigste Argument gegen lange Synthesen.],
+) <tab:ausbeutebilanz>
+
+*Schutzgruppenstrategie.* Für eine Synthese mit drei funktionellen Gruppen
+braucht man höchstens zwei Schutzgruppen, und diese müssen orthogonal sein: Sie
+werden unter Bedingungen entfernt, die einander nicht beeinflussen. Die
+klassische Kombination ist Boc (sauer) und Benzyl (Hydrierung); eine weitere ist
+TBS (fluorid) und Acetyl (Base).
+
+#figure(
+  table(
+    columns: (1.2fr, 1.4fr, 1.4fr, 1.3fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Gruppe*], [*schützt*], [*stabil gegen*], [*entfernt mit*]),
+    [Boc], [Amin], [Base, Hydrierung], [TFA, HCl],
+    [Cbz], [Amin], [Base, Säure], [H#sub[2]/Pd],
+    [Fmoc], [Amin], [Säure], [Piperidin],
+    [TBS], [Alkohol], [Base, Oxidation], [F⁻, HF·Pyridin],
+    [Acetyl], [Alkohol, Amin], [Säure, Oxidation], [NaOH, NH#sub[3]],
+    [Benzyl], [Alkohol], [Base, Säure], [H#sub[2]/Pd],
+    [THP], [Alkohol], [Base, Hydrid], [H#sub[3]O⁺],
+    [Acetal], [Keton], [Base, Hydrid], [H#sub[3]O⁺],
+  ),
+  caption: [Schutzgruppen und ihre Orthogonalität. Zwei Gruppen sind orthogonal,
+    wenn sie unter Bedingungen entfernt werden, die die andere nicht
+    angreifen.],
+) <tab:schutzgruppen>
+
+*Retrosynthetische Strategien.* Vier Vorgehensweisen haben sich bewährt:
+
+- *Zerlegung in zwei gleich große Hälften* („halbe-halbe"): günstig, weil beide
+  Teile parallel aufgebaut werden können.
+- *Aufbau durch Kettenverlängerung*: von einem Ende her, mit C–C-Verknüpfungen
+  (Grignard, Aldol, Wittig).
+- *Aufbau durch Ringschluß*: zuletzt den Ring schließen, weil Ringschlüsse
+  empfindlich sind.
+- *Funktionalisierung eines Gerüsts*: zuerst das Kohlenstoffgerüst, dann die
+  funktionellen Gruppen — die klassische Strategie der Terpensynthese.
+
+=== Aufgaben
+
+- Eine Synthese hat vier Stufen mit 75, 60, 90 und 85 % Ausbeute. Wie hoch ist
+  die Gesamtausbeute? Lohnt sich eine fünfte Stufe mit 95 %, wenn sie die
+  Ausbeute der dritten auf 95 % hebt?
+- Warum ist Boc für ein Amin geeignet, das anschließend mit Natronlauge
+  behandelt wird, Fmoc dagegen nicht?
+- Formulieren Sie eine Retrosynthese für 4-Phenylbutan-2-on und prüfen Sie, ob
+  die Edukte im Praktikum verfügbar sind.
 
 == Literaturhinweise
 

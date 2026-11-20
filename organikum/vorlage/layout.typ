@@ -176,8 +176,9 @@
       it.supplement + " " + nummer + ": " + it.body
     }
   ]
-  show figure: set block(breakable: false)
-  // Abbildungen nie oben an eine Seite kleben, wenn darunter kein Text steht
+  // Bilder bleiben unteilbar; lange Tabellen dürfen über den Seitenumbruch
+  // laufen, sonst entstehen halbleere Seiten.
+  show figure.where(kind: image): set block(breakable: false)
   show figure.where(kind: image): set block(above: 6pt, below: 6pt)
 
   // ---------------------------------------------------------------- Fußnoten

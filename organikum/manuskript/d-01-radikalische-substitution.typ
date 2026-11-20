@@ -99,6 +99,39 @@ mit der Zahl der Wasserstoffatome $n$ und der relativen Reaktivität $r$. Wer di
 Rechnung beherrscht, kann vorhersagen, ob ein Ansatz sinnvoll ist — und ob eine
 Trennung nötig wird.
 
+*Rechenbeispiel: Chlorierung und Bromierung von Isobutan.* Isobutan besitzt
+neun primäre und ein tertiäres Wasserstoffatom. Mit den relativen
+Reaktivitäten der folgenden Tabelle ergibt sich bei der Chlorierung:
+
+$ (9 dot 1,0) \/ (9 dot 1,0 + 1 dot 5,0) = 0,64 $
+
+Es entstehen also 64 % 1-Chlor-2-methylpropan und 36 % 2-Chlor-2-methylpropan —
+die Trennung ist mühsam. Bei der Bromierung kehrt sich das Bild um:
+
+$ (9 dot 1,0) \/ (9 dot 1,0 + 1 dot 1700) = 0,005 $
+
+Hier liefert die Bromierung 99,5 % 2-Brom-2-methylpropan; die kleinen
+Ausbeuteverluste gehen auf die eine Seite, die man haben will. Genau darum
+greift man in der präparativen Praxis zur Bromierung, sobald ein tertiäres
+Wasserstoffatom zur Verfügung steht.
+
+#figure(
+  table(
+    columns: (1.3fr, auto, auto, auto),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, right, right, right),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*H-Atom*], [*Zahl n*], [*r (Cl·)*], [*r (Br·)*]),
+    [primär (C–H)], [—], [1,0], [1,0],
+    [sekundär (C–H)], [—], [3,8], [82],
+    [tertiär (C–H)], [—], [5,0], [1700],
+    [benzylisch/allylisch], [—], [≈ 10], [≈ 10#super[4]],
+  ),
+  caption: [Relative Reaktivitäten pro Wasserstoffatom bei der radikalischen
+    Halogenierung (25 °C). Brom ist langsamer, aber um Größenordnungen
+    selektiver — Selektivität kostet Geschwindigkeit.],
+) <tab:radikal-selektivitaet>
+
 === Chlorierung von Alkanen
 
 Die technische Chlorierung von Methan führt zu einem Gemisch von Chlormethan bis
@@ -251,6 +284,47 @@ ist teurer, aber schonender und für empfindliche Substrate die Methode der Wahl
 Wer Toluol in größerer Menge umsetzt, wählt Brom; wer eine empfindliche
 Verbindung bromiert, wählt NBS.
 
+*Nicht nur benzylich.* Dieselbe Wohl-Ziegler-Bromierung erfaßt auch
+allylische Positionen; das Succinimid fällt dabei als Feststoff aus und
+treibt die Reaktion. Die folgende Vorschrift bromiert Cyclohexen in
+Stellung 3 — die Doppelbindung bleibt erhalten.
+
+#vorschrift("D.1.6", [3-Bromcyclohexen aus Cyclohexen])[
+  #reaktion(
+    $ "C" _6"H" _10 + "C" _4"H" _4"BrNO" _2 $,
+    [#text(size: 6.5pt)[AIBN, 1,2-Dichlorethan, 83 °C]],
+    $ "C" _6"H" _9"Br" + "C" _4"H" _5"NO" _2 $,
+  )
+
+  #ansatz[
+    20,5 g (25 mL; 0,25 mol) Cyclohexen, 44,5 g (0,25 mol)
+    N-Bromsuccinimid, 0,5 g AIBN, 100 mL 1,2-Dichlorethan.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rückflußkühler und Magnetrührer wird das
+  Cyclohexen mit N-Bromsuccinimid und dem Initiator in 100 mL
+  1,2-Dichlorethan versetzt und 1,5 h zum Sieden erhitzt. Das Succinimid
+  scheidet sich dabei als weißer Niederschlag ab; gegen Ende der Reaktion
+  beginnt es wieder zu lösen, wenn das N-Bromsuccinimid verbraucht ist.
+
+  Man saugt das Succinimid ab, wäscht den Rückstand mit 2 × 10 mL
+  1,2-Dichlorethan und engt das Filtrat am Rotationsverdampfer ein. Der
+  Rückstand wird im Vakuum destilliert.
+
+  #ausbeute[22 g (55 % d. Th.) farblose, tränenreizende Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 55–58 °C (12 hPa) #h(2em) $n_D^20$ = 1,5340 #h(2em)
+    $rho_20$ = 1,39 g·cm#super[−3] #h(2em) $M$ = 161,0 g·mol#super[−1]
+  ]
+]
+
+#gefahr[N-Bromsuccinimid reizt Haut und Schleimhäute; 1,2-Dichlorethan ist
+  krebserzeugend und wassergefährdend — nur im Abzug, mit Handschuhen, und
+  getrennt sammeln. AIBN ist explosionsgefährlich, wenn es trocken erhitzt
+  wird. 3-Bromcyclohexen ist alkylierend und tränenreizend; nicht einatmen,
+  nicht mit der Haut in Berührung bringen.]
+
 === Radikalische Addition und Polymerisation
 
 Radikale addieren an Doppelbindungen; die Reaktion ist die Grundlage der
@@ -310,6 +384,52 @@ werden, sonst dauert die Reaktion stundenlang unter Induktionszeit — die
   und nicht überhitzen. Das Polymerisationsglas wird locker verschlossen: Der
   Druck des Stickstoffs aus dem Initiator muß entweichen können.]
 
+*Anti-Markownikoff-Addition von Bromwasserstoff.* Radikale addieren an
+Doppelbindungen nach dem Anti-Markownikoff-Prinzip: Das Bromradikal greift
+das endständige Kohlenstoffatom an, weil dabei das stabilere sekundäre
+Radikal entsteht. Mit Peroxid als Starter weicht das Produkt völlig von der
+elektrophilen Addition ab (die in D.4.3 behandelt wird).
+
+#vorschrift("D.1.7", [1-Bromoctan aus 1-Octen])[
+  #reaktion(
+    $ "C" _8"H" _16 + "HBr" $,
+    [#text(size: 6.5pt)[Peroxid, 0–20 °C]],
+    $ "C" _8"H" _17"Br" $,
+  )
+
+  #ansatz[
+    28 g (35 mL; 0,25 mol) 1-Octen, 0,5 g Dibenzoylperoxid (feucht),
+    24 g (0,30 mol) Bromwasserstoff.
+  ]
+
+  In einem 250-mL-Dreihalskolben mit Gasleitrohr, Thermometer und
+  Magnetrührer wird das 1-Octen mit dem Peroxid versetzt und auf 0 °C
+  gekühlt. Man leitet trockenes Bromwasserstoffgas (aus einer Stahlflasche
+  oder aus Eisessig durch Erwärmen freigesetzt) langsam ein, wobei die
+  Temperatur unter 20 °C bleiben muß. Nach Aufnahme der berechneten Menge
+  läßt man auf Raumtemperatur erwärmen und rührt noch 30 min nach.
+
+  Die wäbrige Phase wird abgetrennt, die organische Phase zweimal mit je
+  20 mL Wasser gewaschen, über Natriumsulfat getrocknet und im Vakuum
+  destilliert.
+
+  #ausbeute[38 g (79 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 201–203 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4527 #h(2em)
+    $rho_20$ = 1,11 g·cm#super[−3] #h(2em) $M$ = 193,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Bromwasserstoff ist ätzend und muß vollständig abgebunden werden;
+  das Gas nicht einatmen, Apparatur nur im Abzug. Peroxide sind
+  explosionsgefährlich — Dibenzoylperoxid feucht wägen, niemals trocken
+  erhitzen. 1-Bromoctan ist alkylierend; Hautkontakt vermeiden.]
+
+*Ohne Peroxid verläuft dieselbe Addition nach Markownikoff* (Abschnitt
+D.4.3) und liefert 2-Bromoctan. Wer das Produkt vergleichen will, führt
+beide Ansätze nebeneinander durch und prüft die Siedepunkte.
+
 === Autoxidation und Peroxide
 
 Sauerstoff addiert an Radikale unter Bildung von Peroxiden. Diese Autoxidation
@@ -367,6 +487,26 @@ und radikalische Substitutionen — die Verbindung, die den Kreis zu AIBN
   tränenreizend; die Reaktion wird nur im Abzug und in kleinen Ansätzen
   durchgeführt.]
 
+=== Störungen und ihre Ursachen
+
+#figure(
+  table(
+    columns: (1.3fr, 1.3fr, 1.2fr),
+    inset: (x: 5pt, y: 3.4pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Störung*], [*Ursache*], [*Abhilfe*]),
+    [Succinimid fällt nicht aus], [zu wenig NBS, feuchtes Lösungsmittel], [NBS nachwiegen, Lösungsmittel trocknen],
+    [Braunfärbung der Reaktionsmischung], [Bromüberschuß, Zersetzung], [mit Thiosulfat waschen, Kühlen],
+    [Niedrige Ausbeute bei der NBS-Bromierung], [Licht abgeschaltet, Initiator zu alt], [Licht zulassen, frisches AIBN],
+    [Polymerisation statt Addition], [Peroxid vergessen, zu hohe Temperatur], [Peroxid prüfen, auf 0 °C kühlen],
+    [Druckanstieg in der Apparatur], [Gaszufluß zu schnell, verstopfte Leitung], [Zufluß drosseln, Leitung spülen],
+    [Explosion bei Peroxid-Arbeiten], [Trockenerhitzung, Reibung], [feucht wägen, kleine Mengen, Abzug],
+  ),
+  caption: [Typische Störungen bei radikalischen Substitutionen und
+    Additionen — und was man dagegen tut.],
+) <tab:stoerungen-radikal>
+
 === Aufgaben
 
 - Berechnen Sie das Produktverhältnis der Chlorierung von Propan bei 25 °C
@@ -388,3 +528,11 @@ und radikalische Substitutionen — die Verbindung, die den Kreis zu AIBN
 - Ein Initiator für die Polymerisation von Styrol soll gewechselt werden.
   Vergleichen Sie Dibenzoylperoxid und AIBN hinsichtlich Handhabung und
   Zersetzungstemperatur.
+- Berechnen Sie die Produktverhältnisse der Chlorierung und Bromierung von
+  Propan bei 25 °C (primär : sekundär) und vergleichen Sie mit der
+  Literatur.
+- Warum liefert die radikalische HBr-Addition an 1-Octen
+  Anti-Markownikoff-Produkt, die elektrophile Addition dagegen
+  2-Bromoctan?
+- Ein Ansatz zur NBS-Bromierung von Toluol wird im Dunkeln angesetzt; die
+  Ausbeute ist schlecht. Erklären Sie, woran es liegt.

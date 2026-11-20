@@ -189,8 +189,8 @@ node tools/stats.mjs            # Kennzahlen
 | 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 124–127, Register 181 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **127 Seiten** Buchformat (168 × 240 mm), 43 700 Wörter,
-26 Abbildungen, 109 Tabellen, 50 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **129 Seiten** Buchformat (168 × 240 mm)  44 570 Wörter 
+26 Abbildungen, 112 Tabellen, 52 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF,
 `python3 tools/check-refs.py` zusätzlich die inhaltliche Passung jedes Stichworts.

@@ -316,6 +316,48 @@ stört die Aufarbeitung kaum.
   Dichlormethan ist krebserzeugend; nur im Abzug arbeiten. Cyclohexenoxid ist
   reizend und leicht flüchtig — dicht verschließen.]
 
+*Chlorhydrinbildung.* In wäßrigem Milieu addiert Hypochloritsäure an
+Alkene; das Chlor greift von einer Seite an, das Wasser von der anderen
+(anti-Addition). Das Produkt ist ein Baustein für Epoxide und
+Aminoalkohole.
+
+#vorschrift("D.4.10", [trans-2-Chlorcyclohexanol aus Cyclohexen])[
+  #reaktion(
+    $ "C" _6"H" _10 + "HOCl" $,
+    [#text(size: 6.5pt)[Aceton/H#sub[2]O, 0–20 °C]],
+    $ "C" _6"H" _10"ClOH" $,
+  )
+
+  #ansatz[
+    20,5 g (25 mL; 0,25 mol) Cyclohexen, 25 g Calciumhypochlorit
+    (70 %, ca. 0,18 mol), 30 g Eisessig, 100 mL Aceton, 50 mL Wasser.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rührer, Tropftrichter und Eisbad gibt
+  man Wasser, Aceton und Eisessig zusammen und suspendiert das
+  Calciumhypochlorit portionsweise darin; dabei entsteht Hypochloritsäure.
+  Bei 0–5 °C tropft man das Cyclohexen zu und läßt auf Raumtemperatur
+  erwärmen; man rührt noch 1 h nach.
+
+  Man gießt in 200 mL Wasser, schüttelt dreimal mit je 40 mL Ether aus,
+  wäscht die Etherphase mit Natriumhydrogencarbonat-Lösung und Wasser und
+  trocknet über Magnesiumsulfat. Nach dem Einengen wird im Vakuum
+  destilliert.
+
+  #ausbeute[20 g (58 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 83–85 °C (14 hPa) #h(2em) $n_D^20$ = 1,4895 #h(2em)
+    $rho_20$ = 1,14 g·cm#super[−3] #h(2em) $M$ = 134,6 g·mol#super[−1]
+    Das Produkt ist *trans*-konfiguriert (anti-Addition).
+  ]
+]
+
+#gefahr[Calciumhypochlorit ist ein starkes Oxidationsmittel und reagiert
+  mit Säuren unter Chlorgasbildung — nur im Abzug, portionsweise, nie mit
+  konzentrierter Säure zusammenbringen. Aceton ist leicht entzündbar.
+  trans-2-Chlorcyclohexanol reizt die Haut.]
+
 === Cycloadditionen
 
 Die Diels-Alder-Reaktion ist eine [4+2]-Cycloaddition zwischen einem Dien und
@@ -624,3 +666,6 @@ nicht aus.
   cis-Epoxid? Zeichnen Sie den Übergangszustand.
 - Die Ausbeute der Diels-Alder-Reaktion sinkt, wenn man das Cyclopentadien
   nicht frisch destilliert. Woran liegt das?
+- Erklären Sie die Stereochemie der Chlorhydrinbildung an Cyclohexen mit
+  Hilfe des Übergangszustands (Chloronium-Ion).
+- Wie wandelt man trans-2-Chlorcyclohexanol in Cyclohexenoxid um?

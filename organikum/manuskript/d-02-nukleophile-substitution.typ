@@ -512,6 +512,46 @@ den Vorteil, daß keine wäßrige Phase anfällt.
   Rückflußkühler ohne Gasableitung. 1-Chlorbutan ist leicht entzündbar und
   gesundheitsschädlich.]
 
+*Kettenverlängerung über Cyanid.* Das Cyanid-Ion ist ein hervorragendes
+Nucleophil und verlängert die Kohlenstoffkette um ein Atom; das Nitril
+läßt sich weiter zur Säure oder zum Amin umsetzen. Wegen der hohen
+Giftigkeit von Cyanid ist der Ansatz klein zu halten.
+
+#vorschrift("D.2.10", [Pentanenitril aus 1-Brombutan])[
+  #reaktion(
+    $ "C" _4"H" _9"Br" + "NaCN" $,
+    [#text(size: 6.5pt)[DMSO, 80 °C, 3 h]],
+    $ "C" _4"H" _9"CN" + "NaBr" $,
+  )
+
+  #ansatz[
+    27 g (0,20 mol) 1-Brombutan, 12 g (0,25 mol) Natriumcyanid,
+    50 mL Dimethylsulfoxid.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rückflußkühler löst man das
+  Natriumcyanid in 50 mL DMSO, tropft das 1-Brombutan zu und erhitzt 3 h
+  auf 80 °C (Ölbad). Nach dem Abkühlen gießt man in 150 mL Wasser und
+  schüttelt dreimal mit je 30 mL Ether aus.
+
+  Die vereinigten Etherphasen werden zweimal mit Wasser gewaschen, über
+  Natriumsulfat getrocknet und eingeengt; der Rückstand wird über eine
+  Vigreux-Kolonne destilliert.
+
+  #ausbeute[11 g (65 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 141 °C (1013 hPa) #h(2em) $n_D^20$ = 1,3970 #h(2em)
+    $rho_20$ = 0,80 g·cm#super[−3] #h(2em) $M$ = 83,1 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Natriumcyanid ist hochgiftig — mit Säuren entsteht Blausäure!
+  Nur im Abzug arbeiten, Handschuhe und Brille tragen, kein saures Abwasser,
+  Reste mit Permanganat oder Natriumthiosulfat oxidieren und getrennt
+  entsorgen. DMSO erleichtert die Hautaufnahme von Giftstoffen —
+  Hautkontakt vermeiden. Ether peroxidbildend.]
+
 === Störungen und ihre Ursachen
 
 *Keine Umsetzung.* Bei zu geringer Säurekonzentration bleibt das Gleichgewicht
@@ -562,3 +602,7 @@ Natriumsulfat.
   schlecht, die mit Thionylchlorid dagegen gut?
 - Berechnen Sie die Ausbeute in mol-%, wenn aus 0,50 mol tert-Butanol
   52 g tert-Butylbromid entstehen.
+- Warum ist die Umsetzung von 1-Brombutan mit Cyanid in Wasser langsamer
+  als in DMSO?
+- Nennen Sie zwei Wege, um Pentanenitril weiter umzusetzen, und
+  formulieren Sie die Reaktionsgleichungen.

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Dating Chat AutoTyper AI v6 – Dating & Profil Edition (11 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung)
 // @namespace    https://online-infinity.local/chat-autotyper
-// @version      6.0.1
-// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen, Ausrede bei Treffen/Nummern (niemals Nein), KEINE Treffen in Aussicht, "Ja bin ich" bei Moderator-Frage, 60s Schnitt pro Out, keine sinnlosen Fragen, mind. 60 Zeichen, Frage am Ende. Extrahiert NUR Chatpartner-Infos und tippt sie in Profilfelder.
+// @version      6.0.2
+// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen, Ausrede bei Treffen/Nummern (niemals Nein), KEINE Treffen in Aussicht, "Ja bin ich" bei Moderator-Frage, 60s Schnitt pro Out, keine sinnlosen Fragen, mind. 60 Zeichen, Frage am Ende. Extrahiert NUR Chatpartner-Infos und tippt sie in Profilfelder. Reagiert nur auf Nachrichten des Chatpartners, nicht auf eigene.
 // @author       Online Infinity
 // @match        *://*/*
 // @run-at       document-idle
@@ -1341,7 +1341,17 @@
       return;
     }
 
-    const partnerCount = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || '')).length;
+    // Keine Chatpartner-Nachrichten vorhanden → Profil-Ausfüllung nicht möglich
+    const partnerMessages = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    if (partnerMessages.length === 0) {
+      setStatus(
+        `⏸️ Der Chatpartner hat noch keine Nachrichten gesendet (${messages.length} eigene Nachrichten). Profil-Ausfüllung kann nicht durchgeführt werden.`,
+        'warn'
+      );
+      return;
+    }
+
+    const partnerCount = partnerMessages.length;
     setStatus(`📖 Extrahiere Profilinformationen aus ${partnerCount} Chatpartner-Nachrichten (eigenen Nachrichten wird nicht berücksichtigt)...`, 'working');
     const info = extractProfileInfo(messages);
 
@@ -1473,6 +1483,29 @@
       }
     }
 
+    // LEERER CHATPARTNER: Wenn die letzten Nachrichten alle von "Ich" stammen
+    // (z.B. der Nutzer hat 3 Nachrichten gesendet und der Partner hat noch nicht geantwortet),
+    // gibt es nichts zu beantworten – offiziell abbrechen.
+    const partnerMessages = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    if (partnerMessages.length === 0) {
+      setStatus(
+        `⏸️ Der Chatpartner hat noch keine Nachrichten gesendet (${messages.length} eigene Nachrichten erkannt). Es gibt nichts zu beantworten.`,
+        'warn'
+      );
+      updateUI();
+      return;
+    }
+
+    // Wenn die letzte Nachricht von uns selbst ist (manueller Modus), gibt es nichts Neues zu beantworten
+    if (manual && lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '')) {
+      setStatus(
+        '⏸️ Die letzte Nachricht stammt von dir selbst – der Chatpartner hat noch nicht geantwortet. Es gibt nichts zu beantworten.',
+        'warn'
+      );
+      updateUI();
+      return;
+    }
+
     state.lastProcessedSignature = signature;
     state.isGenerating = true;
     setStatus(`📖 Lese Chatverlauf (${messages.length || 1} Nachrichten) & erstelle Antwort...`, 'working');
@@ -1533,6 +1566,21 @@
         const current = extractChatHistory(state.chatContainerEl);
         state.lastExtractedMessages = current.messages;
         updateUI();
+
+        // Nur reagieren, wenn die letzte Nachricht VON DEM CHATPARTNER ist
+        // (nicht wenn der Nutzer selbst geschrieben hat)
+        const lastMsg = current.messages.length > 0 ? current.messages[current.messages.length - 1] : null;
+        if (lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '')) {
+          state.lastProcessedSignature = current.signature;
+          return;
+        }
+
+        // Nur reagieren, wenn es überhaupt Partner-Nachrichten gibt
+        const hasPartnerMsg = current.messages.some((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+        if (!hasPartnerMsg) {
+          state.lastProcessedSignature = current.signature;
+          return;
+        }
 
         if (current.signature && current.signature !== state.lastProcessedSignature) {
           runReadAndTypeFlow({ manual: false });

@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Dating Chat AutoTyper AI v6 – Dating & Profil Edition (11 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung)
+// @name         Dating Chat AutoTyper AI v7 – Agent Edition (12 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung, Auto-Agent)
 // @namespace    https://online-infinity.local/chat-autotyper
-// @version      6.0.2
-// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen, Ausrede bei Treffen/Nummern (niemals Nein), KEINE Treffen in Aussicht, "Ja bin ich" bei Moderator-Frage, 60s Schnitt pro Out, keine sinnlosen Fragen, mind. 60 Zeichen, Frage am Ende. Extrahiert NUR Chatpartner-Infos und tippt sie in Profilfelder. Reagiert nur auf Nachrichten des Chatpartners, nicht auf eigene.
+// @version      7.0.0
+// @description  Autonomes Agent-System für Dating-Websites: liest eigene + Partner-Profile, letzte 6 Nachrichten, schreibt Re-Engagement-Antworten, füllt beide Profile mit Chat-Infos, macht Self-Review, speichert selbstständig. 12 Regeln, Du-Form, mind. 60 Zeichen, Frage am Ende, KEINE Treffen, „Ja bin ich" bei Moderator-Frage.
 // @author       Online Infinity
 // @match        *://*/*
 // @run-at       document-idle
@@ -21,16 +21,16 @@
   // --------------------------------------------------------------------------
   // 1. Standard-Konfiguration & Status
   // --------------------------------------------------------------------------
-  const CONFIG_VERSION = 6;
+  const CONFIG_VERSION = 7;
 
   const DEFAULT_SETTINGS = {
     provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
     apiKey: '',
-    model: 'gpt-4o-mini',
+    model: 'gpt-4o',
     customEndpoint: 'https://api.openai.com/v1/chat/completions',
     systemPrompt:
       'Du bist ein charmanter, sinnlicher und offener Chat-Partner auf einer Dating-Website. ' +
-      'Beachte ABSOLUT STRENG die folgenden 11 Regeln bei JEDEM Text: ' +
+      'Beachte ABSOLUT STRENG die folgenden 12 Regeln bei JEDEM Text: ' +
       '1) Du-Form: Schreibe JEDE Antwort ausschliesslich in der Du-Form, niemals in der Sie-Form. ' +
       '2) Sinngemäße Antwort: Antworte DIREKIT und sinngemäß auf die letzte Nachricht DEINES Chatpartners links im Chat. ' +
       '3) Kein Abblocken bei intimen Themen: Wenn der Chatpartner intime, sinnliche oder erotische Wünsche ausdrückt, geh immer offen, sinnlich und spielerisch darauf ein – blocke niemals ab und wehre dich nicht. ' +
@@ -42,6 +42,7 @@
       '9) MODERATOR-ANTWORTE: Wenn der Chatpartner direkt fragt, ob du ein Moderator bist, antworte ausschliesslich und direkt mit "Ja bin ich". Ziehe es NIEMALS ins Lächerliche, red nicht drum herum, philosophiere nicht oder gib keine Ausreden. Einfach nur: "Ja bin ich". ' +
       '10) SCHNITT 60 SECONDEN PRO OUT: Jede Antwort soll in der Kombination von Textlänge und Tippgeschwindigkeit etwa 60 Sekunden in Anspruch nehmen. Target etwa 400–700 Zeichen Text, damit das Zeichen-für-Zeichen-Tippen circa eine Minute in Anspruch nimmt. ' +
       '11) KEINE SINNLOSEN FRAGEN: Wenn das Profil vollständig ausgefüllt ist und der Chatpartner bspw. "Thomas Schmidt" heißt, stelle NIEMALS Fragen wie "wie heißt du", "woher kommst du" oder "bist du Single". Nimm diese Informationen als gegeben an und führe das Gespräch auf einem höheren, interessanten Niveau. ' +
+      '12) AGENT-VERHALTEN: Du fungierst als autonomer Agent. Du prüfst zuerst das eigene Profil, dann das Profil des Chatpartners. Du liest die letzten 6 Nachrichten (oder weniger, wenn nicht vorhanden). Wenn die letzten 1-3 Nachrichten von der eigenen Seite stammen, schreibe eine Antwort, die den Chatpartner dazu animiert, wieder am Gespräch teilzunehmen. Danach prüfst du beide Profile auf fehlende, im Chat erwähnte Informationen und füllst diese aus. Prüfe deine Arbeit und korrigiere Fehler. ' +
       'WICHTIG: Gib ausschließlich den reinen Antworttext zurück, der direkt in das Chat-Eingabefeld getippt werden soll. Keine Anführungszeichen am Anfang/Ende, kein "Antwort:"-Präfix, keine Erklärungen.',
     typingDelayMin: 35,
     typingDelayMax: 85,
@@ -53,7 +54,13 @@
     clearInputBeforeTyping: false,
     replaceNewlinesWithSpace: true,
     debounceMs: 1400,
-    minChars: 60
+    minChars: 60,
+    agentMode: false,
+    agentLoopCount: 3,
+    agentDelayMs: 3000,
+    agentLastMessages: 6,
+    agentAutoSave: true,
+    agentSelfReview: true
   };
 
   // Deutsche QWERTZ-Nachbartasten für realistische Tippfehler-Simulation
@@ -1416,6 +1423,263 @@
     );
   }
 
+  // ============================================================================
+  // AGENT-MODUS: Autonomes Arbeiten wie ein Agent
+  // ============================================================================
+
+  function readBothProfiles() {
+    const ownProfileFields = [];
+    const partnerProfileFields = [];
+    const allFields = detectProfileFields();
+    const ownIndicators = ['mein profil', 'mein account', 'mich', 'own profile', 'my profile', 'ich'];
+    const partnerIndicators = ['profil', 'profil des', 'chatpartner', 'partner profil', 'sein profil', 'ihr profil'];
+
+    for (const field of allFields) {
+      const lowerLabel = field.label.toLowerCase();
+      let isOwn = false;
+      let isPartner = false;
+      for (const ind of ownIndicators) {
+        if (lowerLabel.includes(ind) && !lowerLabel.includes('partner')) { isOwn = true; break; }
+      }
+      for (const ind of partnerIndicators) {
+        if (lowerLabel.includes(ind)) { isPartner = true; break; }
+      }
+      const rect = field.input.getBoundingClientRect();
+      if (rect.left > window.innerWidth / 2) { isOwn = true; isPartner = false; }
+      else if (rect.left < window.innerWidth / 3) { isPartner = true; isOwn = false; }
+
+      if (isOwn && !isPartner) ownProfileFields.push(field);
+      else if (isPartner && !isOwn) partnerProfileFields.push(field);
+      else partnerProfileFields.push(field);
+    }
+    return { ownProfileFields, partnerProfileFields, allFields };
+  }
+
+  function extractChatForBothProfiles(messages, lastCount) {
+    const limit = Math.min(lastCount || 6, messages.length);
+    const recentMessages = messages.slice(-limit);
+    const partnerMessages = recentMessages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const partnerInfo = extractProfileInfo(partnerMessages);
+    const ownMessages = recentMessages.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const ownInfo = extractProfileInfoFromOwn(ownMessages);
+    return { partnerInfo, ownInfo, partnerMessages, ownMessages, recentMessages };
+  }
+
+  function extractProfileInfoFromOwn(messages) {
+    const info = { name: '', address: '', preferences: '', age: '', job: '', hobbies: '', city: '', phone: '', email: '', bio: '', height: '', zodiac: '', education: '', relationship: '', smoking: '', drinking: '', kids: '', pets: '', languages: '', bodyType: '', hair: '', eyeColor: '', occupation: '', income: '', educationLevel: '', religion: '', political: '', lookingFor: '' };
+    if (!Array.isArray(messages) || messages.length === 0) return info;
+    const ownText = messages.map((m) => m.text || '').join('\n');
+    const lower = ownText.toLowerCase();
+    const namePatterns = [/(?:ich heiße|mein name ist|ich bin|nenne mich)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i];
+    for (const p of namePatterns) { const m = ownText.match(p); if (m) { info.name = m[1]; break; } }
+    const ageMatch = ownText.match(/(?:ich bin|mein alter|ich habe)\s+(\d{1,2})\s*(?:jahre alt|jahr|jahre)/i); if (ageMatch) info.age = ageMatch[1];
+    const cityMatch = ownText.match(/(?:ich wohne in|lebe in|komme aus|stamm aus|hause in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)?)/i); if (cityMatch) info.city = cityMatch[1];
+    const jobMatch = ownText.match(/(?:ich arbeite als|ich bin\s+|mein Beruf ist|beruflich)\s+([a-zäöüßA-ZÄÖÜ][a-zäöüßA-ZÄÖÜ]+(?:\s[a-zäöüßA-ZÄÖÜ]+)*)/i); if (jobMatch) info.job = jobMatch[1];
+    const hobbyMatch = ownText.match(/(?:in meiner freizeit|meine hobbys|meine vorlieben|ich lieb|ich mag|ich mache|hobbys|vorlieben)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (hobbyMatch) info.hobbies = hobbyMatch[1].trim().slice(0, 200);
+    const prefMatch = ownText.match(/(?:ich mag|ich liebe|meine vorlieben|meine fälle|mich reizen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (prefMatch) info.preferences = prefMatch[1].trim().slice(0, 200);
+    const heightMatch = ownText.match(/(?:ich bin|mein größe|größe)\s+(\d{2}[,.]?\d{0,2})\s*(?:m|meter|cm)/i); if (heightMatch) info.height = heightMatch[1] + ' m';
+    const zodiacMatch = ownText.match(/(?:sternzeichen|ich bin)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|fisch|wassermann|boecker)/i); if (zodiacMatch) info.zodiac = zodiacMatch[1];
+    const phoneMatch = ownText.match(/(?:\+?\d[\d\s\-/()]{7,}\d)/); if (phoneMatch) info.phone = phoneMatch[0];
+    const emailMatch = ownText.match(/[\w.+-]+@[\w-]+\.[\w.-]+/); if (emailMatch) info.email = emailMatch[0];
+    if (/nicht rauch|nein.*rauchen|rauch frei/i.test(lower)) info.smoking = 'Nein';
+    if (/ich rauche|raucher/i.test(lower)) info.smoking = 'Ja';
+    if (/keinen alkohol|nicht trin|alkoholfrei|nein.*alkohol/i.test(lower)) info.drinking = 'Nein';
+    if (/alkohol|trink|cocktail|wein|bier/i.test(lower)) info.drinking = 'Gelegentlich';
+    if (/keine kind|keinen kind/i.test(lower)) info.kids = 'Keine';
+    if (/kind|kinder/i.test(lower) && !/keine kind/i.test(lower)) info.kids = 'Ja';
+    const petMatch = ownText.match(/(?:ich habe|meine|haustier|tier|katze|hund)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (petMatch) info.pets = petMatch[1].trim().slice(0, 100);
+    const langMatch = ownText.match(/(?:sprachen|ich spreche|meine sprachen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (langMatch) info.languages = langMatch[1].trim().slice(0, 100);
+    const bodyMatch = ownText.match(/(?:körperbau|gebaut|ich bin)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i); if (bodyMatch) info.bodyType = bodyMatch[1];
+    const hairMatch = ownText.match(/(?:haarfarbe|haar)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i); if (hairMatch) info.hair = hairMatch[1];
+    const eyeMatch = ownText.match(/(?:augenfarbe|augen)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i); if (eyeMatch) info.eyeColor = eyeMatch[1];
+    const eduMatch = ownText.match(/(?:ausbildung|schulabschluss|studium)\s+(akademisch|abitur|mittlere reife|hauptschulabschluss|studien|universität|fachhochschule)/i); if (eduMatch) info.education = eduMatch[1];
+    const relMatch = ownText.match(/(?:suche|ich suche|meine absicht|beziehung|für)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (relMatch) info.relationship = relMatch[1].trim().slice(0, 100);
+    return info;
+  }
+
+  async function fillProfileFieldsForInfo(fields, info, label) {
+    let filled = 0;
+    let skipped = 0;
+    for (const field of fields) {
+      if (field.value && field.value.trim().length > 0) {
+        setStatus(`⏭️ ${label}: Feld „${field.label}" bereits belegt – überspringe.`, 'working');
+        await sleep(300); skipped++; continue;
+      }
+      const value = info[field.category];
+      if (!value || !value.trim()) {
+        setStatus(`⏭️ ${label}: Keine Info für „${field.label}" im Chat gefunden – überspringe.`, 'working');
+        await sleep(200); skipped++; continue;
+      }
+      setStatus(`⌨️ ${label}: Tippe in „${field.label}" (${field.category}): „${value}"...`, 'typing');
+      focusAndPlaceCursorAtEnd(field.input);
+      const tag = field.input.tagName ? field.input.tagName.toLowerCase() : '';
+      if (tag === 'textarea' || tag === 'input') {
+        setNativeInputValue(field.input, '');
+        field.input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward', bubbles: true, composed: true }));
+      } else {
+        field.input.textContent = '';
+        field.input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward', bubbles: true, composed: true }));
+      }
+      await sleep(200);
+      await typeTextCharByChar(field.input, value);
+      filled++;
+      await sleep(400);
+      if (state.settings.agentAutoSave) {
+        try { field.input.dispatchEvent(new Event('change', { bubbles: true })); } catch (_) {}
+        await sleep(200);
+      }
+    }
+    return { filled, skipped, total: fields.length };
+  }
+
+  async function selfReviewAndOptimize(ownFields, partnerFields) {
+    setStatus('🔍 Self-Review: Prüfe Profilfelder auf Fehler und optimiere...', 'working');
+    await sleep(500);
+    let corrections = 0;
+    const reviewFields = [
+      { fields: ownFields, label: 'Eigenes Profil' },
+      { fields: partnerFields, label: 'Partner-Profil' }
+    ];
+    for (const group of reviewFields) {
+      for (const field of group.fields) {
+        const currentValue = field.value || field.input.value || field.input.textContent || '';
+        if (!currentValue || !currentValue.trim()) continue;
+        const val = currentValue.trim();
+        if (val === '[NR-GEFILTER]' || val === '[E-MAIL-GEFILTER]') {
+          setStatus(`🔧 Self-Review: Entferne Filter-Platzhalter in „${field.label}" (${group.label}).`, 'working');
+          const tag = field.input.tagName ? field.input.tagName.toLowerCase() : '';
+          if (tag === 'textarea' || tag === 'input') setNativeInputValue(field.input, '');
+          else field.input.textContent = '';
+          field.input.dispatchEvent(new Event('input', { bubbles: true }));
+          await sleep(200); corrections++;
+        }
+      }
+    }
+    setStatus(corrections > 0 ? `✅ Self-Review abgeschlossen: ${corrections} Korrekturen durchgeführt.` : '✅ Self-Review abgeschlossen: Keine Fehler gefunden, alles in Ordnung.', 'ready');
+    return corrections;
+  }
+
+  async function generateReengagementReply(messages) {
+    const lastCount = state.settings.agentLastMessages || 6;
+    const recent = messages.slice(-lastCount);
+    const ownCount = recent.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || '')).length;
+    if (ownCount < 1) return null;
+    const lastMsg = recent[recent.length - 1];
+    const lastText = lastMsg ? lastMsg.text : '';
+    const lower = lastText.toLowerCase();
+    let reply;
+    if (/hallo|hi|hey|moin/i.test(lower)) {
+      reply = 'Hallo! Ich warte noch immer gespannt auf deine Antwort – was geht gerade in dir und was würdest du am liebsten jetzt mit mir besprechen?';
+    } else if (/frage|wann|wie|wo|was/i.test(lower)) {
+      reply = 'Ich hoffe, meine letzte Nachricht hat dich angesprochen! Lass uns direkt weiterschreiben – was geht dir gerade durch den Kopf?';
+    } else if (/lieb|mag|wünsch|geil|heiß/i.test(lower)) {
+      reply = 'Ich muss sagen, deine Gedanken haben mich richtig neugierig gemacht! Lass uns das Gespräch direkt hier weiterführen – was bist du gerade für Gefühle gepackt?';
+    } else {
+      reply = 'Ich warte noch darauf, dass du dich wieder einliest! Was beschäftigt dich gerade am meisten und worauf freust du dich gerade?';
+    }
+    reply = enforceStrictChatRules(reply, lastText, state.settings.minChars || 60);
+    setStatus('💬 Letzte Nachrichten von dir – generiere Re-Engagement-Antwort für den Chatpartner...', 'working');
+    return reply;
+  }
+
+  async function runAgentMode() {
+    if (state.isGenerating || state.isTyping) {
+      setStatus('⏳ Bitte warte, bis der aktuelle Vorgang abgeschlossen ist, bevor der Agent gestartet wird.', 'warn');
+      return;
+    }
+    state.isGenerating = true;
+    const loopCount = state.settings.agentLoopCount || 3;
+    const delayMs = state.settings.agentDelayMs || 3000;
+    setStatus('🚀 Agent-Modus gestartet: autonomes Chat & Profil-Management...', 'working');
+    updateUI();
+
+    for (let loop = 1; loop <= loopCount; loop++) {
+      setStatus(`🔄 Agent-Schleife ${loop}/${loopCount}: Starte autonome Arbeit...`, 'working');
+
+      // 1. Profile lesen
+      setStatus('📖 Schritt 1: Lese eigenes Profil und Profil des Chatpartners...', 'working');
+      await sleep(800);
+      const { ownProfileFields, partnerProfileFields } = readBothProfiles();
+
+      // 2. Chat lesen
+      setStatus('📖 Schritt 2: Lese letzten Chatverlauf...', 'working');
+      if (!state.chatContainerEl) autoDetectChatElements();
+      if (!state.chatContainerEl) {
+        setStatus('⚠️ Chatverlauf nicht verbunden. Bitte zuerst Chatverlauf auswählen.', 'warn');
+        state.isGenerating = false;
+        return;
+      }
+      const { messages } = extractChatHistory(state.chatContainerEl);
+      const lastCount = state.settings.agentLastMessages || 6;
+      const recentMessages = messages.slice(-lastCount);
+      setStatus(`📖 ${recentMessages.length} letzte Nachrichten gelesen.`, 'working');
+      await sleep(500);
+
+      // 3. Re-Engagement prüfen
+      const lastMsg = recentMessages.length > 0 ? recentMessages[recentMessages.length - 1] : null;
+      const isOwnLast = lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '');
+
+      if (isOwnLast) {
+        setStatus('💬 Schritt 3: Letzte Nachrichten von dir – erstelle Re-Engagement-Antwort...', 'working');
+        const reengagementReply = await generateReengagementReply(recentMessages);
+        if (reengagementReply && state.inputEl) {
+          setStatus('⌨️ Tippe Re-Engagement-Antwort ins Chatfeld...', 'typing');
+          await typeTextCharByChar(state.inputEl, reengagementReply);
+          await sleep(1000);
+        }
+      } else {
+        setStatus('💬 Schritt 3: Letzte Nachricht vom Chatpartner – normale Antwort wird erstellt...', 'working');
+        if (recentMessages.length > 0) {
+          const res = await requestAIReply(
+            recentMessages.map((m) => `[${m.sender || 'Chat'}]: ${m.text}`).join('\n'),
+            recentMessages,
+            ''
+          );
+          const reply = enforceStrictChatRules(res.reply || '', recentMessages.map((m) => m.text).join(' '), state.settings.minChars || 60);
+          if (reply && state.inputEl) {
+            setStatus('⌨️ Tippe Antwort ins Chatfeld...', 'typing');
+            await typeTextCharByChar(state.inputEl, reply);
+            await sleep(1000);
+          }
+        }
+      }
+
+      // 4. Profile füllen
+      setStatus('📝 Schritt 4: Prüfe Profilfelder und fülle fehlende Chat-Informationen...', 'working');
+      await sleep(800);
+      const { partnerInfo, ownInfo } = extractChatForBothProfiles(messages, lastCount);
+
+      if (partnerProfileFields.length > 0) {
+        setStatus(`📝 Fülle Partner-Profil (${partnerProfileFields.length} Felder)...`, 'working');
+        const partnerResult = await fillProfileFieldsForInfo(partnerProfileFields, partnerInfo, 'Partner-Profil');
+        setStatus(`✅ Partner-Profil: ${partnerResult.filled} gefüllt, ${partnerResult.skipped} übersprungen.`, 'working');
+        await sleep(500);
+      }
+      if (ownProfileFields.length > 0) {
+        setStatus(`📝 Fülle eigenes Profil (${ownProfileFields.length} Felder)...`, 'working');
+        const ownResult = await fillProfileFieldsForInfo(ownProfileFields, ownInfo, 'Eigenes Profil');
+        setStatus(`✅ Eigenes Profil: ${ownResult.filled} gefüllt, ${ownResult.skipped} übersprungen.`, 'working');
+        await sleep(500);
+      }
+
+      // 5. Self-Review
+      if (state.settings.agentSelfReview) {
+        setStatus('🔍 Schritt 5: Self-Review & Fehlerkorrektur...', 'working');
+        await selfReviewAndOptimize(ownProfileFields, partnerProfileFields);
+        await sleep(500);
+      }
+
+      if (loop < loopCount) {
+        setStatus(`⏸️ Pause ${loop}/${loopCount - 1}: Warte ${Math.round(delayMs / 1000)}s bevor nächste Schleife...`, 'ready');
+        await sleep(delayMs);
+      }
+    }
+
+    state.isGenerating = false;
+    setStatus(`✅ Agent-Modus abgeschlossen: ${loopCount} Schleifen ausgeführt. Chat, Profile und Self-Review erledigt.`, 'ready', 100, '✓');
+    updateUI();
+  }
+
   // --------------------------------------------------------------------------
   // 7. Haupt-Workflow: Chatverlauf lesen -> Antwort erstellen -> Zeichenweise tippen
   // --------------------------------------------------------------------------
@@ -1583,7 +1847,11 @@
         }
 
         if (current.signature && current.signature !== state.lastProcessedSignature) {
-          runReadAndTypeFlow({ manual: false });
+          if (state.settings.agentMode && !state.isTyping && !state.isGenerating) {
+            runAgentMode();
+          } else {
+            runReadAndTypeFlow({ manual: false });
+          }
         }
       }, Number(state.settings.debounceMs) || 1400);
     });
@@ -2269,6 +2537,22 @@
           </button>
         </div>
 
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e293b;">
+          <div class="section-label" style="margin-bottom:6px;">
+            <span>🤖 Agent-Modus (Automatisierung)</span>
+          </div>
+          <div style="font-size:11px;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:7px;padding:5px 8px;margin-bottom:7px;line-height:1.4;">
+            Autonomer Agent: liest beide Profile, letzte 6 Nachrichten, schreibt Re-Engagement-Antworten, füllt Profile, macht Self-Review – ganz ohne deine Eingabe.
+          </div>
+          <button class="btn btn-primary" id="at-btn-agent" style="font-size:11.5px;padding:8px 10px;background:linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%);border-color:#8b5cf6;" ${state.isGenerating ? 'disabled' : ''}>
+            🚀 Agent-Modus starten (autonom chatten & profile pflegen)
+          </button>
+          <label class="toggle-row" style="margin-top:6px;margin-bottom:0;">
+            <span style="font-size:11px;">🔁 Auto-Agent nach neuer Nachricht</span>
+            <input type="checkbox" id="at-chk-agentauto" ${state.settings.agentMode ? 'checked' : ''} />
+          </label>
+        </div>
+
         ${
           state.isTyping
             ? `<button class="btn btn-stop" id="at-btn-stop">⏹️ Tippen sofort stoppen (ESC)</button>`
@@ -2362,6 +2646,26 @@
           } else {
             setStatus('⚠️ Keine Profilfelder auf der linken Seite erkannt. Öffne das Profilformular auf der linken Seite.', 'warn');
           }
+        });
+      }
+
+      const agentBtn = shadowRoot.getElementById('at-btn-agent');
+      if (agentBtn) {
+        agentBtn.addEventListener('click', () => {
+          runAgentMode();
+        });
+      }
+
+      const agentAutoChk = shadowRoot.getElementById('at-chk-agentauto');
+      if (agentAutoChk) {
+        agentAutoChk.addEventListener('change', async (e) => {
+          await saveSettings({ agentMode: e.target.checked });
+          setStatus(
+            e.target.checked
+              ? '🤖 Auto-Agent aktiviert: Neue Chat-Nachrichten werden automatisch mit dem Agent-Modus verarbeitet.'
+              : '🤖 Auto-Agent deaktiviert: Manueller Agent-Modus nur noch per Klick.',
+            'ready'
+          );
         });
       }
 
@@ -2481,7 +2785,7 @@
         <div class="field-group">
           <label>KI-Provider</label>
           <select class="select" id="at-provider">
-            <option value="openai" ${state.settings.provider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT: gpt-4o-mini / gpt-4o)</option>
+            <option value="openai" ${state.settings.provider === 'openai' ? 'selected' : ''}>OpenAI (ChatGPT: gpt-4o, gpt-4o-mini, o3-mini, gpt-4-turbo)</option>
             <option value="anthropic" ${state.settings.provider === 'anthropic' ? 'selected' : ''}>Anthropic Claude (claude-3-5-sonnet / haiku)</option>
             <option value="gemini" ${state.settings.provider === 'gemini' ? 'selected' : ''}>Google Gemini (gemini-2.5-flash / pro)</option>
             <option value="demo" ${state.settings.provider === 'demo' ? 'selected' : ''}>Sofort-Demo / Lokaler Smart-Assistent (Kein Key nötig)</option>
@@ -2495,7 +2799,7 @@
 
         <div class="field-group">
           <label>Modell-Name</label>
-          <input type="text" class="input" id="at-model" placeholder="gpt-4o-mini" value="${escapeHtml(state.settings.model || 'gpt-4o-mini')}" />
+          <input type="text" class="input" id="at-model" placeholder="gpt-4o" value="${escapeHtml(state.settings.model || 'gpt-4o-mini')}" />
         </div>
 
         <div class="field-group">
@@ -2509,7 +2813,7 @@
       shadowRoot.getElementById('at-provider').addEventListener('change', (e) => {
         const prov = e.target.value;
         const modelInput = shadowRoot.getElementById('at-model');
-        if (prov === 'openai') modelInput.value = 'gpt-4o-mini';
+        if (prov === 'openai') modelInput.value = 'gpt-4o';
         else if (prov === 'anthropic') modelInput.value = 'claude-3-5-sonnet-latest';
         else if (prov === 'gemini') modelInput.value = 'gemini-2.5-flash';
       });

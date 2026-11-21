@@ -9,13 +9,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (res && res.settings) {
       providerEl.value = res.settings.provider || 'openai';
       apiKeyEl.value = res.settings.apiKey || '';
-      modelEl.value = res.settings.model || 'gpt-4o-mini';
+      modelEl.value = res.settings.model || 'gpt-4o';
       systemPromptEl.value = res.settings.systemPrompt || '';
     }
   });
 
   providerEl.addEventListener('change', () => {
-    if (providerEl.value === 'openai') modelEl.value = 'gpt-4o-mini';
+    if (providerEl.value === 'openai') modelEl.value = 'gpt-4o';
     else if (providerEl.value === 'anthropic') modelEl.value = 'claude-3-5-sonnet-latest';
     else if (providerEl.value === 'gemini') modelEl.value = 'gemini-2.5-flash';
   });

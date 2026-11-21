@@ -60,6 +60,32 @@ stickstoffhaltige Verbindungen.
     schränken die Möglichkeiten ein.],
 ) <tab:vorproben>
 
+*Vorproben im Überblick.* Bevor Spektroskopie bestellt wird, geben
+einfache Vorproben erste Hinweise. Keine Vorprobe beweist eine Struktur —
+sie grenzt nur ein.
+
+#figure(
+  table(
+    columns: (1fr, 1.1fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Vorprobe*], [*Durchführung*], [*Aussage*]),
+    [Flammenfärbung], [Bouquital- oder Kupferdrahtprobe], [Na gelb, K violett, Li rot, Cu grün],
+    [Beilstein-Test], [Kupferspirale in Flamme], [Grünfärbung: Halogen (kein Beweis!)],
+    [Lassaigne-Test], [Schmelzen mit Na, Nachweis im Filtrat], [N, S, Hal — Nebenprodukte beachten],
+    [Eisen(III)-chlorid], [wenige Tropfen auf Substanz], [Blau/Violett: Phenol, Enol],
+    [Tollens-Probe], [frisch bereitetes [Ag(NH#sub[3])#sub[2]]#super[+]], [Silberspiegel: Aldehyd, reduzierend],
+    [Fehling-Probe], [Cu(II)/Tartrat, Erwärmen], [Roter Niederschlag: aliph. Aldehyd],
+    [Br#sub[2]-Wasser], [Tropfen zur Lösung], [Entfärbung: C=C, Phenol, Anilin],
+    [KMnO#sub[4] (Baeyer)], [verdünnte Lösung], [Entfärbung: Doppelbindung, Aldehyd],
+    [2,4-DNPH (Brady)], [in Methanol/HCIO], [Niederschlag: Keton oder Aldehyd; Smp. = Identität],
+    [Säure-Base-Verhalten], [Löslichkeit in NaOH / NaHCO#sub[3] / HCl], [siehe Klassenschema unten],
+  ),
+  caption: [Gebräuchliche Vorproben. Jede positive Reaktion wird mit einer
+    Reinsubstanz gegengeprüft; negative Ergebnisse schließen nicht aus.],
+) <tab:vorproben>
+
 === Löslichkeitsverhalten
 
 Das Löslichkeitsschema ordnet eine Verbindung nach ihrem Verhalten in Wasser,
@@ -88,6 +114,32 @@ schnellste Klassifizierung und braucht nur wenige Milligramm.
 geschüttelt; löslich heißt klar löslich, nicht nur dispergiert. Bei S2 ist die
 Gasentwicklung mit Hydrogencarbonat ein zusätzlicher Beweis für eine Carbonsäure
 (pK#sub[a] < 6).
+
+*Das Löslichkeitsschema.* Die wäßrige Löslichkeit und das Verhalten
+gegen Säuren und Basen ordnen eine unbekannte Verbindung einer
+Funktionalitätenklasse zu — die klassische erste Einteilung der
+organischen Analytik.
+
+#figure(
+  table(
+    columns: (1.1fr, 0.8fr, 1.2fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Klasse*], [*Löslichkeit*], [*Hinweis*]),
+    [S1 — sauer], [in NaOH, NaHCO#sub[3]], [Carbonsäuren (CO#sub[2]-Entwicklung!)],
+    [S2 — sauer], [in NaOH, nicht in NaHCO#sub[3]], [Phenole, Sulfonamide, Imide],
+    [B1 — basisch], [in HCl], [Amine (primär, sekundär, tertiär)],
+    [B2 — basisch], [in HCl, unangenehm riechend], [heterocyclische Amine],
+    [N1 — neutral, wasserlöslich], [Wasser, kein NaOH/HCl-Effekt], [Alkohole, Aldehyde, Ketone, Ester < 5 C],
+    [N2 — neutral, wasserunlöslich], [nur organische Lösemittel], [Alkane, Aromaten, höhere Ester],
+    [I — inert / schwach], [nirgends außer Lösemitteln], [Halogenkohlenwasserstoffe, Ether],
+    [Z — hochmolekular], [quellend, nicht lösend], [Polymere, Polysaccharide],
+  ),
+  caption: [Löslichkeitsklassen der unbekannten organischen Verbindung.
+    Die Grenzen sind fließend — Verbindungen mit mehreren Gruppen
+    fallen in zwei Klassen.],
+) <tab:loeslichkeitsklassen>
 
 === Nachweis funktioneller Gruppen
 
@@ -304,3 +356,8 @@ eine Verunreinigung mit Aceton — solche Sätze gehören ins Protokoll.
 - Ihre Probe liefert nach Ninhydrin keinen Flecken, nach Jodkammer einen
   braunen. Was folgern Sie?
 - Warum muß die DC-Kammer vor dem Lauf gesättigt werden? Was passiert sonst?
+- Eine unbekannte Substanz löst sich in Natronlauge, nicht in
+  Natriumhydrogencarbonat. Welche Gruppe ist wahrscheinlich?
+- Warum sagt die Beilstein-Probe über die Menge des Halogens nichts aus?
+- Ordnen Sie Anilin, Benzoesäure, Hexanol und Chloroform den
+  Löslichkeitsklassen zu.

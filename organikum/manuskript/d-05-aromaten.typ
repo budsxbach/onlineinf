@@ -598,6 +598,87 @@ das Diazoniumsalz zersetzt sich sonst unter Stickstoffentwicklung.
   caption: [Typische Störungen bei Reaktionen am Aromaten.],
 ) <tab:stoerungen-aromaten>
 
+*Zwei Wege zum Alkylbenzol und zur Carbonsäure.* Die
+Friedel-Crafts-Alkylierung ist die Schwester der Acylierung — mit dem
+Unterschied, daß Umlagerungen möglich sind. Die Kolbe-Schmitt-Reaktion
+bringt direkt eine Carboxylgruppe in den Phenolat-Ring; sie ist der
+industrielle Weg zur Salicylsäure und damit zum Aspirin (D.7.5).
+
+#vorschrift("D.5.10", [Salicylsäure aus Natriumphenolat])[
+  #reaktion(
+    $ "C" _6"H" _5"ONa" + "CO" _2 $,
+    [#text(size: 6.5pt)[125 °C, 6 bar, 6 h]],
+    $ "C" _6"H" _4("OH")"COONa" $,
+  )
+
+  #ansatz[
+    29 g (0,25 mol) Natriumphenolat (getrocknet), 15 g (0,34 mol)
+    Kohlendioxid, 100 mL Wasser (zur Aufarbeitung).
+  ]
+
+  In einem 300-mL-Autoklaven mit Rührer erhitzt man das getrocknete
+  Natriumphenolat unter Kohlendioxid-Überdruck (6 bar) 6 h auf 125 °C.
+  Nach dem Abkühlen läßt man den Druck ab und löst die geschmolzene Masse
+  in 100 mL heißem Wasser.
+
+  Man filtriert ungelöste Bestandteile ab und säuert das Filtrat mit
+  konz. Salzsäure auf pH 1 an; die Salicylsäure fällt als weißes Pulver
+  aus. Nach dem Absaugen und Waschen mit kaltem Wasser wird aus Wasser
+  umkristallisiert.
+
+  #ausbeute[22 g (64 % d. Th.) weiße Kristalle.]
+
+  #kenndaten[
+    Schmp. 159 °C #h(2em) löslich in Ethanol, heißem Wasser
+    #h(2em) $M$ = 138,1 g·mol#super[−1] #h(2em)
+    Mit Eisen(III)-chlorid violette Färbung — Phenol-Nachweis.
+  ]
+]
+
+#gefahr[Natriumphenolat ist ätzend und muß wasserfrei vorliegen —
+  Restfeuchte senkt die Ausbeute drastisch. Der Autoklav wird nur mit
+  geprüften Bauteilen und Druckminderer betrieben; nach dem Abkühlen
+  langsam druckentlasten. Salicylsäure reizt die Haut.]
+
+#vorschrift("D.5.11", [tert-Butylbenzol aus Benzol])[
+  #reaktion(
+    $ "C" _6"H" _6 + ("CH"_3)_2"C=CH"_2 $,
+    [#text(size: 6.5pt)[H#sub[3]PO#sub[4], 25 °C]],
+    $ "C" _6"H" _5"C(CH"_3)_3 $,
+  )
+
+  #ansatz[
+    78 g (100 mL; 1,0 mol) Benzol, 28 g (0,50 mol) Isobuten (aus
+    tert-Butanol/Schwefelsäure), 5 mL Phosphorsäure (85 %).
+  ]
+
+  In einem 250-mL-Dreihalskolben mit Gasleitrohr, Thermometer und Rührer
+  versetzt man das Benzol mit 5 mL Phosphorsäure und leitet Isobuten
+  (durch Erwärmen von tert-Butanol über Schwefelsäure erzeugt) bei
+  25–30 °C ein. Man rührt 1 h nach, trennt die Säurephase ab und wäscht
+  die organische Phase mit Wasser und Natriumhydrogencarbonat-Lösung.
+
+  Nach dem Trocknen über Calciumchlorid destilliert man über eine
+  Vigreux-Kolonne; bei 168–170 °C geht das tert-Butylbenzol über.
+
+  #ausbeute[38 g (57 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 169 °C (1013 hPa) #h(2em) $n_D^20$ = 1,4920 #h(2em)
+    $rho_20$ = 0,87 g·cm#super[−3] #h(2em) $M$ = 134,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Benzol ist krebserzeugend — im Abzug arbeiten, wo möglich Toluol
+  als Ersatz erwägen. Isobuten ist extrem entzündbar; Gasleitung dicht
+  halten, keine Zündquellen. Phosphorsäure ätzend.]
+
+*Umlagerung als Warnung.* Würde man 1-Chlor-2-methylpropan mit
+Aluminiumchlorid alkylieren, entstünde über die Umlagerung zum tert-Butyl-
+Carbenium ebenfalls tert-Butylbenzol — nicht das lineare Produkt. Genau
+deshalb greift man für definierte Ketten zur Acylierung mit anschließender
+Clemmensen- oder Wolff-Kishner-Reduktion.
+
 === Aufgaben
 
 - Ordnen Sie die folgenden Verbindungen nach ihrer Reaktivität gegenüber
@@ -618,3 +699,9 @@ das Diazoniumsalz zersetzt sich sonst unter Stickstoffentwicklung.
 - Warum gelingt die Friedel-Crafts-Acylierung an Aminobenzol nicht?
 - Berechnen Sie die theoretische Ausbeute der Diazotierung von 0,25 mol
   Anilin und vergleichen Sie mit der erhaltenen Menge Phenol.
+- Erklären Sie anhand der Carbeniumion-Stabilitäten, warum die
+  Friedel-Crafts-Alkylierung von 1-Chlorpropan kein n-Propylbenzol
+  liefert.
+- Vergleichen Sie Kolbe-Schmitt- und Gattermann-Reaktion zur Synthese von
+  Hydroxybenzoesäuren.
+- Wie gelangt man von tert-Butylbenzol zu p-tert-Butylphenol?

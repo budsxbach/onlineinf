@@ -75,6 +75,44 @@ Ringverengung und -erweiterung.
     Kondensation und sind hydrolyseempfindlich.],
 ) <tab:stickstoffanaloga>
 
+*Mannich-Reaktion.* Aldehyde, Amine und Carbonylverbindungen mit
+α-Wasserstoff setzen sich zu β-Aminocarbonylverbindungen um — ein
+Dreikomponenten-Kondensationsgleichgewicht, in dem das Imin das
+Elektrophil und das Enol das Nucleophil liefert.
+
+#vorschrift("D.8.7", [Mannich-Base aus Aceton und Formaldehyd])[
+  #reaktion(
+    $ "CH"_3"COCH"_3 + "HCHO" + "HN(CH"_2"CH"_2)_2"O" $,
+    [#text(size: 6.5pt)[HCl, Ethanol, 25 °C]],
+    $ "CH"_3"COCH"_2"CH"_2"N(CH"_2"CH"_2)_2"O" $,
+  )
+
+  #ansatz[
+    15 g (18 mL; 0,25 mol) Aceton, 20 g Formaldehyd-Lösung (37 %,
+    0,25 mol), 22 g (0,25 mol) Morpholin, 30 mL Ethanol,
+    2 mL Salzsäure (25 %).
+  ]
+
+  In einem 250-mL-Rundkolben mit Rührer versetzt man Aceton, Formaldehyd-
+  Lösung und Morpholin in 30 mL Ethanol, säuert mit 2 mL Salzsäure an und
+  rührt 12 h bei Raumtemperatur. Man engt am Rotationsverdampfer ein und
+  stellt den Rückstand mit Natronlauge alkalisch.
+
+  Die freie Base wird mit Dichlormethan ausgeschüttelt, die organische
+  Phase über Kaliumcarbonat getrocknet und im Vakuum destilliert.
+
+  #ausbeute[22 g (57 % d. Th.) farblose Flüssigkeit.]
+
+  #kenndaten[
+    Sdp. 95 °C (12 hPa) #h(2em) $n_D^20$ = 1,4762 #h(2em)
+    $rho_20$ = 0,99 g·cm#super[−3] #h(2em) $M$ = 155,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Formaldehyd ist krebserzeugend und reizend — nur im Abzug
+  dosieren. Morpholin ätzt und wird über die Haut aufgenommen. Aceton ist
+  leicht entzündbar. Das Produkt ist eine Aminoketone und reizt die Haut.]
+
 === Nitrile
 
 Nitrile sind Carbonsäurederivate mit Stickstoff als Heteroatom: Sie lassen sich
@@ -440,3 +478,6 @@ verdankt ihren Platz im Organikum der Rolle des Phosphors.
   überwiegt.
 - Vergleichen Sie Wittig-Reaktion und McMurry-Kupplung für die Synthese von
   Stilben.
+- Zeichnen Sie den Mechanismus der Mannich-Reaktion und benennen Sie
+  Elektrophil und Nucleophil.
+- Warum muß die Reaktion leicht sauer verlaufen?

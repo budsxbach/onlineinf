@@ -439,6 +439,46 @@ ausfällt und leicht zu isolieren ist.
   Suspension spritzt beim Erhitzen leicht über — Siedesteine verwenden.
   Konz. Salzsäure ätzend; nur im Abzug ansäuern.]
 
+*Selektive Oxidation mit Mangandioxid.* Aktiviertes MnO#sub[2]
+oxidiert benzyllische und allyllische Alkohole schonend zu Aldehyden und
+Ketonen, ohne aliphatische Alkohole anzugreifen — eine Selektivität, die
+Chromreagenzien nicht bieten.
+
+#vorschrift("D.6.8", [Benzophenon aus Benzhydrol])[
+  #reaktion(
+    $ ("C" _6"H" _5)_2"CHOH" $,
+    [#text(size: 6.5pt)[MnO#sub[2], CH#sub[2]Cl#sub[2], 25 °C]],
+    $ ("C" _6"H" _5)_2"C=O" $,
+  )
+
+  #ansatz[
+    18 g (0,10 mol) Benzhydrol, 26 g (0,30 mol) aktiviertes
+    Mangandioxid, 100 mL Dichlormethan.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rückflußkühler suspendiert man das
+  Mangandioxid in 100 mL Dichlormethan, gibt das Benzhydrol zu und
+  erhitzt 4 h zum Sieden. Man prüft den Reaktionsverlauf mit DC
+  (Kieselgel/Petrolether-Essigester).
+
+  Das überschüssige Mangandioxid wird über Celite heiß abgesaugt und mit
+  3 × 20 mL Dichlormethan nachgewaschen. Das Filtrat wird am
+  Rotationsverdampfer eingeengt und aus Ethanol umkristallisiert.
+
+  #ausbeute[15 g (82 % d. Th.) weiße Kristalle.]
+
+  #kenndaten[
+    Schmp. 48 °C #h(2em) Sdp. 305 °C #h(2em)
+    löslich in Ethanol, Ether, Chloroform #h(2em)
+    $M$ = 182,2 g·mol#super[−1]
+  ]
+]
+
+#gefahr[MnO#sub[2]-Staub nicht einatmen; das feuchte Filterkuchen wird
+  gesammelt, nicht getrocknet, da es organische Rückstände enthält.
+  Dichlormethan ist krebserzeugend — nur im Abzug arbeiten.
+  Benzophenon ist hautreizend.]
+
 === Nachweisreaktionen und ihre Grenzen
 
 Für die Prüfung, ob eine Oxidation vollständig verlaufen ist, genügen einfache
@@ -500,3 +540,6 @@ Derivats oder ein Spektrum erforderlich.
   Stufenoxidation zum Aldehyd?
 - Berechnen Sie den Permanganat-Verbrauch (in Mol) für 0,25 mol p-Xylol
   und begründen Sie den Überschuß.
+- Warum oxidiert MnO#sub[2] Benzhydrol, nicht aber 1-Butanol?
+- Vergleichen Sie PCC (D.6.2), MnO#sub[2] (D.6.8) und Jones-Oxidation
+  (D.6.1) anhand ihrer Selektivität.

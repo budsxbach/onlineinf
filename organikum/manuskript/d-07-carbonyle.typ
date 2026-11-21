@@ -220,6 +220,46 @@ Brom; der Schmelzpunkt allein genügt nicht, weil das Monokondensationsprodukt
 Dünnschichtchromatographie mit Essigsäureethylester/Cyclohexan (1:4) trennt
 beide sauber.
 
+*α-Halogenierung von Carbonsäuren.* Die Hell-Volhard-Zelinsky-Reaktion
+bromiert Carbonsäuren in α-Stellung über das Säurebromid-Enol; das
+Produkt ist ein Schlüsselbaustein für Aminosäuren und
+α-Hydroxysäuren.
+
+#vorschrift("D.7.10", [Bromessigsäure aus Essigsäure])[
+  #reaktion(
+    $ "CH"_3"COOH" + "Br" _2 $,
+    [#text(size: 6.5pt)[PBr#sub[3], 100 °C, 6 h]],
+    $ "BrCH"_2"COOH" + "HBr" $,
+  )
+
+  #ansatz[
+    60 g (58 mL; 1,0 mol) Eisessig, 160 g (51 mL; 1,0 mol) Brom,
+    3 mL Phosphortribromid.
+  ]
+
+  In einem 250-mL-Dreihalskolben mit Rückflußkühler, Tropftrichter und
+  Gaseinleitung erhitzt man den Eisessig mit 3 mL Phosphortribromid auf
+  100 °C und tropft das Brom so zu, daß die entstehenden Bromwasserstoff-
+  mengen über den Kühler in eine Natronlauge-Falle geleitet werden. Man
+  erhitzt 6 h nach, bis die Bromfärbung verschwunden ist.
+
+  Der Rückstand wird im Vakuum destilliert; bei 118–120 °C (25 hPa) geht
+  die Bromessigsäure über.
+
+  #ausbeute[85 g (61 % d. Th.) farblose, tränenreizende Kristalle.]
+
+  #kenndaten[
+    Schmp. 50 °C #h(2em) Sdp. 208 °C (Zersetzung) #h(2em)
+    löslich in Wasser, Ethanol #h(2em) $M$ = 139,0 g·mol#super[−1]
+  ]
+]
+
+#gefahr[Brom ist hochätzend und giftig, Bromessigsäure stark ätzend und
+  alkylierend (Vesikant!) — nur im Abzug, Handschuhe und Schutzbrille,
+  größere Mengen niemals ungeschützt. Das entweichende HBr muß in der
+  Laugefalle gebunden werden. Der Ansatz ist streng wasserfrei
+  durchzuführen.]
+
 === Carbonsäuren und ihre Derivate
 
 *Säurechloride* entstehen aus Carbonsäuren mit Thionylchlorid, Oxalylchlorid oder
@@ -611,3 +651,7 @@ Schotten-Baumann-Acylierung.
 - Vergleichen Sie die Addition von Phenylmagnesiumbromid an Benzophenon
   und an Ethylformiat. Welche Produkte entstehen, und warum?
 - Warum muß das THF für die Grignard-Reaktion absolut trocken sein?
+- Warum läuft die HVZ-Reaktion über das Säurebromid und nicht über die
+  Säure selbst?
+- Wie wandelt man Bromessigsäure in Glycin um? Formulieren Sie die
+  Reaktionsstufen.

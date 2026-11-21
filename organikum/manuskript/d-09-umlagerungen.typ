@@ -142,6 +142,47 @@ Laurinlactam.
 das *anti*-ständige Alkyl wandert. Damit läßt sich die Konfiguration eines
 Oxims bestimmen — oder, bei bekanntem Oxim, gezielt ein Amid synthetisieren.
 
+*Beckmann-Umlagerung unsymmetrischer Oxime.* Welche Gruppe migriert,
+entscheidet die Konfiguration des Oxims: es wandert die Gruppe, die
+*anti*-ständig zur Hydroxylgruppe steht. Acetophenonoxim liefert so
+Acetanilid — ein Weg zum Amid, der sich vom Schotten-Baumann-Verfahren
+(D.7.8) grundlegend unterscheidet.
+
+#vorschrift("D.9.7", [Acetanilid aus Acetophenonoxim])[
+  #reaktion(
+    $ "C" _6"H" _5"C(=NOH)CH"_3 $,
+    [#text(size: 6.5pt)[PCl#sub[5], Ether, dann H#sub[2]O]],
+    $ "C" _6"H" _5"NHCOCH"_3 $,
+  )
+
+  #ansatz[
+    14 g (0,10 mol) Acetophenonoxim, 22 g (0,10 mol) Phosphor-
+    pentachlorid, 80 mL Diethylether, 100 mL Wasser.
+  ]
+
+  In einem 250-mL-Rundkolben mit Rüher und Eisbad suspendiert man das
+  Oxim in 80 mL trockenem Ether und gibt portionsweise Phosphor-
+  pentachlorid zu; die Suspension klärt sich unter Rotfärbung. Man rührt
+  30 min bei Raumtemperatur und gießt dann vorsichtig auf 100 g Eis.
+
+  Die wäßrige Phase wird mit Ether gewaschen, mit Natriumcarbonat
+  neutralisiert und mit Dichlormethan ausgeschüttelt. Nach dem Trocknen
+  und Einengen wird aus Wasser umkristallisiert.
+
+  #ausbeute[9 g (66 % d. Th.) weiße Kristalle.]
+
+  #kenndaten[
+    Schmp. 114 °C #h(2em) löslich in Ethanol, heißem Wasser
+    #h(2em) $M$ = 135,2 g·mol#super[−1] #h(2em)
+    IR: Amid-I-Bande bei 1660 cm#super[−1].
+  ]
+]
+
+#gefahr[Phosphorpentachlorid raucht an feuchter Luft und reagiert heftig
+  mit Wasser — portionsweise, im Abzug, trockener Ether. Beim Eingießen in
+  Eis tritt Salzsäure-Dampf auf. Acetanilid ist gesundheitsschädlich
+  (Methämoglobin).]
+
 === Hofmann-, Curtius- und Schmidt-Abbau
 
 Alle drei Reaktionen verkürzen eine Kohlenstoffkette um ein Atom unter Bildung
@@ -276,7 +317,8 @@ wird sie heute nur noch in geschlossenen Anlagen durchgeführt.
 *Fries-Umlagerung.* Phenolester lagern in Gegenwart von
 Aluminiumchlorid zu Hydroxyarylketonen um; das Ortho/Para-Verhältnis hängt
 von der Temperatur ab. Die Umlagerung ist eine der klassischen Methoden zur
-Herstellung von Hydroxyketonen.
+Herstellung von Hydroxyketonen — verwandt mit der Favorskii-Umlagerung,
+die über Cyclopropanon-Zwischenstufen läuft.
 
 #vorschrift("D.9.6", [2'-Hydroxyacetophenon aus Phenylacetat])[
   #reaktion(
@@ -299,6 +341,8 @@ Herstellung von Hydroxyketonen.
   Ortho-Isomer (2'-Hydroxyacetophenon) geht mit dem Dampf über, das
   Para-Isomer bleibt im Rückstand. Das Destillat wird mit Ether
   ausgeschüttelt, über Natriumsulfat getrocknet und im Vakuum destilliert.
+  (Zur Abgrenzung: Die Favorskii-Umlagerung α-halogenierter Ketone läuft
+  über Cyclopropanon-Zwischenstufen.)
 
   #ausbeute[15 g (45 % d. Th.) ölige Flüssigkeit (Ortho-Produkt).]
 
@@ -457,3 +501,8 @@ Die Favorskii-Umlagerung ist dagegen eine Spezialität für cyclische
   Ortho-Produkt, bei höherer Temperatur das Para-Produkt überwiegt.
 - Vergleichen Sie die Fries- mit der Claisen-Umlagerung (D.9.4): Was ist
   das Gemeinsame, was der Unterschied?
+- Erklären Sie, warum (E)-Acetophenonoxim und (Z)-Acetophenonoxim
+  verschiedene Umlagerungsprodukte liefern müssen.
+- Vergleichen Sie die Wege Acetophenon → Acetanilid über (a) die
+  Beckmann-Umlagerung und (b) Reduktion zum Amin mit anschließender
+  Acetylierung.

@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Dating Chat AutoTyper AI v6 – Dating & Profil Edition (11 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung)
 // @namespace    https://online-infinity.local/chat-autotyper
-// @version      6.0.0
-// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen, Ausrede bei Treffen/Nummern (niemals Nein), KEINE Treffen in Aussicht, "Ja bin ich" bei Moderator-Frage, 60s Schnitt pro Out, keine sinnlosen Fragen, mind. 60 Zeichen, Frage am Ende. Extrahiert Profilinformationen und tippt sie in Profilfelder.
+// @version      6.0.1
+// @description  Beantwortet immer die linken Nachrichten deines Chatpartners in der Du-Form: Intim-offen, Ausrede bei Treffen/Nummern (niemals Nein), KEINE Treffen in Aussicht, "Ja bin ich" bei Moderator-Frage, 60s Schnitt pro Out, keine sinnlosen Fragen, mind. 60 Zeichen, Frage am Ende. Extrahiert NUR Chatpartner-Infos und tippt sie in Profilfelder.
 // @author       Online Infinity
 // @match        *://*/*
 // @run-at       document-idle
@@ -163,7 +163,7 @@
     lastTypedText: '',
     lastGeneratedReply: '',
     lastExtractedMessages: [],
-    activeTab: 'control', // 'control' | 'typing' | 'ai' | 'profile'
+    activeTab: 'control', // 'control' | 'typing' | 'ai'
     minimized: false
   };
 
@@ -1050,6 +1050,21 @@
   // Zeichen für Zeichen in die Profilfelder auf der linken Seite ein.
   // ============================================================================
   function extractProfileInfo(messages) {
+    // SEPARATOR: Nur Nachrichten vom CHATPARTNER (links) werden für das
+    // Profil des Chatpartners extrahiert. Nachrichten von "Ich" (rechts)
+    // werden NIEMALS in das Profil des Chatpartners eingetragen!
+    const partnerMessages = Array.isArray(messages)
+      ? messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''))
+      : [];
+    const ownMessages = Array.isArray(messages)
+      ? messages.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || ''))
+      : [];
+
+    // Für das Profil des Chatpartners: NUR Partner-Nachrichten verwenden
+    const partnerText = partnerMessages
+      .map((m) => m.text || '')
+      .join('\n');
+
     const info = {
       name: '',
       address: '',
@@ -1083,9 +1098,7 @@
 
     if (!Array.isArray(messages)) return info;
 
-    // Kombination aller Nachrichtentexte (auch eigene Nachrichten)
-    const allText = messages.map((m) => m.text || '').join('\n');
-    const lower = allText.toLowerCase();
+    const lower = partnerText.toLowerCase();
 
     // Name
     const namePatterns = [
@@ -1093,20 +1106,20 @@
       /(?:du bist|dein name ist)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i
     ];
     for (const p of namePatterns) {
-      const m = allText.match(p);
+      const m = partnerText.match(p);
       if (m) { info.name = m[1]; break; }
     }
 
     // Alter
-    const ageMatch = allText.match(/(?:ich bin|mein alter|ich habe)\s+(\d{1,2})\s*(?:jahre alt|jahr|jahre)/i);
+    const ageMatch = partnerText.match(/(?:ich bin|mein alter|ich habe)\s+(\d{1,2})\s*(?:jahre alt|jahr|jahre)/i);
     if (ageMatch) info.age = ageMatch[1];
 
     // Adresse
-    const addrMatch = allText.match(/(?:ich wohne|meine adresse|ich lebe|wohne in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*(?:\s\d{1,5})?)/i);
+    const addrMatch = partnerText.match(/(?:ich wohne|meine adresse|ich lebe|wohne in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)*(?:\s\d{1,5})?)/i);
     if (addrMatch) info.address = addrMatch[1];
 
     // Stadt
-    const cityMatch = allText.match(/(?:ich wohne in|lebe in|komme aus|stamm aus|hause in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)?)/i);
+    const cityMatch = partnerText.match(/(?:ich wohne in|lebe in|komme aus|stamm aus|hause in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)?)/i);
     if (cityMatch) info.city = cityMatch[1];
 
     // Beruf / Job
@@ -1115,32 +1128,32 @@
       /(?:als)\s+([a-zäöüß][a-zäöüß]+(?:\s[a-zäöüß]+)*)\s+(?:arbeite|tätig)/i
     ];
     for (const p of jobPatterns) {
-      const m = allText.match(p);
+      const m = partnerText.match(p);
       if (m) { info.job = m[1]; break; }
     }
 
     // Hobbys / Vorlieben
-    const hobbyMatch = allText.match(/(?:in meiner freizeit|meine hobbys|meine vorlieben|ich lieb|ich mag|ich mache|hobbys|vorlieben)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const hobbyMatch = partnerText.match(/(?:in meiner freizeit|meine hobbys|meine vorlieben|ich lieb|ich mag|ich mache|hobbys|vorlieben)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (hobbyMatch) info.hobbies = hobbyMatch[1].trim().slice(0, 200);
 
     // Vorlieben (allgemein)
-    const prefMatch = allText.match(/(?:ich mag|ich liebe|meine vorlieben|meine fälle|mich reizen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const prefMatch = partnerText.match(/(?:ich mag|ich liebe|meine vorlieben|meine fälle|mich reizen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (prefMatch) info.preferences = prefMatch[1].trim().slice(0, 200);
 
     // Größe
-    const heightMatch = allText.match(/(?:ich bin|mein größe|größe)\s+(\d{2}[,.]?\d{0,2})\s*(?:m|meter|cm)/i);
+    const heightMatch = partnerText.match(/(?:ich bin|mein größe|größe)\s+(\d{2}[,.]?\d{0,2})\s*(?:m|meter|cm)/i);
     if (heightMatch) info.height = heightMatch[1] + ' m';
 
     // Sternzeichen
-    const zodiacMatch = allText.match(/(?:sternzeichen|ich bin)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|skorpion|steinbock|fisch|wassermann|boecker)/i);
+    const zodiacMatch = partnerText.match(/(?:sternzeichen|ich bin)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|skorpion|steinbock|fisch|wassermann|boecker)/i);
     if (zodiacMatch) info.zodiac = zodiacMatch[1];
 
     // Telefon
-    const phoneMatch = allText.match(/(?:\+?\d[\d\s\-/()]{7,}\d)/);
+    const phoneMatch = partnerText.match(/(?:\+?\d[\d\s\-/()]{7,}\d)/);
     if (phoneMatch) info.phone = phoneMatch[0];
 
     // E-Mail
-    const emailMatch = allText.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
+    const emailMatch = partnerText.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
     if (emailMatch) info.email = emailMatch[0];
 
     // Rauchen
@@ -1156,31 +1169,31 @@
     if (/kind|kinder/i.test(lower) && !/keine kind/i.test(lower)) info.kids = 'Ja';
 
     // Tiere
-    const petMatch = allText.match(/(?:ich habe|meine|haustier|tier|katze|hund|hund|katze)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const petMatch = partnerText.match(/(?:ich habe|meine|haustier|tier|katze|hund|hund|katze)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (petMatch) info.pets = petMatch[1].trim().slice(0, 100);
 
     // Sprachen
-    const langMatch = allText.match(/(?:sprachen|ich spreche|meine sprachen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const langMatch = partnerText.match(/(?:sprachen|ich spreche|meine sprachen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (langMatch) info.languages = langMatch[1].trim().slice(0, 100);
 
     // Aussehen: Körperbau
-    const bodyMatch = allText.match(/(?:körperbau|gebaut|ich bin)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i);
+    const bodyMatch = partnerText.match(/(?:körperbau|gebaut|ich bin)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i);
     if (bodyMatch) info.bodyType = bodyMatch[1];
 
     // Haarfarbe
-    const hairMatch = allText.match(/(?:haarfarbe|haar)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i);
+    const hairMatch = partnerText.match(/(?:haarfarbe|haar)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i);
     if (hairMatch) info.hair = hairMatch[1];
 
     // Augenfarbe
-    const eyeMatch = allText.match(/(?:augenfarbe|augen)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i);
+    const eyeMatch = partnerText.match(/(?:augenfarbe|augen)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i);
     if (eyeMatch) info.eyeColor = eyeMatch[1];
 
     // Ausbildung
-    const eduMatch = allText.match(/(?:ausbildung|schulabschluss|studium|ich habe)\s+(akademisch|abitur|mittlere reife|hauptschulabschluss|studien|universität|fachhochschule|berufsschule)/i);
+    const eduMatch = partnerText.match(/(?:ausbildung|schulabschluss|studium|ich habe)\s+(akademisch|abitur|mittlere reife|hauptschulabschluss|studien|universität|fachhochschule|berufsschule)/i);
     if (eduMatch) info.education = eduMatch[1];
 
     // Beziehung / Suchzweck
-    const relMatch = allText.match(/(?:suche|ich suche|meine absicht|beziehung|für)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const relMatch = partnerText.match(/(?:suche|ich suche|meine absicht|beziehung|für)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (relMatch) info.relationship = relMatch[1].trim().slice(0, 100);
 
     return info;
@@ -1328,7 +1341,8 @@
       return;
     }
 
-    setStatus(`📖 Extrahiere Profilinformationen aus ${messages.length} Nachrichten...`, 'working');
+    const partnerCount = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || '')).length;
+    setStatus(`📖 Extrahiere Profilinformationen aus ${partnerCount} Chatpartner-Nachrichten (eigenen Nachrichten wird nicht berücksichtigt)...`, 'working');
     const info = extractProfileInfo(messages);
 
     // 2. Profilfelder erkennen
@@ -1797,7 +1811,7 @@
         .icon-btn:hover { background: #334155; color: #fff; }
         .tabs {
           display: grid;
-          grid-template-columns: repeat(4, 1fr);
+          grid-template-columns: repeat(3, 1fr);
           background: #090d16;
           border-bottom: 1px solid #1e293b;
         }
@@ -2048,7 +2062,6 @@
             <button class="tab-btn active" data-tab="control">1. Steuerung</button>
             <button class="tab-btn" data-tab="typing">2. Tastatur</button>
             <button class="tab-btn" data-tab="ai">3. KI & API</button>
-            <button class="tab-btn" data-tab="profile">4. Profil</button>
           </div>
 
           <div class="body" id="at-tab-body"></div>
@@ -2192,6 +2205,22 @@
           ⚡ Jetzt Chat lesen, Antwort erstellen & langsam tippen
         </button>
 
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid #1e293b;">
+          <div class="section-label" style="margin-bottom:6px;">
+            <span>📝 Profildaten aus Chatverlauf</span>
+            <span style="font-size:10px;color:#64748b;font-weight:400;">Nur Chatpartner-Infos</span>
+          </div>
+          <div style="font-size:11px;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:7px;padding:5px 8px;margin-bottom:7px;line-height:1.4;">
+            Liest nur die linken Nachrichten des Chatpartners – eigene Nachrichten (rechts) werden NIEMALS in das Profil des Partners eingetragen.
+          </div>
+          <button class="btn btn-primary" id="at-btn-fill-profile" style="font-size:11.5px;padding:8px 10px;" ${state.isTyping || state.isGenerating ? 'disabled' : ''}>
+            📋 Profilinformationen extrahieren & Profilfelder ausfüllen
+          </button>
+          <button class="btn" id="at-btn-detect-profile" style="width:100%;margin-top:6px;font-size:11px;padding:6px 10px;">
+            🔍 Profilfelder auf der Seite erkennen
+          </button>
+        </div>
+
         ${
           state.isTyping
             ? `<button class="btn btn-stop" id="at-btn-stop">⏹️ Tippen sofort stoppen (ESC)</button>`
@@ -2267,6 +2296,26 @@
       shadowRoot.getElementById('at-btn-run-now').addEventListener('click', () => {
         runReadAndTypeFlow({ manual: true });
       });
+
+      // Profil-Ausfüllung direkt im Steuerung-Tab (keine Tab-Wechsel nötig!)
+      const profileFillBtn = shadowRoot.getElementById('at-btn-fill-profile');
+      if (profileFillBtn) {
+        profileFillBtn.addEventListener('click', () => {
+          fillProfileFields();
+        });
+      }
+
+      const profileDetectBtn = shadowRoot.getElementById('at-btn-detect-profile');
+      if (profileDetectBtn) {
+        profileDetectBtn.addEventListener('click', () => {
+          const fields = detectProfileFields();
+          if (fields.length > 0) {
+            setStatus(`✅ ${fields.length} Profilfelder erkannt. Klicke auf „Profilinformationen extrahieren & ausfüllen".`, 'ready');
+          } else {
+            setStatus('⚠️ Keine Profilfelder auf der linken Seite erkannt. Öffne das Profilformular auf der linken Seite.', 'warn');
+          }
+        });
+      }
 
       const stopBtn = shadowRoot.getElementById('at-btn-stop');
       if (stopBtn) {
@@ -2427,72 +2476,6 @@
         state.activeTab = 'control';
         setStatus('✅ KI-Konfiguration gespeichert!', 'ready');
         updateUI();
-      });
-    }
-
-    if (state.activeTab === 'profile') {
-      container.innerHTML = `
-        <div class="section-label">
-          <span>📝 Profildaten aus Chatverlauf erfassen</span>
-        </div>
-
-        <div style="font-size:11.5px;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:8px;padding:8px 10px;margin-bottom:10px;line-height:1.5;">
-          💡 Das Programm liest den Chatverlauf (linke + rechte Nachrichten), extrahiert relevante
-          Informationen (Name, Adresse, Vorlieben, Alter, Beruf etc.) und tippt sie
-          <strong>Zeichen für Zeichen</strong> in die Profilfelder auf der linken Seite ein.
-          Gleiche Technik wie beim Chat: langsam, mit Schreibfehlern, welche korrigiert werden.
-        </div>
-
-        <button class="btn btn-primary" id="at-btn-fill-profile" ${state.isTyping || state.isGenerating ? 'disabled' : ''}>
-          📋 Profilinformationen extrahieren & Profilfelder ausfüllen
-        </button>
-
-        <div style="margin-top:8px;">
-          <button class="btn" id="at-btn-detect-profile" style="width:100%;">
-            🔍 Profilfelder auf der Seite erkennen
-          </button>
-        </div>
-
-        <div class="status-box" id="at-profile-status-box">
-          <div class="status-header">
-            <div class="status-text" id="at-profile-status-text">Bereit – Profil-Ausfüllung noch nicht gestartet.</div>
-          </div>
-        </div>
-
-        <div style="margin-top:8px;font-size:11px;color:#64748b;">
-          ℹ️ Voraussetzung: Chatverlauf muss verbunden sein (1. Steuerung) und
-          Profilformular auf der linken Seite sichtbar sein.
-        </div>
-
-        <div class="safety-banner">
-          🔒 <strong>Prüf-Schutz aktiv:</strong> Das Programm tippt alle Profildaten Buchstabe für Buchstabe ein. Du kannst sie danach in Ruhe prüfen und anpassen.
-        </div>
-      `;
-
-      renderStatusArea();
-
-      shadowRoot.getElementById('at-btn-fill-profile').addEventListener('click', () => {
-        fillProfileFields();
-      });
-
-      shadowRoot.getElementById('at-btn-detect-profile').addEventListener('click', () => {
-        const fields = detectProfileFields();
-        if (fields.length > 0) {
-          let fieldList = fields.map((f) => `• ${f.label} → ${f.category}`).join('\n');
-          setStatus(`✅ ${fields.length} Profilfelder erkannt:\n${fieldList}`, 'ready');
-          state.activeTab = 'profile';
-          updateUI();
-          // Zeige die erkannten Felder in einem Alert-Style
-          const statusText = shadowRoot.getElementById('at-profile-status-text');
-          if (statusText) {
-            statusText.textContent = `✅ ${fields.length} Profilfelder erkannt:\n${fieldList}`;
-            statusText.style.whiteSpace = 'pre-wrap';
-          }
-        } else {
-          setStatus('⚠️ Keine Profilfelder auf der linken Seite erkannt. Bitte das Profilformular öffnen und Seite neu laden.', 'warn');
-          const statusText = shadowRoot.getElementById('at-profile-status-text');
-          if (statusText) statusText.textContent = '⚠️ Keine Profilfelder erkannt. Öffne das Profilformular auf der linken Seite.';
-        }
       });
     }
   }

@@ -184,13 +184,13 @@ node tools/stats.mjs            # Kennzahlen
 | 4 C Allgemeine Grundlagen | **Grundfassung fertig (ca. 60 %)** | C.1–C.9, S. 32–48 |
 | 5 D Präparativer Teil | **alle 9 Kapitel, 69 Vorschriften (ca. 25 %)** | D.1–D.9, S. 49–121, 77 Vorschriften |
 | 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 122–133 |
-| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 134–140 |
-| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 141–148 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 149–152, Register 224 Stichwörter |
+| 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 134–142 |
+| 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 143–150 |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 151–154, Register 226 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **152 Seiten** Buchformat (168 × 240 mm), 54 526 Wörter, 
-26 Abbildungen, 137 Tabellen, 77 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **154 Seiten** Buchformat (168 × 240 mm), 54 948 Wörter, 
+26 Abbildungen, 139 Tabellen, 77 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF,
 `python3 tools/check-refs.py` zusätzlich die inhaltliche Passung jedes Stichworts.

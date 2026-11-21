@@ -302,6 +302,32 @@ zersetzen, sondern mit Ethylacetat und dann mit gesättigter
 Natriumsulfatlösung. Natriumborhydrid ist weniger gefährlich, entwickelt aber
 ebenfalls Wasserstoff.]
 
+*Oxidations- und Reduktionsmittel im Überblick.* Die Wahl des
+Reagenzes entscheidet über Selektivität und Aufwand. Die Tabelle nennt
+Einsatz und Grenzen der gebräuchlichsten.
+
+#figure(
+  table(
+    columns: (0.9fr, 1.2fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Reagenz*], [*Einsatz*], [*Grenzen / Hinweise*]),
+    [NaBH#sub[4]], [Keton/Aldehyd → Alkohol], [Ester bleiben; nur protische Lösemittel],
+    [LiAlH#sub[4]], [auch Ester, Säuren, Amide → Alkohol/Amin], [wasser- und luftempfindlich, etherisch],
+    [DIBAL-H], [Ester → Aldehyd (−78 °C)], [Menge 1 Äquiv, streng kalt],
+    [H#sub[2] / Pd-C], [C=C, C≡C, Nitro, Benzyl-Ether], [siehe Hydrierung D.4.2],
+    [Zn / Essigsäure], [reduktive Aufarbeitung (Ozonide, Nitro)], [mild, in wäßrigem Milieu],
+    [PCC], [primärer Alkohol → Aldehyd], [Chrom(VI)-Abfall, krebserzeugend],
+    [Jones-Reagenz], [primär → Säure, sekundär → Keton], [wäßrige Säure, für säurestabile Produkte],
+    [Swern (DMSO/(COCl)#sub[2])], [Alkohol → Aldehyd/Keton], [sehr mild, −70 °C, kein Chrom],
+    [TEMPO / NaOCl], [primär → Aldehyd, sekundär → Keton], [katalytisch, grün, wäßrig],
+    [m-CPBA], [Alken → Epoxid (D.4.8)], [Peroxid — nicht trocknen!],
+    [KMnO#sub[4]], [Alken → Diol, Seitenketten → Säure], [brauner Braunstein, schwer abzutrennen],
+  ),
+  caption: [Oxidations- und Reduktionsmittel der präparativen Praxis.],
+) <tab:redox-reagenzien>
+
 === Säuren und Basen
 
 *Konzentrierte Säuren* werden zum Verdünnen in Wasser gegeben, nie umgekehrt.
@@ -313,6 +339,35 @@ stark oxidierend und bildet mit organischen Stoffen explosive Gemische;
 werden in Plätzchen oder als Maßlösung gehandhabt. Natriumamid und
 Kalium-t-butoxid sind starke Basen, die unter Feuchtigkeitsausschluß gelagert
 werden.
+
+*Lösungsherstellung für den Laborbedarf.* Standardlösungen werden
+in der Regel wäßrig angesetzt; die Konzentrationen sind so gewählt, daß
+1–2 mL für eine typische Reaktion ausreichen. Angaben pro Liter.
+
+#figure(
+  table(
+    columns: (1.1fr, 1.2fr, 1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Lösung*], [*Herstellung pro Liter*], [*Verwendung*]),
+    [Natronlauge 1 M], [40 g NaOH in Wasser], [Verseifung, Neutralisation],
+    [Salzsäure 2 M], [170 mL konz. HCl auf 1 L], [Ansäuern, Hydrolysen],
+    [Schwefelsäure 2 M], [110 mL konz. H#sub[2]SO#sub[4] vorsichtig], [Katalyse, Trocknen],
+    [Natriumcarbonat 5 %], [50 g Na#sub[2]CO#sub[3]], [neutral Waschen],
+    [Natriumhydrogencarbonat 5 %], [50 g NaHCO#sub[3]], [CO#sub[2]-Entwicklungstest, Waschen],
+    [Natriumthiosulfat 0,1 M], [25 g Na#sub[2]S#sub[2]O#sub[3] · 5 H#sub[2]O], [Iodometrie, Peroxid-Abbau],
+    [Kaliumpermanganat 0,02 M], [3,2 g KMnO#sub[4], Standzeit beachten], [Baeyer-Probe, Titration],
+    [Bromwasser], [gesättigt, frisch], [Nachweis von C=C, Phenol],
+    [Brady-Reagenz], [5 g 2,4-DNPH in 20 mL H#sub[2]SO#sub[4], 100 mL Ethanol], [Carbonyl-Nachweis],
+    [Fehling A / B], [A: CuSO#sub[4]; B: Seignettesalz/NaOH, mischen], [Aldehyd-Nachweis],
+    [Tollens-Reagenz], [AgNO#sub[3] + NaOH + NH#sub[3], frisch], [Aldehyd-Nachweis, Spiegel],
+    [Lucas-Reagenz], [ZnCl#sub[2] in konz. HCl], [Alkohol-Ordnung (t > s > p)],
+  ),
+  caption: [Herstellung gebräuchlicher Laborlösungen. Silber- und
+    Fehling-Lösungen werden frisch angesetzt; Permanganat altert und wird
+    titriert.],
+) <tab:loesungsherstellung>
 
 === Katalysatoren
 
@@ -361,3 +416,7 @@ Suspension eingesetzt.
   verwendet werden?
 - Ein Ether ist über Natrium getrocknet worden. Welche Prüfung muß vorher
   durchgeführt werden, und warum?
+- Welches Reduktionsmittel wählen Sie, um aus einem Ester den Aldehyd zu
+  gewinnen? Begründen Sie.
+- Stellen Sie 500 mL 0,1-m Thiosulfatlösung her; wieviel Pentahydrat
+  brauchen Sie?

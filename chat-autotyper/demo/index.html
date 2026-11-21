@@ -76,11 +76,11 @@
     .dl-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
     .layout {
-      max-width: 1180px;
+      max-width: 1400px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 20px;
+      grid-template-columns: 1fr 1fr 0.85fr;
+      gap: 16px;
       align-items: start;
     }
     @media (max-width: 960px) {
@@ -258,7 +258,7 @@
 
   <div class="top-bar">
     <div>
-      <h1>⌨️ Chat AutoTyper AI v4 – Live-Test & Download</h1>
+      <h1>⌨️ Chat AutoTyper AI v5 – Live-Test & Download</h1>
       <p>Liest automatisch die linken Nachrichten des Chatpartners, antwortet in Du-Form (intim-offen, Ausrede bei Treffen/Nummern, mind. 60 Zeichen, Frage am Ende) und tippt sie <strong>Buchstabe für Buchstabe</strong> ins Chatfeld – <strong>ohne sie abzusenden</strong>.</p>
     </div>
     <div class="dl-group">
@@ -295,6 +295,12 @@
         </button>
         <button class="sim-btn" data-msg="Ich hätte total Lust, deine Lippen und deine Berührungen auf meiner Haut zu spüren... 😍">
           💋 Küssen & Berührungen
+        </button>
+        <button class="sim-btn" data-msg="Ich heiße Sarah Müller, bin 28 Jahre alt und wohne in Köln. Ich arbeite als Lehrerin und in meiner Freizeit lese ich gern und gehe wandern.">
+          📋 Profil-Info (Name, Alter, Stadt, Beruf, Hobbys)
+        </button>
+        <button class="sim-btn" data-msg="Meine Vorlieben sind lange Spaziergänge am Meer, gute Literatur und ein Glas Wein am Abend. Mein Sternzeichen ist Skorpion und ich bin 1,72 m groß.">
+          📋 Profil-Info (Vorlieben, Sternzeichen, Größe)
         </button>
       </div>
 
@@ -343,7 +349,7 @@
       </div>
     </div>
 
-    <!-- Rechte Spalte: Anleitung & Funktionsweise -->
+    <!-- Mitte: Anleitung & Funktionsweise -->
     <div style="display:flex;flex-direction:column;gap:18px;">
       <div class="card">
         <div class="card-header">
@@ -367,6 +373,10 @@
             <strong>4. Stehen lassen & selbst absenden:</strong><br/>
             Das Programm löst <strong>niemals</strong> <span class="code-inline">Enter</span> zum Senden aus. Der fertige Text bleibt im Eingabefeld stehen, sodass du ihn in Ruhe prüfen, bei Bedarf anpassen und selbst abschicken kannst.
           </li>
+          <li>
+            <strong>5. Profildaten aus Chatverlauf erfassen (Neu in v5!):</strong><br/>
+            Gehe im Panel auf Reiter <span class="code-inline">4. Profil</span> und klicke auf <span class="code-inline">📋 Profilinformationen extrahieren & ausfüllen</span>. Das Programm liest den Chatverlauf, extrahiert relevante Informationen (Name, Adresse, Vorlieben, Alter, Beruf etc.) und tippt sie Zeichen für Zeichen in die Profilfelder auf der linken Seite ein – mit der gleichen langsamen, fehlerbehafteten Tipp-Technik wie beim Chat.
+          </li>
         </ol>
       </div>
 
@@ -388,6 +398,59 @@
             2. Klicke oben auf <span class="code-inline">Tampermonkey Userscript (.user.js)</span> oder füge den Inhalt von <span class="code-inline">chat-autotyper/userscript/chat-autotyper.user.js</span> als neues Skript ein.
           </li>
         </ul>
+      </div>
+    </div>
+
+    <!-- Rechte Spalte: Profil-Formular zum Testen der Profil-Ausfüllung -->
+    <div class="card">
+      <div class="card-header">
+        <h2>📋 Profil-Formular (Testet Profil-Ausfüllung)</h2>
+        <span style="font-size:11px;color:#38bdf8;">v5-Feature</span>
+      </div>
+      <div style="padding:14px 18px;">
+        <div style="font-size:11px;color:#94a3b8;margin-bottom:10px;line-height:1.5;">
+          Das Programm erkannt die Felder hier links und tippt die aus dem Chat extrahierten Werte ein.
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Name</label>
+          <input type="text" id="profile-name" class="chat-input-box" style="min-height:38px;" placeholder="Name wird hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Alter</label>
+          <input type="text" id="profile-age" class="chat-input-box" style="min-height:38px;" placeholder="Alter wird hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Stadt</label>
+          <input type="text" id="profile-city" class="chat-input-box" style="min-height:38px;" placeholder="Stadt wird hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Beruf</label>
+          <input type="text" id="profile-job" class="chat-input-box" style="min-height:38px;" placeholder="Beruf wird hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Hobbys</label>
+          <input type="text" id="profile-hobbies" class="chat-input-box" style="min-height:38px;" placeholder="Hobbys werden hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Vorlieben</label>
+          <input type="text" id="profile-preferences" class="chat-input-box" style="min-height:38px;" placeholder="Vorlieben werden hier eingetragen..." />
+        </div>
+
+        <div style="margin-bottom:10px;">
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Größe</label>
+          <input type="text" id="profile-height" class="chat-input-box" style="min-height:38px;" placeholder="Größe wird hier eingetragen..." />
+        </div>
+
+        <div>
+          <label style="display:block;font-size:11px;color:#cbd5e1;margin-bottom:3px;font-weight:600;">Sternzeichen</label>
+          <input type="text" id="profile-zodiac" class="chat-input-box" style="min-height:38px;" placeholder="Sternzeichen wird hier eingetragen..." />
+        </div>
       </div>
     </div>
   </div>

@@ -3,7 +3,7 @@
 // Führt KI-API-Anfragen (OpenAI, Claude, Gemini) im Hintergrund ohne CORS aus
 // ============================================================================
 
-const CONFIG_VERSION = 4;
+const CONFIG_VERSION = 5;
 
 const DEFAULT_SETTINGS = {
   provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'

@@ -10,7 +10,7 @@
   // --------------------------------------------------------------------------
   // 1. Standard-Konfiguration & Status
   // --------------------------------------------------------------------------
-  const CONFIG_VERSION = 5;
+  const CONFIG_VERSION = 6;
 
   const DEFAULT_SETTINGS = {
     provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
@@ -19,7 +19,7 @@
     customEndpoint: 'https://api.openai.com/v1/chat/completions',
     systemPrompt:
       'Du bist ein charmanter, sinnlicher und offener Chat-Partner auf einer Dating-Website. ' +
-      'Beachte ABSOLUT STRENG die folgenden 7 Regeln bei JEDEM Text: ' +
+      'Beachte ABSOLUT STRENG die folgenden 11 Regeln bei JEDEM Text: ' +
       '1) Du-Form: Schreibe JEDE Antwort ausschliesslich in der Du-Form, niemals in der Sie-Form. ' +
       '2) Sinngemäße Antwort: Antworte DIREKIT und sinngemäß auf die letzte Nachricht DEINES Chatpartners links im Chat. ' +
       '3) Kein Abblocken bei intimen Themen: Wenn der Chatpartner intime, sinnliche oder erotische Wünsche ausdrückt, geh immer offen, sinnlich und spielerisch darauf ein – blocke niemals ab und wehre dich nicht. ' +
@@ -27,6 +27,10 @@
       '5) Keine Kontaktmöglichkeiten weitergeben: Wenn der Chatpartner nach Handynummer, WhatsApp, Instagram, E-Mail, Telegram, Telefon etc. fragt, erfinde IMMER eine charmante Ausrede (z.B. Handy wird fast nur fürs Geschäft genutzt, Telefon spinnt gerade, hier im Chat hat man viel mehr Ruhe und niemand funkt dazwischen), um KEINE Kontaktdaten weiterzugeben – sage aber NIEMALS einfach nur "Nein" oder "nicht". ' +
       '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein (idealerweise 120–240 Zeichen). ' +
       '7) Frage am Ende: Jede Antwort muss IMMER mit einer kontextbezogenen, offenen Gegenfrage enden, die als letztes Zeichen ein Fragezeichen ("?") hat. ' +
+      '8) KEINE TREFFEN: Es werden absolut KEINE Treffen abgemacht, angedeutet oder als Möglichkeit in Aussicht gestellt. Keine Formulierungen wie "sobald sich was ändert", "vielleicht später", "dann könnten wir", "wenn Zeit ist" oder ähnliches, die eine zukünftige Zusammenkunft in Aussicht stellen. Lenke jede Treffen-Anfrage sofort und eindeutig auf das aktuelle Chat-Gespräch. ' +
+      '9) MODERATOR-ANTWORTE: Wenn der Chatpartner direkt fragt, ob du ein Moderator bist, antworte ausschliesslich und direkt mit "Ja bin ich". Ziehe es NIEMALS ins Lächerliche, red nicht drum herum, philosophiere nicht oder gib keine Ausreden. Einfach nur: "Ja bin ich". ' +
+      '10) SCHNITT 60 SECONDEN PRO OUT: Jede Antwort soll in der Kombination von Textlänge und Tippgeschwindigkeit etwa 60 Sekunden in Anspruch nehmen. Target etwa 400–700 Zeichen Text, damit das Zeichen-für-Zeichen-Tippen circa eine Minute in Anspruch nimmt. ' +
+      '11) KEINE SINNLOSEN FRAGEN: Wenn das Profil vollständig ausgefüllt ist und der Chatpartner bspw. "Thomas Schmidt" heißt, stelle NIEMALS Fragen wie "wie heißt du", "woher kommst du" oder "bist du Single". Nimm diese Informationen als gegeben an und führe das Gespräch auf einem höheren, interessanten Niveau. ' +
       'WICHTIG: Gib ausschließlich den reinen Antworttext zurück, der direkt in das Chat-Eingabefeld getippt werden soll. Keine Anführungszeichen am Anfang/Ende, kein "Antwort:"-Präfix, keine Erklärungen.',
     typingDelayMin: 35,
     typingDelayMax: 85,
@@ -77,6 +81,31 @@
     if (isMeetingRequest && reply.length < min) {
       reply = 'Oh, die Vorstellung dich zu treffen reizt mich total! Ich bin aber momentan im Job voll vereinnahmt und habe abends auch noch Familienkram erledigen müssen. Darf es erst mal weitergehen hier direkt mit uns im Chat?';
     }
+    // 5b) MODERATOR-Frage → exclusive "Ja bin ich" Antwort, kein drum herumreden
+    if (/(moderateur|moderator|admin|verwalter|betreuer)/i.test(lower)) {
+      reply = 'Ja bin ich';
+    }
+
+    // 5c) KEINE TREFFEN: Entferne jede Formulierung, die Treffen in Aussicht stellt
+    reply = reply
+      .replace(/(sobald sich(?: etwas| was)? ändert|sobald sich was ändert)[^.]*\.?/gi, '')
+      .replace(/(vielleicht (?:einfach )?(?:dann|später|einmal|mal))[^.]*\.?/gi, '')
+      .replace(/(dann könnten wir|dann können wir|wenn (?:dann|es|die zeit|zeit ist))[^.]*\.?/gi, '')
+      .replace(/(träfen uns|treffen wir uns|treffen können|zusammenkommen|vorbeikommen)[^.]*\.?/gi, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+
+    // 5d) KEINE SINNLOSEN FRAGEN: Wenn der Name im Chat bereits genannt wurde,
+    //     entferne Frage nach Namen/Herkunft/Single-Status
+    const knownNameMatch = (partnerText || '').match(/(?:ich heiße|mein name ist|ich bin|nenne mich)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i);
+    if (knownNameMatch) {
+      reply = reply
+        .replace(/(wie (?:heißt|ist) (?:du|dein Name|dich)[^?]*?)\?/gi, 'Was treibt dich denn aktuell so?')
+        .replace(/(woher komm(?:st|t) du[^?]*?)\?/gi, 'Was sind deine aktuell wichtigsten Projekte?')
+        .replace(/(bist du (?:single|ledig|verheiratet|beziehungsfähig)[^?]*?)\?/gi, 'Was sind deine Träume und Wünsche für die Zukunft?')
+        .trim();
+    }
+
     // 6) Intimate hint
     const intimateHint = /(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|berühren|küssen|heiß|geil|sehnsucht|wünsche|fantasien|gedanken)/i.test(lower);
 
@@ -870,7 +899,7 @@
     }
     userPrompt +=
       'Erstelle jetzt die direkt passende Antwort auf die letzte Nachricht DEINES Chatpartners. ' +
-      'Beachte die 7 Regeln aus dem System-Prompt. ' +
+      'Beachte die 11 Regeln aus dem System-Prompt. ' +
       'Gib NUR den finalen Nachrichtentext aus, ohne Anführungszeichen und ohne Metakommentare.';
 
     const systemPrompt = settings.systemPrompt || DEFAULT_SETTINGS.systemPrompt;

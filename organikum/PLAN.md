@@ -186,11 +186,11 @@ node tools/stats.mjs            # Kennzahlen
 | 6 E Identifizierung | **Grundfassung fertig (ca. 35 %)** | E.1–E.2, S. 122–133 |
 | 7 F Reagenzien/Arbeitstechnik | **Grundfassung fertig (ca. 35 %)** | F.1–F.2, S. 134–142 |
 | 8 G Gefahrstoffe/Sicherheit | **Grundfassung fertig (ca. 40 %)** | G.1–G.3, S. 143–150 |
-| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 151–154, Register 226 Stichwörter |
+| 9 H Anhang | **Grundfassung fertig** | H.1–H.4, S. 151–155, Register 226 Stichwörter |
 | 10 Feinsatz | offen | — |
 
-Aktuell gesetzt: **154 Seiten** Buchformat (168 × 240 mm), 54 948 Wörter, 
-26 Abbildungen, 139 Tabellen, 77 Vorschriften. Kolumnentitel, Teilezählung,
+Aktuell gesetzt: **155 Seiten** Buchformat (168 × 240 mm), 55 123 Wörter, 
+26 Abbildungen, 136 Tabellen, 77 Vorschriften. Kolumnentitel, Teilezählung,
 Abbildungs- und Tabellennumerierung je Teil, Fußnoten, Register laufen;
 `python3 tools/check-index.py` prüft alle Registerverweise gegen das PDF,
 `python3 tools/check-refs.py` zusätzlich die inhaltliche Passung jedes Stichworts.

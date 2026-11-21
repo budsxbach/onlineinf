@@ -92,6 +92,32 @@
   caption: [Umrechnungen, die im Labor gebraucht werden.],
 ) <tab:umrechnungen>
 
+*Umrechnungen und Naturkonstanten.* Die folgenden Werte genügen für
+alle Rechnungen des Grundpraktikums; zusätzliche Ziffern sind bei
+Meßwertrechnungen überflüssig.
+
+#figure(
+  table(
+    columns: (1.1fr, 1.1fr, 1.1fr),
+    inset: (x: 5pt, y: 3.2pt),
+    align: (left, left, left),
+    stroke: (x, y) => if y == 0 { (bottom: 0.8pt) } else { (top: 0.25pt + luma(175)) },
+    table.header([*Größe*], [*Wert*], [*Umwandlung*]),
+    [Gaskonstante $R$], [8,314 J·mol#super[−1]·K#super[−1]], [= 1,987 cal·mol#super[−1]·K#super[−1]],
+    [Avogadro-Konstante $N_A$], [6,022 × 10#super[23] mol#super[−1]], [Teilchen pro Mol],
+    [Boltzmann-Konstante $k$], [1,381 × 10#super[−23] J·K#super[−1]], [=$R \/ N_A$],
+    [Faraday-Konstante $F$], [96 485 C·mol#super[−1]], [Elektrochemie],
+    [Normdruck], [1013,25 hPa], [= 1 atm = 760 Torr = 1,013 bar],
+    [Molarvolumen (ideales Gas)], [22,414 L·mol#super[−1] (0 °C)], [24,465 L·mol#super[−1] (25 °C)],
+    [Energie], [1 cal = 4,184 J], [1 eV = 96,49 kJ·mol#super[−1]],
+    [Temperatur], [$T$ (K) = $t$ (°C) + 273,15], [Differenzen identisch],
+    [Druck], [1 Pa = 0,01 mbar], [1 Torr = 1,333 hPa],
+    [Masse], [1 u = 1,661 × 10#super[−24] g], [1 g = 6,022 × 10#super[23] u],
+    [Konzentration], [1 M = 1 mol·L#super[−1]], [ppm (w/w) = mg·kg#super[−1]],
+  ),
+  caption: [Naturkonstanten und Umrechnungsfaktoren des Laboralltags.],
+) <tab:umrechnungen>
+
 == Sicherheitsabkürzungen im Text
 
 In den Vorschriften werden Gefahrenhinweise abgekürzt. Die folgende Liste ordnet

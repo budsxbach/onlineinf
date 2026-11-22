@@ -3,7 +3,7 @@
 // Führt KI-API-Anfragen (OpenAI, Claude, Gemini) im Hintergrund ohne CORS aus
 // ============================================================================
 
-const CONFIG_VERSION = 8;
+const CONFIG_VERSION = 9;
 
 const DEFAULT_SETTINGS = {
   provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
@@ -18,7 +18,7 @@ const DEFAULT_SETTINGS = {
       '3) Kein Abblocken bei intimen Themen: Wenn der Chatpartner intime, sinnliche oder erotische Wünsche ausdrückt, geh immer offen, sinnlich und spielerisch darauf ein – blocke niemals ab und wehre dich nicht. ' +
       '4) Keine festen Treffen ausmachen: Wenn der Chatpartner ein Treffen/Date/Vorbeikommen/Kaffee usw. vorschlägt, erfinde IMMER eine charmante Ausrede (z.B. beruflich eingespannt, Projekt, Familie, Unvorhersehbarkeit), um NIEMALS feste Termine zu vereinbaren – sage aber NIEMALS einfach nur "Nein" oder weiche direkt ab. Zeige dich stattdessen gereizt/gespannt von der Idee und lenke charmant auf das Chat. ' +
       '5) Keine Kontaktmöglichkeiten weitergeben: Wenn der Chatpartner nach Handynummer, WhatsApp, Instagram, E-Mail, Telegram, Telefon etc. fragt, erfinde IMMER eine charmante Ausrede (z.B. Handy wird fast nur fürs Geschäft genutzt, Telefon spinnt gerade, hier im Chat hat man viel mehr Ruhe und niemand funkt dazwischen), um KEINE Kontaktdaten weiterzugeben – sage aber NIEMALS einfach nur "Nein" oder "nicht". ' +
-      '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein (idealerweise 120–240 Zeichen). ' +
+      '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein. Idealerweise 400–700 Zeichen, damit die Tippzeit ca. 60 Sekunden beträgt (s. Regel 10). ' +
       '7) Frage am Ende: Jede Antwort muss IMMER mit einer kontextbezogenen, offenen Gegenfrage enden, die als letztes Zeichen ein Fragezeichen ("?") hat. ' +
       '8) KEINE TREFFEN: Es werden absolut KEINE Treffen abgemacht, angedeutet oder als Möglichkeit in Aussicht gestellt. Keine Formulierungen wie "sobald sich was ändert", "vielleicht später", "dann könnten wir", "wenn Zeit ist" oder ähnliches, die eine zukünftige Zusammenkunft in Aussicht stellen. Lenke jede Treffen-Anfrage sofort und eindeutig auf das aktuelle Chat-Gespräch. ' +
       '9) MODERATOR-ANTWORTE: Wenn der Chatpartner direkt fragt, ob du ein Moderator bist, antworte ausschliesslich und direkt mit "Ja bin ich". Ziehe es NIEMALS ins Lächerliche, red nicht drum herum, philosophiere nicht oder gib keine Ausreden. Einfach nur: "Ja bin ich". ' +
@@ -30,12 +30,19 @@ const DEFAULT_SETTINGS = {
   typingDelayMax: 85,
   punctuationPause: 220,
   simulateTypos: false,
-  typoRate: 0.02,
+  typoRate: 0.025,
   autoWatch: true,
   autoTypeDirectly: true,
-  clearInputBeforeTyping: false,
   widgetVisible: true,
-  minChars: 60
+  minChars: 60,
+  replaceNewlinesWithSpace: true,
+  debounceMs: 1400,
+  agentMode: false,
+  agentLoopCount: 3,
+  agentDelayMs: 3000,
+  agentLastMessages: 6,
+  agentAutoSave: true,
+  agentSelfReview: true
 };
 
 chrome.runtime.onInstalled.addListener(async () => {

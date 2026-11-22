@@ -10,7 +10,7 @@
   // --------------------------------------------------------------------------
   // 1. Standard-Konfiguration & Status
   // --------------------------------------------------------------------------
-  const CONFIG_VERSION = 8;
+  const CONFIG_VERSION = 9;
 
   const DEFAULT_SETTINGS = {
     provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
@@ -25,7 +25,7 @@
       '3) Kein Abblocken bei intimen Themen: Wenn der Chatpartner intime, sinnliche oder erotische Wünsche ausdrückt, geh immer offen, sinnlich und spielerisch darauf ein – blocke niemals ab und wehre dich nicht. ' +
       '4) Keine festen Treffen ausmachen: Wenn der Chatpartner ein Treffen/Date/Vorbeikommen/Kaffee usw. vorschlägt, erfinde IMMER eine charmante Ausrede (z.B. beruflich eingespannt, Projekt, Familie, Unvorhersehbarkeit), um NIEMALS feste Termine zu vereinbaren – sage aber NIEMALS einfach nur "Nein" oder weiche direkt ab. Zeige dich stattdessen gereizt/gespannt von der Idee und lenke charmant auf das Chat. ' +
       '5) Keine Kontaktmöglichkeiten weitergeben: Wenn der Chatpartner nach Handynummer, WhatsApp, Instagram, E-Mail, Telegram, Telefon etc. fragt, erfinde IMMER eine charmante Ausrede (z.B. Handy wird fast nur fürs Geschäft genutzt, Telefon spinnt gerade, hier im Chat hat man viel mehr Ruhe und niemand funkt dazwischen), um KEINE Kontaktdaten weiterzugeben – sage aber NIEMALS einfach nur "Nein" oder "nicht". ' +
-      '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein (idealerweise 120–240 Zeichen). ' +
+      '6) Mindestzeichenanzahl: Jede Antwort muss MINDENST 60 Zeichen lang sein. Idealerweise 400–700 Zeichen, damit die Tippzeit ca. 60 Sekunden beträgt (s. Regel 10). ' +
       '7) Frage am Ende: Jede Antwort muss IMMER mit einer kontextbezogenen, offenen Gegenfrage enden, die als letztes Zeichen ein Fragezeichen ("?") hat. ' +
       '8) KEINE TREFFEN: Es werden absolut KEINE Treffen abgemacht, angedeutet oder als Möglichkeit in Aussicht gestellt. Keine Formulierungen wie "sobald sich was ändert", "vielleicht später", "dann könnten wir", "wenn Zeit ist" oder ähnliches, die eine zukünftige Zusammenkunft in Aussicht stellen. Lenke jede Treffen-Anfrage sofort und eindeutig auf das aktuelle Chat-Gespräch. ' +
       '9) MODERATOR-ANTWORTE: Wenn der Chatpartner direkt fragt, ob du ein Moderator bist, antworte ausschliesslich und direkt mit "Ja bin ich". Ziehe es NIEMALS ins Lächerliche, red nicht drum herum, philosophiere nicht oder gib keine Ausreden. Einfach nur: "Ja bin ich". ' +
@@ -88,9 +88,11 @@
     if (isMeetingRequest && reply.length < min) {
       reply = 'Oh, die Vorstellung dich zu treffen reizt mich total! Ich bin aber momentan im Job voll vereinnahmt und habe abends auch noch Familienkram erledigen müssen. Darf es erst mal weitergehen hier direkt mit uns im Chat?';
     }
-    // 5b) MODERATOR-Frage → exclusive "Ja bin ich" Antwort, kein drum herumreden
+    // 5b) MODERATOR-Frage → exclusive "Ja bin ich" Antwort, KEINE weitere
+    //     Enforcement (keine Mindestlänge, keine Frage, keine Stripping).
+    //     Diese Antwort ist die einzige Ausnahme von allen Regeln.
     if (/(moderateur|moderator|admin|verwalter|betreuer)/i.test(lower)) {
-      reply = 'Ja bin ich';
+      return 'Ja bin ich';
     }
 
     // 5c) KEINE TREFFEN: Entferne jede Formulierung, die Treffen in Aussicht stellt
@@ -153,6 +155,7 @@
     isTyping: false,
     abortTyping: false,
     isGenerating: false,
+    agentAbort: false,
     observer: null,
     debounceTimer: null,
     lastProcessedSignature: '',
@@ -906,7 +909,7 @@
     }
     userPrompt +=
       'Erstelle jetzt die direkt passende Antwort auf die letzte Nachricht DEINES Chatpartners. ' +
-      'Beachte die 11 Regeln aus dem System-Prompt. ' +
+      'Beachte die 12 Regeln aus dem System-Prompt. ' +
       'Gib NUR den finalen Nachrichtentext aus, ohne Anführungszeichen und ohne Metakommentare.';
 
     const systemPrompt = settings.systemPrompt || DEFAULT_SETTINGS.systemPrompt;
@@ -920,7 +923,7 @@
           Authorization: `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: settings.model || 'gpt-4o-mini',
+          model: settings.model || 'gpt-4o',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
@@ -937,7 +940,7 @@
       return {
         ok: true,
         reply: enforceStrictChatRules(cleanReply(data?.choices?.[0]?.message?.content || ''), chatHistoryText, settings.minChars || 60),
-        providerUsed: `OpenAI (${settings.model || 'gpt-4o-mini'})`
+        providerUsed: `OpenAI (${settings.model || 'gpt-4o'})`
       };
     }
 
@@ -1032,7 +1035,7 @@
     }
 
     // 3. Intimate / Sinnliche Anfrage → offen, sinnlich, spielerisch
-    if (/(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|spaß|berühren|küssen|heiß|geil|sehnsucht|wünsche|fantasien|gedanken|hau|neben)/i.test(lower)) {
+    if (/(bett|nackt|haut|kuss|selbst|trieb|mögen|lieben|spaß|einmal|na so|magst|berühren|küssen|heiß|geil|sehnsucht|wünsche|fantasien|gedanken|haut an)/i.test(lower)) {
       return 'Ich stelle mir gerade vor, wie du hier vor dem Bildschirm sitzt – und ich muss sagen, der Gedanke an dich macht mich wirklich ganz warm! Lass uns das hier direkt lebhaft ein bisschen weiterspinnen. Was wünschst du dir denn genau, wenn wir beide ungestört sind?';
     }
 
@@ -1231,8 +1234,10 @@
     ).filter((el) => {
       const rect = el.getBoundingClientRect();
       if (rect.width < 40 || rect.height < 15) return false;
-      // Profilfelder sind typischerweise auf der linken Seite oder in einem Formular
-      return rect.left < window.innerWidth / 2.5;
+      // Profilfelder können auf BEIDEN Seiten liegen:
+      // Links = Partner-Profil, Rechts = eigenes Profil.
+      // BOTH Seiten scannen, die Klassifizierung erfolgt später in readBothProfiles().
+      return rect.left < window.innerWidth && rect.right > 0;
     });
 
     // Versuche, jedes Feld mit einem Label/Placeholder/Label-Text zu verknüpfen
@@ -1405,6 +1410,13 @@
         skipped++;
         continue;
       }
+      // VALIDATION: Nur sinnvolle Werte eintragen
+      if (!isValidProfileValue(value)) {
+        setStatus(`⏭️ Wert für „${field.label}" ungültig oder unsinnig – überspringe.`, 'warn');
+        await sleep(200);
+        skipped++;
+        continue;
+      }
 
       setStatus(`⌨️ Tippe in Profilfeld „${field.label}" (${field.category}): „${value}"...`, 'typing');
 
@@ -1421,6 +1433,9 @@
 
       await sleep(200);
       await typeTextCharByChar(field.input, value);
+      // Save-Events auslösen, damit Dating-Seiten den Wert speichern
+      field.input.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+      field.input.dispatchEvent(new Event('blur', { bubbles: true, composed: true }));
       filled++;
       await sleep(400);
     }
@@ -1639,6 +1654,7 @@
       return;
     }
     state.isGenerating = true;
+    state.agentAbort = false;
     const loopCount = state.settings.agentLoopCount || 3;
     const delayMs = state.settings.agentDelayMs || 3000;
 
@@ -1652,6 +1668,10 @@
     updateUI();
 
     for (let loop = 1; loop <= loopCount; loop++) {
+      if (state.agentAbort) {
+        setStatus('⏹️ Agent-Modus durch Nutzer gestoppt.', 'warn');
+        break;
+      }
       setStatus(`🔄 Agent-Schleife ${loop}/${loopCount}: Starte autonome Arbeit...`, 'working');
 
       // 1. Profile lesen
@@ -1762,6 +1782,7 @@
     }
 
     state.isGenerating = false;
+    state.agentAbort = false;
     setStatus(`✅ Agent-Modus abgeschlossen: Chat, Profile und Self-Review erledigt.`, 'ready', 100, '✓');
     updateUI();
   }
@@ -2630,9 +2651,14 @@
           <div style="font-size:11px;color:#94a3b8;background:#1e293b;border:1px solid #334155;border-radius:7px;padding:5px 8px;margin-bottom:7px;line-height:1.4;">
             Autonomer Agent: liest beide Profile, letzte 6 Nachrichten, schreibt Re-Engagement-Antworten, füllt Profile, macht Self-Review – ganz ohne deine Eingabe.
           </div>
-          <button class="btn btn-primary" id="at-btn-agent" style="font-size:11.5px;padding:8px 10px;background:linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%);border-color:#8b5cf6;" ${state.isGenerating ? 'disabled' : ''}>
-            🚀 Agent-Modus starten (autonom chatten & profile pflegen)
+          <button class="btn btn-primary" id="at-btn-agent" style="font-size:11.5px;padding:8px 10px;background:linear-gradient(135deg,#7c3aed 0%,#4f46e5 100%);border-color:#8b5cf6;" ${state.isGenerating && !state.isTyping ? 'disabled' : ''}>
+            ${state.isGenerating && !state.isTyping ? '🤖 Agent läuft…' : '🚀 Agent-Modus starten (autonom chatten & profile pflegen)'}
           </button>
+          ${
+            state.isGenerating && !state.isTyping
+              ? '<button class="btn btn-stop" id="at-btn-stop-agent" style="margin-top:6px;font-size:11px;padding:7px 10px;">⏹️ Agent sofort stoppen</button>'
+              : ''
+          }
           <label class="toggle-row" style="margin-top:6px;margin-bottom:0;">
             <span style="font-size:11px;">🔁 Auto-Agent nach neuer Nachricht</span>
             <input type="checkbox" id="at-chk-agentauto" ${state.settings.agentMode ? 'checked' : ''} />
@@ -2661,9 +2687,12 @@
           <div class="preview-card">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <strong style="color:#94a3b8;">Letzte generierte Antwort:</strong>
-              <button class="btn" id="at-btn-retype" style="padding:2px 7px;font-size:10.5px;">⌨️ Erneut tippen</button>
+              <div style="display:flex;gap:4px;">
+                <button class="btn" id="at-btn-copy" style="padding:2px 7px;font-size:10.5px;" title="In Zwischenablage kopieren">📋</button>
+                <button class="btn" id="at-btn-retype" style="padding:2px 7px;font-size:10.5px;">⌨️ Erneut tippen</button>
+              </div>
             </div>
-            <div class="preview-reply">${escapeHtml(state.lastGeneratedReply)}</div>
+            <div class="preview-reply" id="at-preview-text">${escapeHtml(state.lastGeneratedReply)}</div>
             <div style="margin-top:5px;font-size:10.5px;color:#94a3b8;" id="at-preview-rule"></div>
           </div>
         `
@@ -2759,6 +2788,47 @@
       if (stopBtn) {
         stopBtn.addEventListener('click', () => {
           state.abortTyping = true;
+        });
+      }
+
+      // Stop-Agent Button
+      const stopAgentBtn = shadowRoot.getElementById('at-btn-stop-agent');
+      if (stopAgentBtn) {
+        stopAgentBtn.addEventListener('click', () => {
+          state.abortTyping = true;
+          state.isGenerating = false;
+          state.agentAbort = true;
+          setStatus('⏹️ Agent-Modus gestoppt. Bisherige Arbeit bleibt erhalten.', 'warn');
+          updateUI();
+        });
+      }
+
+      // Copy-Button für letzte Antwort
+      const copyBtn = shadowRoot.getElementById('at-btn-copy');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const text = state.lastGeneratedReply || '';
+          if (text) {
+            try {
+              // Clipboard API (privileged Kontext)
+              navigator.clipboard.writeText(text).then(() => {
+                setStatus('📋 Antwort in Zwischenablage kopiert!', 'ready');
+              }).catch(() => {
+                // Fallback: Selection + execCommand
+                const tmp = document.createElement('textarea');
+                tmp.value = text;
+                tmp.style.position = 'fixed';
+                tmp.style.opacity = '0';
+                document.body.appendChild(tmp);
+                tmp.select();
+                try { document.execCommand('copy'); setStatus('📋 Antwort in Zwischenablage kopiert!', 'ready'); }
+                catch(_) { setStatus('⚠️ Kopieren fehlgeschlagen – bitte manuell auswählen.', 'warn'); }
+                document.body.removeChild(tmp);
+              });
+            } catch (_) {
+              setStatus('⚠️ Kopieren fehlgeschlagen.', 'warn');
+            }
+          }
         });
       }
 

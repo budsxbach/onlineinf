@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Chat AutoTyper AI v7.0.1 – Agent Edition (Bugfixes) (12 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung, Auto-Agent)",
-  "version": "7.0.1",
+  "name": "Chat AutoTyper AI v7.0.2 – Agent Edition (Bugfixes) (12 Regeln, >=60 Zeichen, ? am Ende, Ausreden, Profil-Ausfüllung, Auto-Agent)",
+  "version": "7.0.2",
   "description": "Liest automatisch die linken Nachrichten deines Chatpartners, antwortet in Du-Form (intim-offen, Ausrede bei Treffen/Nummern, mind. 60 Zeichen, Frage am Ende), extrahiert Profilinformationen aus dem Chat und tippt sie Zeichen für Zeichen in die Profilfelder.",
   "permissions": [
     "storage",

@@ -10,7 +10,7 @@
   // --------------------------------------------------------------------------
   // 1. Standard-Konfiguration & Status
   // --------------------------------------------------------------------------
-  const CONFIG_VERSION = 7;
+  const CONFIG_VERSION = 8;
 
   const DEFAULT_SETTINGS = {
     provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
@@ -81,7 +81,7 @@
     // 4) Kontakt-Frage + kurze Antwort → Ausrede ergänzen
     const isContactRequest = /(handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen)/i.test(lower);
     if (isContactRequest && reply.length < min) {
-      reply = 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+      reply = 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist im Moment nur noch beruflich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
     }
     // 5) Treffen-Frage + kurze Antwort → Ausrede ergänzen
     const isMeetingRequest = /(treffen|date|vorbeikommen|coffee|caffee|kaffee|cuddling|besuch|abend|weekend|job|arbeit|unterricht)/i.test(lower);
@@ -1009,7 +1009,7 @@
   // ============================================================================
   function generateContextualDatingAndIntimateReply(chatHistoryText, messages, userHint) {
     const partnerMessages = Array.isArray(messages)
-      ? messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender))
+      ? messages.filter((m) => !isOwnMessage(m))
       : [];
     const lastObj =
       partnerMessages.length > 0
@@ -1028,7 +1028,7 @@
 
     // 2. Handynummer / WhatsApp / Instagram Anfrage → charmante Ausrede, NIEMALS Nein
     if (/(handynummer|handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen|vom handy)/i.test(lower)) {
-      return 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+      return 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist im Moment nur noch beruflich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
     }
 
     // 3. Intimate / Sinnliche Anfrage → offen, sinnlich, spielerisch
@@ -1041,19 +1041,41 @@
   }
 
   // ============================================================================
-  // Profil-Extraktion & Profil-Ausfüllung
-  // Liest relevante Informationen aus dem Chatverlauf und tippt sie
-  // Zeichen für Zeichen in die Profilfelder auf der linken Seite ein.
+  // isOwnMessage – Robuste Erkennung, ob eine Nachricht von der eigenen Seite
+  // (rechts) oder vom Chatpartner (links) stammt.
+  // Priorität: 1) Sender-Label mit "Ich"  2) Screen-Position (rechte Seite)
+  // ============================================================================
+  function isOwnMessage(msg) {
+    if (!msg) return false;
+    // 1) Sender-Label prüfen
+    const sender = (msg.sender || '').trim();
+    if (/^ich\s|ich\s*\(bisher\)/i.test(sender)) return true;
+    // 2) Falls der Sender ein bekannter Eigenname ist (z.B. Nutzer-Name),
+    //    liegt er in der Regel rechts → eigene Seite
+    if (msg.isOwn !== undefined) return msg.isOwn;
+    // 3) Screen-Position als Fallback: Nachrichtenelement rechts→ own
+    if (msg.element && msg.element.getBoundingClientRect) {
+      const rect = msg.element.getBoundingClientRect();
+      if (rect.left > window.innerWidth * 0.5) return true;
+      if (rect.left < window.innerWidth * 0.33) return false;
+    }
+    // Default: wenn kein Signal → als Partner interpretieren (linke Seite)
+    return false;
+  }
+
+  // ============================================================================
+  // extractProfileInfo – Extrahiert Profilinformationen AUSSERHALB der
+  // eigenen Nachrichten. Nur Partner-Nachrichten (links) fließen ein.
   // ============================================================================
   function extractProfileInfo(messages) {
     // SEPARATOR: Nur Nachrichten vom CHATPARTNER (links) werden für das
     // Profil des Chatpartners extrahiert. Nachrichten von "Ich" (rechts)
     // werden NIEMALS in das Profil des Chatpartners eingetragen!
     const partnerMessages = Array.isArray(messages)
-      ? messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''))
+      ? messages.filter((m) => !isOwnMessage(m))
       : [];
     const ownMessages = Array.isArray(messages)
-      ? messages.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || ''))
+      ? messages.filter((m) => isOwnMessage(m))
       : [];
 
     // Für das Profil des Chatpartners: NUR Partner-Nachrichten verwenden
@@ -1096,9 +1118,9 @@
 
     const lower = partnerText.toLowerCase();
 
-    // Name
+    // Name – nur explizite Name-Angaben, NICHT "ich bin" (zu broad)
     const namePatterns = [
-      /(?:ich heiße|mein name ist|ich bin|nenne mich|call me|my name is)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i,
+      /(?:ich heiße|mein name ist|nenne mich|call me|my name is|bin der|bin die)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i,
       /(?:du bist|dein name ist)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i
     ];
     for (const p of namePatterns) {
@@ -1118,22 +1140,22 @@
     const cityMatch = partnerText.match(/(?:ich wohne in|lebe in|komme aus|stamm aus|hause in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)?)/i);
     if (cityMatch) info.city = cityMatch[1];
 
-    // Beruf / Job
+    // Beruf / Job – nur explizite Berufsangaben
     const jobPatterns = [
-      /(?:ich arbeite als|ich bin\s+|mein Beruf ist|beruflich)\s+([a-zäöüßA-ZÄÖÜ][a-zäöüßA-ZÄÖÜ]+(?:\s[a-zäöüßA-ZÄÖÜ]+)*)/i,
-      /(?:als)\s+([a-zäöüß][a-zäöüß]+(?:\s[a-zäöüß]+)*)\s+(?:arbeite|tätig)/i
+      /(?:ich arbeite als|mein Beruf ist|beruflich als|tätig als)\s+([a-zäöüßA-ZÄÖÜ][a-zäöüßA-ZÄÖÜ]+(?:\s[a-zäöüßA-ZÄÖÜ]+)*)/i,
+      /(?:als)\s+([a-zäöüß][a-zäöüß]+(?:\s[a-zäöüß]+)*)\s+(?:arbeite|tätig|im beruf)/i
     ];
     for (const p of jobPatterns) {
       const m = partnerText.match(p);
       if (m) { info.job = m[1]; break; }
     }
 
-    // Hobbys / Vorlieben
-    const hobbyMatch = partnerText.match(/(?:in meiner freizeit|meine hobbys|meine vorlieben|ich lieb|ich mag|ich mache|hobbys|vorlieben)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    // Hobbys / Vorlieben – nur explizite Hobby-Angaben
+    const hobbyMatch = partnerText.match(/(?:in meiner freizeit|meine hobbys|meine beschäftigungen|hobbys|freizeit)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (hobbyMatch) info.hobbies = hobbyMatch[1].trim().slice(0, 200);
 
-    // Vorlieben (allgemein)
-    const prefMatch = partnerText.match(/(?:ich mag|ich liebe|meine vorlieben|meine fälle|mich reizen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    // Vorlieben (allgemein) – nur explizite Vorlieben
+    const prefMatch = partnerText.match(/(?:meine vorlieben|meine fälle|was ich mag|was ich liebe)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (prefMatch) info.preferences = prefMatch[1].trim().slice(0, 200);
 
     // Größe
@@ -1141,7 +1163,7 @@
     if (heightMatch) info.height = heightMatch[1] + ' m';
 
     // Sternzeichen
-    const zodiacMatch = partnerText.match(/(?:sternzeichen|ich bin)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|skorpion|steinbock|fisch|wassermann|boecker)/i);
+    const zodiacMatch = partnerText.match(/(?:mein sternzeichen|sternzeichen\s+ist)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|fisch|wassermann|boecker)/i);
     if (zodiacMatch) info.zodiac = zodiacMatch[1];
 
     // Telefon
@@ -1173,15 +1195,15 @@
     if (langMatch) info.languages = langMatch[1].trim().slice(0, 100);
 
     // Aussehen: Körperbau
-    const bodyMatch = partnerText.match(/(?:körperbau|gebaut|ich bin)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i);
+    const bodyMatch = partnerText.match(/(?:körperbau|gebaut| mein körperbau)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i);
     if (bodyMatch) info.bodyType = bodyMatch[1];
 
     // Haarfarbe
-    const hairMatch = partnerText.match(/(?:haarfarbe|haar)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i);
+    const hairMatch = partnerText.match(/(?:meine haarfarbe|haarfarbe\s+ist)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i);
     if (hairMatch) info.hair = hairMatch[1];
 
     // Augenfarbe
-    const eyeMatch = partnerText.match(/(?:augenfarbe|augen)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i);
+    const eyeMatch = partnerText.match(/(?:meine augenfarbe|augenfarbe\s+ist)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i);
     if (eyeMatch) info.eyeColor = eyeMatch[1];
 
     // Ausbildung
@@ -1189,7 +1211,7 @@
     if (eduMatch) info.education = eduMatch[1];
 
     // Beziehung / Suchzweck
-    const relMatch = partnerText.match(/(?:suche|ich suche|meine absicht|beziehung|für)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
+    const relMatch = partnerText.match(/(?:ich suche|meine absicht|suche\s+eine|suche\s+ einen|suche\s+einen|suche\s+eine|beziehung\s+für|was ich suche)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i);
     if (relMatch) info.relationship = relMatch[1].trim().slice(0, 100);
 
     return info;
@@ -1338,7 +1360,7 @@
     }
 
     // Keine Chatpartner-Nachrichten vorhanden → Profil-Ausfüllung nicht möglich
-    const partnerMessages = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const partnerMessages = messages.filter((m) => !isOwnMessage(m));
     if (partnerMessages.length === 0) {
       setStatus(
         `⏸️ Der Chatpartner hat noch keine Nachrichten gesendet (${messages.length} eigene Nachrichten). Profil-Ausfüllung kann nicht durchgeführt werden.`,
@@ -1420,22 +1442,37 @@
     const ownProfileFields = [];
     const partnerProfileFields = [];
     const allFields = detectProfileFields();
-    const ownIndicators = ['mein profil', 'mein account', 'mich', 'own profile', 'my profile', 'ich'];
-    const partnerIndicators = ['profil', 'profil des', 'chatpartner', 'partner profil', 'sein profil', 'ihr profil'];
+
+    // Präzise Indikatoren: "mein profil" → own, "profil des partner" → partner
+    // "partner" im Label ist ein starkes Signal für Partner-Profil
+    const ownIndicators = ['mein profil', 'mein account', 'mich bewerben', 'own profile', 'my profile', 'bewerbe mich', 'mein eigenes'];
+    const partnerIndicators = ['profil des partner', 'partner profil', 'chatpartner', 'sein profil', 'ihr profil', 'profil partner', 'partnerprofil'];
 
     for (const field of allFields) {
       const lowerLabel = field.label.toLowerCase();
       let isOwn = false;
       let isPartner = false;
-      for (const ind of ownIndicators) {
-        if (lowerLabel.includes(ind) && !lowerLabel.includes('partner')) { isOwn = true; break; }
-      }
+
+      // 1) Explizite Label-Indicators (stark)
       for (const ind of partnerIndicators) {
         if (lowerLabel.includes(ind)) { isPartner = true; break; }
       }
-      const rect = field.input.getBoundingClientRect();
-      if (rect.left > window.innerWidth / 2) { isOwn = true; isPartner = false; }
-      else if (rect.left < window.innerWidth / 3) { isPartner = true; isOwn = false; }
+      if (!isPartner) {
+        for (const ind of ownIndicators) {
+          if (lowerLabel.includes(ind)) { isOwn = true; break; }
+        }
+      }
+
+      // 2) Wenn weder Explizites gefunden: Screen-Position als Fallback
+      if (!isOwn && !isPartner) {
+        const rect = field.input.getBoundingClientRect();
+        // Rechtsseite (> 55% der Breite) = eigenes Profil
+        if (rect.left > window.innerWidth * 0.55) isOwn = true;
+        // Linksseite (< 45% der Breite) = Partner-Profil
+        else if (rect.left < window.innerWidth * 0.45) isPartner = true;
+        // Mitte → Partner-Profil als Conservative Default
+        else isPartner = true;
+      }
 
       if (isOwn && !isPartner) ownProfileFields.push(field);
       else if (isPartner && !isOwn) partnerProfileFields.push(field);
@@ -1447,9 +1484,9 @@
   function extractChatForBothProfiles(messages, lastCount) {
     const limit = Math.min(lastCount || 6, messages.length);
     const recentMessages = messages.slice(-limit);
-    const partnerMessages = recentMessages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const partnerMessages = recentMessages.filter((m) => !isOwnMessage(m));
     const partnerInfo = extractProfileInfo(partnerMessages);
-    const ownMessages = recentMessages.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const ownMessages = recentMessages.filter((m) => isOwnMessage(m));
     const ownInfo = extractProfileInfoFromOwn(ownMessages);
     return { partnerInfo, ownInfo, partnerMessages, ownMessages, recentMessages };
   }
@@ -1459,15 +1496,15 @@
     if (!Array.isArray(messages) || messages.length === 0) return info;
     const ownText = messages.map((m) => m.text || '').join('\n');
     const lower = ownText.toLowerCase();
-    const namePatterns = [/(?:ich heiße|mein name ist|ich bin|nenne mich)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i];
+    const namePatterns = [/(?:ich heiße|mein name ist|nenne mich|bin der|bin die)\s+([A-ZÄÖÜ][a-zäöüß]{2,}(?:\s[A-ZÄÖÜ][a-zäöüß]{2,})?)/i];
     for (const p of namePatterns) { const m = ownText.match(p); if (m) { info.name = m[1]; break; } }
     const ageMatch = ownText.match(/(?:ich bin|mein alter|ich habe)\s+(\d{1,2})\s*(?:jahre alt|jahr|jahre)/i); if (ageMatch) info.age = ageMatch[1];
     const cityMatch = ownText.match(/(?:ich wohne in|lebe in|komme aus|stamm aus|hause in)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s[A-ZÄÖÜ][a-zäöüß]+)?)/i); if (cityMatch) info.city = cityMatch[1];
-    const jobMatch = ownText.match(/(?:ich arbeite als|ich bin\s+|mein Beruf ist|beruflich)\s+([a-zäöüßA-ZÄÖÜ][a-zäöüßA-ZÄÖÜ]+(?:\s[a-zäöüßA-ZÄÖÜ]+)*)/i); if (jobMatch) info.job = jobMatch[1];
-    const hobbyMatch = ownText.match(/(?:in meiner freizeit|meine hobbys|meine vorlieben|ich lieb|ich mag|ich mache|hobbys|vorlieben)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (hobbyMatch) info.hobbies = hobbyMatch[1].trim().slice(0, 200);
-    const prefMatch = ownText.match(/(?:ich mag|ich liebe|meine vorlieben|meine fälle|mich reizen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (prefMatch) info.preferences = prefMatch[1].trim().slice(0, 200);
+    const jobMatch = ownText.match(/(?:ich arbeite als|mein Beruf ist|beruflich als|tätig als)\s+([a-zäöüßA-ZÄÖÜ][a-zäöüßA-ZÄÖÜ]+(?:\s[a-zäöüßA-ZÄÖÜ]+)*)/i); if (jobMatch) info.job = jobMatch[1];
+    const hobbyMatch = ownText.match(/(?:in meiner freizeit|meine hobbys|meine beschäftigungen|hobbys|freizeit)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (hobbyMatch) info.hobbies = hobbyMatch[1].trim().slice(0, 200);
+    const prefMatch = ownText.match(/(?:meine vorlieben|meine fälle|was ich mag|was ich liebe)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (prefMatch) info.preferences = prefMatch[1].trim().slice(0, 200);
     const heightMatch = ownText.match(/(?:ich bin|mein größe|größe)\s+(\d{2}[,.]?\d{0,2})\s*(?:m|meter|cm)/i); if (heightMatch) info.height = heightMatch[1] + ' m';
-    const zodiacMatch = ownText.match(/(?:sternzeichen|ich bin)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|fisch|wassermann|boecker)/i); if (zodiacMatch) info.zodiac = zodiacMatch[1];
+    const zodiacMatch = ownText.match(/(?:mein sternzeichen|sternzeichen\s+ist)\s+(steinbock|skorpion|lowe|widder|krebs|jungfrau|waage|fisch|wassermann|boecker)/i); if (zodiacMatch) info.zodiac = zodiacMatch[1];
     const phoneMatch = ownText.match(/(?:\+?\d[\d\s\-/()]{7,}\d)/); if (phoneMatch) info.phone = phoneMatch[0];
     const emailMatch = ownText.match(/[\w.+-]+@[\w-]+\.[\w.-]+/); if (emailMatch) info.email = emailMatch[0];
     if (/nicht rauch|nein.*rauchen|rauch frei/i.test(lower)) info.smoking = 'Nein';
@@ -1478,12 +1515,32 @@
     if (/kind|kinder/i.test(lower) && !/keine kind/i.test(lower)) info.kids = 'Ja';
     const petMatch = ownText.match(/(?:ich habe|meine|haustier|tier|katze|hund)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (petMatch) info.pets = petMatch[1].trim().slice(0, 100);
     const langMatch = ownText.match(/(?:sprachen|ich spreche|meine sprachen)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (langMatch) info.languages = langMatch[1].trim().slice(0, 100);
-    const bodyMatch = ownText.match(/(?:körperbau|gebaut|ich bin)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmächtig)/i); if (bodyMatch) info.bodyType = bodyMatch[1];
-    const hairMatch = ownText.match(/(?:haarfarbe|haar)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i); if (hairMatch) info.hair = hairMatch[1];
-    const eyeMatch = ownText.match(/(?:augenfarbe|augen)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i); if (eyeMatch) info.eyeColor = eyeMatch[1];
+    const bodyMatch = ownText.match(/(?:körperbau|gebaut| mein körperbau)\s+(schlank|normal|athletisch|kräftig|vollschlank|schmäßig)/i); if (bodyMatch) info.bodyType = bodyMatch[1];
+    const hairMatch = ownText.match(/(?:meine haarfarbe|haarfarbe\s+ist)\s+(blond|braun|schwarz|rothaarig|grau|dunkel)/i); if (hairMatch) info.hair = hairMatch[1];
+    const eyeMatch = ownText.match(/(?:meine augenfarbe|augenfarbe\s+ist)\s+(blau|braun|grün|grau|haselnuss|schwarz)/i); if (eyeMatch) info.eyeColor = eyeMatch[1];
     const eduMatch = ownText.match(/(?:ausbildung|schulabschluss|studium)\s+(akademisch|abitur|mittlere reife|hauptschulabschluss|studien|universität|fachhochschule)/i); if (eduMatch) info.education = eduMatch[1];
-    const relMatch = ownText.match(/(?:suche|ich suche|meine absicht|beziehung|für)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (relMatch) info.relationship = relMatch[1].trim().slice(0, 100);
+    const relMatch = ownText.match(/(?:ich suche|meine absicht|suche\s+eine|suche\s+ einen|suche\s+einen|suche\s+eine|beziehung\s+für|was ich suche)\s*[::–-]?\s*([A-Za-zäöüß][A-Za-zäöüß ,&]+?)(?:\.|!|\?|$|\n)/i); if (relMatch) info.relationship = relMatch[1].trim().slice(0, 100);
     return info;
+  }
+
+  // Wert-Validierung: verhindert nonsensische Einträge
+  function isValidProfileValue(value) {
+    if (!value || !value.trim()) return false;
+    const v = value.trim();
+    // Keine zu kurzen Werte (1 Zeichen = nonsense)
+    if (v.length < 2) return false;
+    // Keine Platzhalter oder Filter-Token
+    if (/\[.*GEFILTER\]|\[.*\]|placeholder|example|lorem|ipsum/i.test(v)) return false;
+    // Keine Fragezeichen – Profilwerte sind Aussagen
+    if (v.includes('?')) return false;
+    // Keine reinen Zahlen (für Text-Felder)
+    if (/^\d+$/.test(v)) return false;
+    // Keine zu lange Wörter ohne Leerzeichen (ein Wort > 25 Zeichen = unrealistisch)
+    if (v.length > 200) return false;
+    // Ausschließen von offensichtlich falschen Werten
+    const badPatterns = /^(ja|nein|ja|nein|klar|sehr|echt|total|ziemlich|ganz|einfach|auch|nur|aber|oder|wenn|das|die|der|ich|du|wir|ihr|doch|ja|ne)/i;
+    if (badPatterns.test(v) && v.length < 5) return false;
+    return true;
   }
 
   async function fillProfileFieldsForInfo(fields, info, label) {
@@ -1497,6 +1554,11 @@
       const value = info[field.category];
       if (!value || !value.trim()) {
         setStatus(`⏭️ ${label}: Keine Info für „${field.label}" im Chat gefunden – überspringe.`, 'working');
+        await sleep(200); skipped++; continue;
+      }
+      // VALIDATION: Nur sinnvolle Werte eintragen
+      if (!isValidProfileValue(value)) {
+        setStatus(`⏭️ ${label}: Wert für „${field.label}" ungültig oder unsinnig – überspringe.`, 'warn');
         await sleep(200); skipped++; continue;
       }
       setStatus(`⌨️ ${label}: Tippe in „${field.label}" (${field.category}): „${value}"...`, 'typing');
@@ -1551,7 +1613,7 @@
   async function generateReengagementReply(messages) {
     const lastCount = state.settings.agentLastMessages || 6;
     const recent = messages.slice(-lastCount);
-    const ownCount = recent.filter((m) => /Ich|Ich \(Bisher\)/i.test(m.sender || '')).length;
+    const ownCount = recent.filter((m) => isOwnMessage(m)).length;
     if (ownCount < 1) return null;
     const lastMsg = recent[recent.length - 1];
     const lastText = lastMsg ? lastMsg.text : '';
@@ -1579,6 +1641,13 @@
     state.isGenerating = true;
     const loopCount = state.settings.agentLoopCount || 3;
     const delayMs = state.settings.agentDelayMs || 3000;
+
+    // Zähler für Repetenz-Erkennung
+    let lastProcessedMsgKey = '';
+    let lastProcessedReply = '';
+    let replySkipCount = 0;
+    const MAX_SKIP_REPLIES = 1; // Nach 1 zugegebenen Antworten warten, bis sich der Chat ändert
+
     setStatus('🚀 Agent-Modus gestartet: autonomes Chat & Profil-Management...', 'working');
     updateUI();
 
@@ -1604,17 +1673,25 @@
       setStatus(`📖 ${recentMessages.length} letzte Nachrichten gelesen.`, 'working');
       await sleep(500);
 
-      // 3. Re-Engagement prüfen
+      // 3. Repetenz-Prüfung: Hat sich die letzte zu beantwortende Nachricht geändert?
       const lastMsg = recentMessages.length > 0 ? recentMessages[recentMessages.length - 1] : null;
-      const isOwnLast = lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '');
+      const isOwnLast = lastMsg && isOwnMessage(lastMsg);
+      const msgKey = lastMsg ? (lastMsg.sender || '') + '::' + (lastMsg.text || '').slice(0, 50) : '';
 
-      if (isOwnLast) {
+      let reply = '';
+      if (msgKey === lastProcessedMsgKey && replySkipCount >= MAX_SKIP_REPLIES) {
+        // Chat hat sich nicht geändert – keine neue Antwort generieren
+        setStatus('⏭️ Chatverlauf seit letzter Antwort unverändert – überspringe Antwortgenerierung (keine Repetenz).', 'working');
+        replySkipCount = 0;
+      } else if (isOwnLast) {
         setStatus('💬 Schritt 3: Letzte Nachrichten von dir – erstelle Re-Engagement-Antwort...', 'working');
-        const reengagementReply = await generateReengagementReply(recentMessages);
-        if (reengagementReply && state.inputEl) {
+        reply = await generateReengagementReply(recentMessages);
+        if (reply && state.inputEl) {
           setStatus('⌨️ Tippe Re-Engagement-Antwort ins Chatfeld...', 'typing');
-          await typeTextCharByChar(state.inputEl, reengagementReply);
+          await typeTextCharByChar(state.inputEl, reply);
           await sleep(1000);
+          lastProcessedReply = reply;
+          replySkipCount++;
         }
       } else {
         setStatus('💬 Schritt 3: Letzte Nachricht vom Chatpartner – normale Antwort wird erstellt...', 'working');
@@ -1624,31 +1701,45 @@
             recentMessages,
             ''
           );
-          const reply = enforceStrictChatRules(res.reply || '', recentMessages.map((m) => m.text).join(' '), state.settings.minChars || 60);
+          reply = enforceStrictChatRules(res.reply || '', recentMessages.map((m) => m.text).join(' '), state.settings.minChars || 60);
           if (reply && state.inputEl) {
             setStatus('⌨️ Tippe Antwort ins Chatfeld...', 'typing');
             await typeTextCharByChar(state.inputEl, reply);
             await sleep(1000);
+            lastProcessedReply = reply;
+            replySkipCount++;
           }
         }
       }
+      lastProcessedMsgKey = msgKey;
 
-      // 4. Profile füllen
+      // 4. Profile füllen – nur wenn neue Chat-Informationen vorhanden
       setStatus('📝 Schritt 4: Prüfe Profilfelder und fülle fehlende Chat-Informationen...', 'working');
       await sleep(800);
       const { partnerInfo, ownInfo } = extractChatForBothProfiles(messages, lastCount);
 
-      if (partnerProfileFields.length > 0) {
+      // Prüfe ob überhaupt neue Info vorhanden
+      const hasPartnerInfo = Object.values(partnerInfo).some((v) => v && v.trim());
+      const hasOwnInfo = Object.values(ownInfo).some((v) => v && v.trim());
+
+      if (partnerProfileFields.length > 0 && hasPartnerInfo) {
         setStatus(`📝 Fülle Partner-Profil (${partnerProfileFields.length} Felder)...`, 'working');
         const partnerResult = await fillProfileFieldsForInfo(partnerProfileFields, partnerInfo, 'Partner-Profil');
         setStatus(`✅ Partner-Profil: ${partnerResult.filled} gefüllt, ${partnerResult.skipped} übersprungen.`, 'working');
         await sleep(500);
+      } else if (partnerProfileFields.length > 0) {
+        setStatus('⏭️ Partner-Profil: Keine neuen Chat-Informationen gefunden – überspringe.', 'working');
+        await sleep(300);
       }
-      if (ownProfileFields.length > 0) {
+
+      if (ownProfileFields.length > 0 && hasOwnInfo) {
         setStatus(`📝 Fülle eigenes Profil (${ownProfileFields.length} Felder)...`, 'working');
         const ownResult = await fillProfileFieldsForInfo(ownProfileFields, ownInfo, 'Eigenes Profil');
         setStatus(`✅ Eigenes Profil: ${ownResult.filled} gefüllt, ${ownResult.skipped} übersprungen.`, 'working');
         await sleep(500);
+      } else if (ownProfileFields.length > 0) {
+        setStatus('⏭️ Eigenes Profil: Keine neuen Chat-Informationen gefunden – überspringe.', 'working');
+        await sleep(300);
       }
 
       // 5. Self-Review
@@ -1658,6 +1749,12 @@
         await sleep(500);
       }
 
+      // Wenn keine Antwort und keine Profil-Aktualisierung stattfand: Schleife abbrechen
+      if (reply === '' && !hasPartnerInfo && !hasOwnInfo && loop > 1) {
+        setStatus('⏹️ Agent-Schleife abgebrochen: keine neue Arbeit notwendig.', 'ready');
+        break;
+      }
+
       if (loop < loopCount) {
         setStatus(`⏸️ Pause ${loop}/${loopCount - 1}: Warte ${Math.round(delayMs / 1000)}s bevor nächste Schleife...`, 'ready');
         await sleep(delayMs);
@@ -1665,7 +1762,7 @@
     }
 
     state.isGenerating = false;
-    setStatus(`✅ Agent-Modus abgeschlossen: ${loopCount} Schleifen ausgeführt. Chat, Profile und Self-Review erledigt.`, 'ready', 100, '✓');
+    setStatus(`✅ Agent-Modus abgeschlossen: Chat, Profile und Self-Review erledigt.`, 'ready', 100, '✓');
     updateUI();
   }
 
@@ -1739,7 +1836,7 @@
     // LEERER CHATPARTNER: Wenn die letzten Nachrichten alle von "Ich" stammen
     // (z.B. der Nutzer hat 3 Nachrichten gesendet und der Partner hat noch nicht geantwortet),
     // gibt es nichts zu beantworten – offiziell abbrechen.
-    const partnerMessages = messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+    const partnerMessages = messages.filter((m) => !isOwnMessage(m));
     if (partnerMessages.length === 0) {
       setStatus(
         `⏸️ Der Chatpartner hat noch keine Nachrichten gesendet (${messages.length} eigene Nachrichten erkannt). Es gibt nichts zu beantworten.`,
@@ -1750,7 +1847,7 @@
     }
 
     // Wenn die letzte Nachricht von uns selbst ist (manueller Modus), gibt es nichts Neues zu beantworten
-    if (manual && lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '')) {
+    if (manual && lastMsg && isOwnMessage(lastMsg)) {
       setStatus(
         '⏸️ Die letzte Nachricht stammt von dir selbst – der Chatpartner hat noch nicht geantwortet. Es gibt nichts zu beantworten.',
         'warn'
@@ -1823,13 +1920,13 @@
         // Nur reagieren, wenn die letzte Nachricht VON DEM CHATPARTNER ist
         // (nicht wenn der Nutzer selbst geschrieben hat)
         const lastMsg = current.messages.length > 0 ? current.messages[current.messages.length - 1] : null;
-        if (lastMsg && /Ich|Ich \(Bisher\)/i.test(lastMsg.sender || '')) {
+        if (lastMsg && isOwnMessage(lastMsg)) {
           state.lastProcessedSignature = current.signature;
           return;
         }
 
         // Nur reagieren, wenn es überhaupt Partner-Nachrichten gibt
-        const hasPartnerMsg = current.messages.some((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender || ''));
+        const hasPartnerMsg = current.messages.some((m) => !isOwnMessage(m));
         if (!hasPartnerMsg) {
           state.lastProcessedSignature = current.signature;
           return;

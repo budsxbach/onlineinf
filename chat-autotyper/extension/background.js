@@ -3,7 +3,7 @@
 // Führt KI-API-Anfragen (OpenAI, Claude, Gemini) im Hintergrund ohne CORS aus
 // ============================================================================
 
-const CONFIG_VERSION = 7;
+const CONFIG_VERSION = 8;
 
 const DEFAULT_SETTINGS = {
   provider: 'openai', // 'openai' | 'anthropic' | 'gemini' | 'demo'
@@ -164,7 +164,7 @@ function enforceStrictChatRules(rawReply, partnerText, minChars) {
   const lower = (partnerText || '').toLowerCase();
   const isContactRequest = /(handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen)/i.test(lower);
   if (isContactRequest && reply.length < min) {
-    reply = 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+    reply = 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist im Moment nur noch beruflich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
   }
 
   // 6) Wenn eine Treffen-Frage erkennbar ist und Antwort extrem kurz → Ausrede ergänzen
@@ -353,7 +353,12 @@ function cleanReplyText(text) {
 // ============================================================================
 function generateContextualDatingAndIntimateReply(chatHistoryText, messages, userHint) {
   const partnerMessages = Array.isArray(messages)
-    ? messages.filter((m) => !/Ich|Ich \(Bisher\)/i.test(m.sender))
+    ? messages.filter((m) => {
+        const sender = (m.sender || '').trim();
+        // Service Worker: kein DOM, daher nur Label-basierte Erkennung
+        // "Ich" oder "Ich (Bisher)" = eigene Seite → NICHT Partner
+        return !/^ich\s|ich\s*\(bisher\)|^\(bisher\)/i.test(sender);
+      })
     : [];
   const lastObj =
     partnerMessages.length > 0
@@ -372,7 +377,7 @@ function generateContextualDatingAndIntimateReply(chatHistoryText, messages, use
 
   // 2. Handynummer / WhatsApp / Instagram Anfrage → charmante Ausrede, NIEMALS Nein
   if (/(handynummer|handy|nummer|whatsapp|telegram|instagram|kontakt|e-mail|mail|telefon|anrufen|vom handy|chef)/i.test(lower)) {
-    return 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist此刻 nur noch eingemeindet geschäftlich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
+    return 'Aufgeschoben ist ja nicht aufgehoben! Ich musste gerade mein Handy auf Bereiche flicken und es ist im Moment nur noch beruflich aktiv. Hier im Chat haben wir aber die meiste Ruhe und können ungestört bei uns bleiben. Was treibst du so als Nächstes?';
   }
 
   // 3. Intimate / Sinnliche Anfrage → offen, sinnlich, spielerisch
